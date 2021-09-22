@@ -24,7 +24,7 @@ class Menu
     {
         this.mission = mission;
         menuPool = new ObjectPool();
-        mainMenu = new NativeMenu("Police computer", "San Andreas police database");
+        mainMenu = new NativeMenu("Police computer", "Los Santos county database");
         menuPool.Add(mainMenu);
         mostWantedMenu = new NativeMenu("Most Wanted", "Most wanted");
         menuPool.Add(mostWantedMenu);
