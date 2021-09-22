@@ -1,5 +1,4 @@
 ﻿using GTA;
-using GTA.Native;
 using GTA.Math;
 using System;
 using System.Collections.Generic;
@@ -161,14 +160,14 @@ class MissionFive : Mission
     void StartScenarios()
     {
         enemies[0].ped.CanSufferCriticalHits = false;
-        enemies[0].ped.Armor = 650;
-        enemies[0].ped.MaxHealth = 650;
-        enemies[0].ped.Health = 650;
-        enemies[0].ped.CanRagdoll = false;
+        enemies[0].ped.Armor = 600;
+        enemies[0].ped.MaxHealth = 600;
+        enemies[0].ped.Health = 600;
+        enemies[0].ped.CanRagdoll = true;
         enemies[0].ped.CanWrithe = false;
 
         var bundySequence = new TaskSequence();
-        bundySequence.AddTask.FollowToOffsetFromEntity(neutralPeds[0].ped, new GTA.Math.Vector3(), 25, 35000);
+        bundySequence.AddTask.FollowToOffsetFromEntity(neutralPeds[0].ped, new Vector3(), 25, 15000);
         bundySequence.AddTask.ShootAt(neutralPeds[0].ped, -1, FiringPattern.FullAuto);
         neutralPeds[0].ped.Task.FleeFrom(enemies[0].ped);
         enemies[0].ped.Task.PerformSequence(bundySequence);

@@ -51,4 +51,8 @@ class Music
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_MC_START_FUNKY_JAM_TWO_4");
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "fbi4_SHOOTOUT_MID_MA");
     }
+    public void PlayMissionCompleted()
+    {
+        Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
+    }
 }

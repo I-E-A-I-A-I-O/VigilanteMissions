@@ -15,6 +15,7 @@ public class MissionPed
     bool drawedWeapon = false;
     bool wasWeaponDrawed = false;
     bool timerStarted = false;
+    bool stolenVehicleMission = false;
     float timeBeforeAttack = 5000f;
     int startTime;
     int currentTime;
@@ -32,7 +33,7 @@ public class MissionPed
         "PATROL"
     };
 
-    public MissionPed(Ped ped, RelationshipGroup relationshipGroup, Vector3 location, Script script, bool civilian = false)
+    public MissionPed(Ped ped, RelationshipGroup relationshipGroup, Vector3 location, Script script, bool civilian = false, bool stolenVehicleMission = false)
     {
         if (ped == null)
         {
@@ -48,7 +49,10 @@ public class MissionPed
         {
             this.ped.Weapons.Give(RandomWeapon(), 500, true, true);
             this.ped.Weapons.Give(WeaponHash.MicroSMG, 500, false, true);
-            if (ped.GetRelationshipWithPed(Game.Player.Character) == Relationship.Neutral)
+            if (stolenVehicleMission)
+            {
+                return;
+            } else if (ped.GetRelationshipWithPed(Game.Player.Character) == Relationship.Neutral)
             {
                 script.Tick += PedTick;
             }

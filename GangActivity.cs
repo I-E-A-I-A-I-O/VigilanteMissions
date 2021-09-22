@@ -43,12 +43,19 @@ class GangActivity : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
+
+                    var peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
+                    Script.Wait(1000);
+                    foreach (Ped ped in peds)
+                    {
+                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                    }
                     foreach (MissionPed enemy in enemies)
                     {
                         enemy.ShowBlip();
                         enemy.GiveRandomScenario();
                     }
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
@@ -118,12 +125,6 @@ class GangActivity : Mission
                 objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
-            var peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
-            Script.Wait(1000);
-            foreach (Ped ped in peds)
-            {
-                enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
-            }
             currentObjective = Objectives.GoToLocation;
             objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
             objectiveLocationBlip.Color = BlipColor.Yellow;

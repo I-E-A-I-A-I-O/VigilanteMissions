@@ -62,6 +62,7 @@ public class VigilanteMissions: Script
                 currentTime = Game.GameTime - startTime;
                 if (currentTime >= 3000)
                 {
+                    GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
                     missionWorld.QuitMission();
                 }
             }
@@ -80,6 +81,7 @@ public class VigilanteMissions: Script
             }
             if (e.KeyCode == cancelMissionKey && missionWorld.isMissionActive)
             {
+                GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
                 missionWorld.QuitMission();
             }
         };

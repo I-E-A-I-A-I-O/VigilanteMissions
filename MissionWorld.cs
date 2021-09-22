@@ -99,12 +99,12 @@ class MissionWorld
                 }
             case Missions.StolenVehicle:
                 {
-                    currentMission = new StolenVehicle(script, this, RELATIONSHIP_MISSION_AGGRESSIVE);
+                    currentMission = new StolenVehicle(script, this, RELATIONSHIP_MISSION_NEUTRAL);
                     break;
                 }
             case Missions.GangActivity:
                 {
-                    currentMission = new GangActivity(script, this, RELATIONSHIP_MISSION_DISLIKE);
+                    currentMission = new GangActivity(script, this, RELATIONSHIP_MISSION_NEUTRAL);
                     break;
                 }
             case Missions.SuspectOnTheRun:
@@ -118,7 +118,6 @@ class MissionWorld
 
     public void QuitMission()
     {
-        GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
         currentMission.QuitMission();
         isMissionActive = false;
         currentMission = null;

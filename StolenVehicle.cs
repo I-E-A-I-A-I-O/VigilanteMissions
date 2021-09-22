@@ -44,9 +44,17 @@ class StolenVehicle : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
+
+                    var vehicle = randomMissions.CreateVehicle(objectiveLocation);
+                    Script.Wait(500);
+                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
+                    Script.Wait(500);
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script, false, true));
+                    vehicles.Add(vehicle);
+
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
                     enemies[0].ShowBlip();
-                    enemies[0].ped.Task.CruiseWithVehicle(vehicles[0], 150, DrivingStyle.Rushed);
+                    enemies[0].ped.Task.CruiseWithVehicle(vehicle, 250, DrivingStyle.Rushed);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
@@ -119,12 +127,6 @@ class StolenVehicle : Mission
             {
                 objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Vehicle);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
-
-            var ped = randomMissions.CreateCriminal(objectiveLocation);
-            var vehicle = randomMissions.CreateVehicle(objectiveLocation);
-            Script.Wait(1000);
-            enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
-            vehicles.Add(vehicle);
 
             currentObjective = Objectives.GoToLocation;
             objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
