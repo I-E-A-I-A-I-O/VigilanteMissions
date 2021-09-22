@@ -36,7 +36,7 @@ public class VigilanteMissions: Script
         }
 
         missionWorld = new MissionWorld(this);
-        menu = new Menu(missionWorld);
+        menu = new Menu(missionWorld, this);
 
         Tick += (o, e) =>
         {

@@ -10,6 +10,7 @@ class Menu
     public NativeMenu mainMenu;
     public NativeMenu mostWantedMenu;
     public NativeMenu currentCrimesMenu;
+    Script script;
     MissionWorld mission;
 
     readonly List<string> randomEvents = new List<string>()
@@ -20,9 +21,11 @@ class Menu
         "Suspect on the run",
     };
 
-    public Menu(MissionWorld mission)
+    public Menu(MissionWorld mission, Script script)
     {
         this.mission = mission;
+        this.script = script;
+
         menuPool = new ObjectPool();
         mainMenu = new NativeMenu("Police computer", "Los Santos county database");
         menuPool.Add(mainMenu);
@@ -62,7 +65,15 @@ class Menu
         currentCrimesMenu = new NativeMenu("Current crimes", "Current crimes");
         menuPool.Add(currentCrimesMenu);
         mainMenu.AddSubMenu(currentCrimesMenu);
+        var callBackupOption = new NativeItem("Call police backup");
+        mainMenu.Add(callBackupOption);
+        callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
+    }
+
+    void BackUpCalled(object o, EventArgs e)
+    {
+        new PoliceBackup(script);
     }
 
     private void CurrentCrimesMenu_Shown(object sender, EventArgs e)
