@@ -47,8 +47,8 @@ public class MissionPed
         originalHeading = ped.Heading;
         if (!civilian)
         {
-            this.ped.Weapons.Give(RandomWeapon(), 500, true, true);
             this.ped.Weapons.Give(WeaponHash.MicroSMG, 500, false, true);
+            this.ped.Weapons.Give(RandomWeapon(), 500, true, true);
             if (stolenVehicleMission)
             {
                 return;

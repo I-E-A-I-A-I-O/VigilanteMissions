@@ -9,10 +9,12 @@ public class VigilanteMissions: Script
     Vehicle currentPoliceVehicle;
     MissionWorld missionWorld;
     Menu menu;
-    Keys accessComputerKey;
-    Keys cancelMissionKey;
-    public string accessKey;
-    public string cancelKey;
+    public static Keys accessComputerKey;
+    public static Keys interactMissionKey;
+    public static Keys cancelMissionKey;
+    string accessKey;
+    string cancelKey;
+    public static string interactKey;
     ScriptSettings iniFile;
     int startTime;
     int currentTime;
@@ -22,21 +24,29 @@ public class VigilanteMissions: Script
         iniFile = ScriptSettings.Load("scripts\\VigilanteMissionsConfig.ini");
         accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
         cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
-
+        interactKey = iniFile.GetValue("Controls", "Interact", "E");
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
         {
             accessKey = "E";
             accessComputerKey = Keys.E;
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for accessing the police computer so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
         }
         if (!Enum.TryParse(cancelKey, out cancelMissionKey))
         {
             cancelKey = "F1";
             cancelMissionKey = Keys.F1;
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for cancelling the mission so the default key ~g~F1~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
+        }
+        if (!Enum.TryParse(interactKey, out interactMissionKey))
+        {
+            interactKey = "E";
+            interactMissionKey = Keys.E;
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for interacting so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
         }
 
         missionWorld = new MissionWorld(this);
-        menu = new Menu(missionWorld);
+        menu = new Menu(missionWorld, this);
 
         Tick += (o, e) =>
         {

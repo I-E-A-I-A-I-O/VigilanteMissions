@@ -10,7 +10,12 @@ class Menu
     public NativeMenu mainMenu;
     public NativeMenu mostWantedMenu;
     public NativeMenu currentCrimesMenu;
+    public NativeItem callBackupOption;
+    Script script;
     MissionWorld mission;
+    bool timerStarted = false;
+    int startTime;
+    int currentTime;
 
     readonly List<string> randomEvents = new List<string>()
     {
@@ -18,11 +23,14 @@ class Menu
         "Assault",
         "Gang activity",
         "Suspect on the run",
+        "Mass shooter"
     };
 
-    public Menu(MissionWorld mission)
+    public Menu(MissionWorld mission, Script script)
     {
         this.mission = mission;
+        this.script = script;
+
         menuPool = new ObjectPool();
         mainMenu = new NativeMenu("Police computer", "Los Santos county database");
         menuPool.Add(mainMenu);
@@ -38,7 +46,9 @@ class Menu
             new NativeItem("Ted Bundy - Murder"),
             new NativeItem("Song Jiang - Human Trafficking"),
             new NativeItem("Catherine Kerkow - Terrorism"),
-            new NativeItem("Harry \"Taco\" Bowman - Racketeering")
+            new NativeItem("Harry \"Taco\" Bowman - Racketeering"),
+            new NativeItem("Heisenberg - Drug trafficking"),
+            new NativeItem("Billy \"The Beaut\" Russo - Murder")
         };
         for (var i = 0; i < listOfItems.Count; i++)
         {
@@ -62,7 +72,31 @@ class Menu
         currentCrimesMenu = new NativeMenu("Current crimes", "Current crimes");
         menuPool.Add(currentCrimesMenu);
         mainMenu.AddSubMenu(currentCrimesMenu);
+        callBackupOption = new NativeItem("Call police backup");
+        mainMenu.Add(callBackupOption);
+        callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
+    }
+
+    void BackUpCalled(object o, EventArgs e)
+    {
+        if (!timerStarted)
+        {
+            new PoliceBackup(script);
+            timerStarted = true;
+            startTime = Game.GameTime;
+        } else
+        {
+            currentTime = Game.GameTime;
+            if (currentTime - startTime >= 60000)
+            {
+                timerStarted = false;
+                new PoliceBackup(script);
+            } else
+            {
+                GTA.UI.Notification.Show($"Next police backup available in {60 - ((currentTime - startTime) / 1000)} seconds");
+            }
+        }
     }
 
     private void CurrentCrimesMenu_Shown(object sender, EventArgs e)
@@ -106,6 +140,11 @@ class Menu
                     case "Stolen vehicle":
                         {
                             mission.StartMission(MissionWorld.Missions.StolenVehicle);
+                            break;
+                        }
+                    case "Mass shooter":
+                        {
+                            mission.StartMission(MissionWorld.Missions.MassShooter);
                             break;
                         }
                 }

@@ -104,12 +104,14 @@ class MissionSeven : Mission
         this.script = script;
         this.missionWorld = missionWorld;
         this.enemiesRelGroup = enemiesRelGroup;
-        this.neutralsRelGroup = neutralsRelGroup;
 
         mostWantedMissions = new MostWantedMissions();
         objectiveLocation = mostWantedMissions.MISSION_SEVEN_START_LOCATION;
         music = new Music();
         markerPosition = new Vector3(-77.04752f, -830.2404f, 242.3859f);
+
+        var copRelGroupHash = Function.Call<int>(Hash.GET_HASH_KEY, "COP");
+        neutralsRelGroup = new RelationshipGroup(copRelGroupHash);
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -139,9 +141,11 @@ class MissionSeven : Mission
                         enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
                     }
 
-                    foreach(Ped ped in neutrals)
+                    for(var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(ped, neutralsRelGroup, objectiveLocation, script));
+                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, objectiveLocation, script));
+                        neutralPeds[i].ped.Accuracy = 10;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].ped, 1);
                     }
 
                     foreach(Vehicle vehicle in vehicles)
@@ -152,6 +156,8 @@ class MissionSeven : Mission
                     foreach(MissionPed enemy in enemies)
                     {
                         enemy.ShowBlip();
+                        enemy.ped.Accuracy = 80;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.ped, 1);
                     }
 
                     StartStreetScenarios();
@@ -195,6 +201,8 @@ class MissionSeven : Mission
                     foreach(MissionPed enemy in enemies)
                     {
                         enemy.ShowBlip();
+                        enemy.ped.Accuracy = 80;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.ped, 3);
                     }
 
                     StartOfficeScenarios();
@@ -229,12 +237,12 @@ class MissionSeven : Mission
                     {
                         if (Game.LastInputMethod == InputMethod.GamePad)
                         {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press RB to grab the ~g~bomb");
+                            GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to grab the ~g~bomb");
                         } else
                         {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press E to grab the ~g~bomb");
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to grab the ~g~bomb");
                         }
-                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(Keys.E)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB))) 
+                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight))) 
                         {
                             props[0].Delete();
                             props.Clear();
