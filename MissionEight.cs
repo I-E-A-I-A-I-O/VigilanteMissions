@@ -131,13 +131,13 @@ class MissionEight : Mission
                     {
                         if (Game.LastInputMethod == InputMethod.GamePad)
                         {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press RB to grab the ~g~axe");
+                            GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to grab the ~g~axe");
                         }
                         else
                         {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press E to grab the ~g~axe");
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to grab the ~g~axe");
                         }
-                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(Keys.E)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
+                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                         {
                             props[(int)Props.Fireaxe].Delete();
                             props.RemoveAt((int)Props.Fireaxe);
