@@ -6,8 +6,7 @@ using System.Collections.Generic;
 
 public class MissionPed
 {
-    public Ped ped;
-    Script script;
+    Ped ped;
     Vector3 originalPosition;
     float originalHeading;
     bool isFollowing = false;
@@ -33,16 +32,10 @@ public class MissionPed
         "PATROL"
     };
 
-    public MissionPed(Ped ped, RelationshipGroup relationshipGroup, Vector3 location, Script script, bool civilian = false, bool stolenVehicleMission = false)
+    public MissionPed(Ped ped, RelationshipGroup relationshipGroup, bool civilian = false, bool stolenVehicleMission = false)
     {
-        if (ped == null)
-        {
-            PedHash pedHash = civilian ? PedHash.Hooker01SFY : PedHash.MexGoon01GMY;
-            ped = World.CreatePed(new Model(pedHash), location);
-        }
         this.ped = ped;
         this.ped.RelationshipGroup = relationshipGroup;
-        this.script = script;
         originalPosition = ped.Position;
         originalHeading = ped.Heading;
         if (!civilian)
@@ -54,7 +47,7 @@ public class MissionPed
                 return;
             } else if (ped.GetRelationshipWithPed(Game.Player.Character) == Relationship.Neutral)
             {
-                script.Tick += PedTick;
+               MissionWorld.script.Tick += PedTick;
             }
         }
     }
@@ -63,7 +56,7 @@ public class MissionPed
     {
         if (!ped.IsAlive || ped.IsInCombatAgainst(Game.Player.Character))
         {
-            script.Tick -= PedTick;
+            MissionWorld.script.Tick -= PedTick;
             return;
         }
         if (Game.Player.Character.Weapons.Current.Hash == WeaponHash.Unarmed)
@@ -98,7 +91,7 @@ public class MissionPed
             if ((!wasWeaponDrawed && drawedWeapon) || (currentTime - startTime > timeBeforeAttack))
             {
                 ped.Task.FightAgainst(Game.Player.Character);
-                script.Tick -= PedTick;
+                MissionWorld.script.Tick -= PedTick;
                 return;
             }
         }
@@ -173,6 +166,26 @@ public class MissionPed
         ped.AttachedBlip.Scale = 0.8f;
         ped.AttachedBlip.Color = BlipColor.Red;
         ped.AttachedBlip.Name = "Wanted Criminal";
+    }
+    public TaskInvoker GetTask()
+    {
+        return ped.Task;
+    }
+    public Ped GetPed()
+    {
+        return ped;
+    }
+    public Vector3 GetPosition()
+    {
+        return ped.Position;
+    }
+    public RelationshipGroup GetRelGroup()
+    {
+        return ped.RelationshipGroup;
+    }
+    public Blip GetBlip()
+    {
+        return ped.AttachedBlip;
     }
 }
 

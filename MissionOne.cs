@@ -37,15 +37,11 @@ class MissionOne : Mission
     Blip objectiveLocationBlip;
     Music music;
     MostWantedMissions mostWantedMissions;
-    Script script;
     RelationshipGroup enemiesRelGroup;
-    MissionWorld missionWorld;
 
-    public MissionOne(Script script, RelationshipGroup relationshipGroup, MissionWorld missionWorld)
+    public MissionOne()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        enemiesRelGroup = relationshipGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
 
         music = new Music();
         mostWantedMissions = new MostWantedMissions();
@@ -73,7 +69,16 @@ class MissionOne : Mission
                     Script.Wait(1000);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup, targetLocation, script));
+                        try
+                        {
+                            enemies.Add(new MissionPed(peds[i], enemiesRelGroup, MissionWorld.script));
+                        } catch(Exception ex)
+                        {
+                            GTA.UI.Notification.Show("Error loading the mission, cancelling...");
+                            MissionWorld.QuitMission();
+                            MissionWorld.script.Tick -= MissionTick;
+                            return;
+                        }
                     }
                     foreach (MissionPed enemy in enemies)
                     {
@@ -103,8 +108,8 @@ class MissionOne : Mission
                     Game.Player.Money += 15000;
                     Game.Player.WantedLevel = 3;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -114,7 +119,7 @@ class MissionOne : Mission
     {
         music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -143,7 +148,7 @@ class MissionOne : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
@@ -171,18 +176,18 @@ class MissionOne : Mission
 
     void StartScenarios()
     {
-        enemies[(int)Enemies.Target].ped.Task.UseMobilePhone();
-        enemies[(int)Enemies.ElectricBoxGuard01].ped.Task.StartScenario("WORLD_HUMAN_DRUG_DEALER", 0);
-        enemies[(int)Enemies.ElectricBoxGuard02].ped.Task.StartScenario("WORLD_HUMAN_SMOKING", 0);
-        enemies[(int)Enemies.WallGuard].ped.Task.StartScenario("WORLD_HUMAN_LEANING", 0);
-        enemies[(int)Enemies.ScoutGuard].ped.Task.StartScenario("WORLD_HUMAN_BINOCULARS", 0);
-        enemies[(int)Enemies.GuardTrash01].ped.Task.UseMobilePhone();
-        enemies[(int)Enemies.GuardTrash02].ped.Task.ChatTo(enemies[(int)Enemies.GuardTrash01].ped);
-        enemies[(int)Enemies.HallwayGuard].ped.Task.GuardCurrentPosition();
-        enemies[(int)Enemies.PedGroup01].ped.Task.ChatTo(enemies[(int)Enemies.PedGroup02].ped);
-        enemies[(int)Enemies.PedGroup02].ped.Task.ChatTo(enemies[(int)Enemies.PedGroup01].ped);
-        enemies[(int)Enemies.PedGroup03].ped.Task.StartScenario("WORLD_HUMAN_SMOKING", 0);
-        enemies[(int)Enemies.EntranceGuard01].ped.Task.StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
-        enemies[(int)Enemies.EntranceGuard02].ped.Task.StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
+        enemies[(int)Enemies.Target].GetTask().UseMobilePhone();
+        enemies[(int)Enemies.ElectricBoxGuard01].GetTask().StartScenario("WORLD_HUMAN_DRUG_DEALER", 0);
+        enemies[(int)Enemies.ElectricBoxGuard02].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
+        enemies[(int)Enemies.WallGuard].GetTask().StartScenario("WORLD_HUMAN_LEANING", 0);
+        enemies[(int)Enemies.ScoutGuard].GetTask().StartScenario("WORLD_HUMAN_BINOCULARS", 0);
+        enemies[(int)Enemies.GuardTrash01].GetTask().UseMobilePhone();
+        enemies[(int)Enemies.GuardTrash02].GetTask().ChatTo(enemies[(int)Enemies.GuardTrash01].GetPed());
+        enemies[(int)Enemies.HallwayGuard].GetTask().GuardCurrentPosition();
+        enemies[(int)Enemies.PedGroup01].GetTask().ChatTo(enemies[(int)Enemies.PedGroup02].GetPed());
+        enemies[(int)Enemies.PedGroup02].GetTask().ChatTo(enemies[(int)Enemies.PedGroup01].GetPed());
+        enemies[(int)Enemies.PedGroup03].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
+        enemies[(int)Enemies.EntranceGuard01].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)Enemies.EntranceGuard02].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
     }
 }

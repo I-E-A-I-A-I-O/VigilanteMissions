@@ -11,8 +11,6 @@ class Menu
     public NativeMenu mostWantedMenu;
     public NativeMenu currentCrimesMenu;
     public NativeItem callBackupOption;
-    Script script;
-    MissionWorld mission;
     bool timerStarted = false;
     int startTime;
     int currentTime;
@@ -26,11 +24,8 @@ class Menu
         "Mass shooter"
     };
 
-    public Menu(MissionWorld mission, Script script)
+    public Menu()
     {
-        this.mission = mission;
-        this.script = script;
-
         menuPool = new ObjectPool();
         mainMenu = new NativeMenu("Police computer", "Los Santos county database");
         menuPool.Add(mainMenu);
@@ -56,7 +51,7 @@ class Menu
             var index = i;
             listOfItems[i].Activated += (o, e) =>
             {
-                if (mission.isMissionActive)
+                if (MissionWorld.isMissionActive)
                 {
                     GTA.UI.Notification.Show("A mission is already in progress!");
                     return;
@@ -66,7 +61,7 @@ class Menu
                     GTA.UI.Notification.Show("Mission not available.");
                     return;
                 }
-                mission.StartMission((MissionWorld.Missions)index);
+                MissionWorld.StartMission((MissionWorld.Missions)index);
             };
         }
         currentCrimesMenu = new NativeMenu("Current crimes", "Current crimes");
@@ -82,7 +77,7 @@ class Menu
     {
         if (!timerStarted)
         {
-            new PoliceBackup(script);
+            new PoliceBackup(MissionWorld.script);
             timerStarted = true;
             startTime = Game.GameTime;
         } else
@@ -91,7 +86,7 @@ class Menu
             if (currentTime - startTime >= 60000)
             {
                 timerStarted = false;
-                new PoliceBackup(script);
+                new PoliceBackup(MissionWorld.script);
             } else
             {
                 GTA.UI.Notification.Show($"Next police backup available in {60 - ((currentTime - startTime) / 1000)} seconds");
@@ -110,7 +105,7 @@ class Menu
             currentCrimesMenu.Add(item);
             item.Activated += (o, ev) =>
             {
-                if (mission.isMissionActive)
+                if (MissionWorld.isMissionActive)
                 {
                     GTA.UI.Notification.Show("A mission is already in progress!");
                     return;
@@ -124,27 +119,27 @@ class Menu
                 {
                     case "Suspect on the run":
                         {
-                            mission.StartMission(MissionWorld.Missions.SuspectOnTheRun);
+                            MissionWorld.StartMission(MissionWorld.Missions.SuspectOnTheRun);
                             break;
                         }
                     case "Assault":
                         {
-                            mission.StartMission(MissionWorld.Missions.Assault);
+                            MissionWorld.StartMission(MissionWorld.Missions.Assault);
                             break;
                         }
                     case "Gang activity":
                         {
-                            mission.StartMission(MissionWorld.Missions.GangActivity);
+                            MissionWorld.StartMission(MissionWorld.Missions.GangActivity);
                             break;
                         }
                     case "Stolen vehicle":
                         {
-                            mission.StartMission(MissionWorld.Missions.StolenVehicle);
+                            MissionWorld.StartMission(MissionWorld.Missions.StolenVehicle);
                             break;
                         }
                     case "Mass shooter":
                         {
-                            mission.StartMission(MissionWorld.Missions.MassShooter);
+                            MissionWorld.StartMission(MissionWorld.Missions.MassShooter);
                             break;
                         }
                 }

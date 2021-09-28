@@ -3,17 +3,18 @@ using GTA.Native;
 using System;
 using System.Collections.Generic;
 
-class MissionWorld
+public class MissionWorld
 {
-    Script script;
-    RelationshipGroup RELATIONSHIP_MISSION_LIKE;
-    RelationshipGroup RELATIONSHIP_MISSION_NEUTRAL;
-    RelationshipGroup RELATIONSHIP_MISSION_AGGRESSIVE;
-    RelationshipGroup RELATIONSHIP_MISSION_PEDESTRIAN;
-    RelationshipGroup RELATIONSHIP_MISSION_DISLIKE;
-    RelationshipGroup RELATIONSHIP_MISSION_MASS_SHOOTER;
-    public bool isMissionActive;
-    Mission currentMission;
+    public static Script script;
+    public static RelationshipGroup RELATIONSHIP_MISSION_LIKE;
+    public static RelationshipGroup RELATIONSHIP_MISSION_NEUTRAL;
+    public static RelationshipGroup RELATIONSHIP_MISSION_AGGRESSIVE;
+    public static RelationshipGroup RELATIONSHIP_MISSION_PEDESTRIAN;
+    public static RelationshipGroup RELATIONSHIP_MISSION_DISLIKE;
+    public static RelationshipGroup RELATIONSHIP_MISSION_MASS_SHOOTER;
+    public static RelationshipGroup RELATIONSHIP_MISSION_COP;
+    public static bool isMissionActive;
+    static Mission currentMission;
     
     public enum Missions
     {
@@ -37,7 +38,7 @@ class MissionWorld
 
     public MissionWorld(Script script)
     {
-        this.script = script;
+        MissionWorld.script = script;
 
         var RELATIONSHIP_PLAYER = Function.Call<int>(Hash.GET_HASH_KEY, "PLAYER");
         var RELATIONSHIP_COPS = Function.Call<int>(Hash.GET_HASH_KEY, "COP");
@@ -50,6 +51,7 @@ class MissionWorld
         RELATIONSHIP_MISSION_AGGRESSIVE = World.AddRelationshipGroup("VIGILANTE_MISSION_AGGRESSIVE");
         RELATIONSHIP_MISSION_DISLIKE = World.AddRelationshipGroup("VIGILANTE_MISSION_DISLIKE");
         RELATIONSHIP_MISSION_MASS_SHOOTER = World.AddRelationshipGroup("VIGILANTE_MISSION_MASS_SHOOTER");
+        RELATIONSHIP_MISSION_COP = new RelationshipGroup(RELATIONSHIP_COPS);
 
         RELATIONSHIP_MISSION_LIKE.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Respect);
         RELATIONSHIP_MISSION_NEUTRAL.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
@@ -67,53 +69,53 @@ class MissionWorld
         isMissionActive = false;
     }
 
-    public void StartMission(Missions mission)
+    public static void StartMission(Missions mission)
     {
         switch (mission)
         {
             case Missions.MostWanted1:
                 {
-                    currentMission = new MissionOne(script, RELATIONSHIP_MISSION_NEUTRAL, this);
+                    currentMission = new MissionOne();
                     break;
                 }
             case Missions.MostWanted2:
                 {
-                    currentMission = new MissionTwo(script, this, RELATIONSHIP_MISSION_NEUTRAL, RELATIONSHIP_MISSION_PEDESTRIAN);
+                    currentMission = new MissionTwo();
                     break;
                 }
             case Missions.MostWanted3:
                 {
-                    currentMission = new MissionThree(script, RELATIONSHIP_MISSION_NEUTRAL, RELATIONSHIP_MISSION_PEDESTRIAN, this);
+                    currentMission = new MissionThree();
                     break;
                 }
             case Missions.MostWanted4:
                 {
-                    currentMission = new MissionFour(script, RELATIONSHIP_MISSION_AGGRESSIVE, this);
+                    currentMission = new MissionFour();
                     break;
                 }
             case Missions.MostWanted5:
                 {
-                    currentMission = new MissionFive(script, this, RELATIONSHIP_MISSION_DISLIKE, RELATIONSHIP_MISSION_PEDESTRIAN);
+                    currentMission = new MissionFive();
                     break;
                 }
             case Missions.MostWanted6:
                 {
-                    currentMission = new MissionSix(script, this, RELATIONSHIP_MISSION_AGGRESSIVE, RELATIONSHIP_MISSION_PEDESTRIAN);
+                    currentMission = new MissionSix();
                     break;
                 }
             case Missions.MostWanted7:
                 {
-                    currentMission = new MissionSeven(script, this, RELATIONSHIP_MISSION_AGGRESSIVE, RELATIONSHIP_MISSION_NEUTRAL);
+                    currentMission = new MissionSeven();
                     break;
                 }
             case Missions.MostWanted8:
                 {
-                    currentMission = new MissionEight(script, this, RELATIONSHIP_MISSION_NEUTRAL, RELATIONSHIP_MISSION_AGGRESSIVE);
+                    currentMission = new MissionEight();
                     break;
                 }
             case Missions.MostWanted9:
                 {
-                    currentMission = new MissionNine(script, this, RELATIONSHIP_MISSION_NEUTRAL, RELATIONSHIP_MISSION_AGGRESSIVE, RELATIONSHIP_MISSION_LIKE);
+                    currentMission = new MissionNine();
                     break;
                 }
             case Missions.MostWanted10:
@@ -150,14 +152,14 @@ class MissionWorld
         isMissionActive = currentMission.StartMission();
     }
 
-    public void QuitMission()
+    public static void QuitMission()
     {
         currentMission.QuitMission();
         isMissionActive = false;
         currentMission = null;
     }
 
-    public void CompleteMission()
+    public static void CompleteMission()
     {
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
         isMissionActive = false;

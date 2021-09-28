@@ -38,7 +38,6 @@ class MissionSix : Mission
     }
 
     Vector3 objectiveLocation;
-    Script script;
     List<Vehicle> vehicles = new List<Vehicle>();
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
@@ -46,16 +45,13 @@ class MissionSix : Mission
     Music music;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    MissionWorld missionWorld;
     MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
 
-    public MissionSix(Script script, MissionWorld missionWorld, RelationshipGroup enemiesRelGroup, RelationshipGroup neutralsRelGroup)
+    public MissionSix()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemiesRelGroup = enemiesRelGroup;
-        this.neutralsRelGroup = neutralsRelGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
+        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
         music = new Music();
         mostWantedMissions = new MostWantedMissions();
@@ -84,11 +80,11 @@ class MissionSix : Mission
                     Script.Wait(1000);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, objectiveLocation, script, true));
+                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -113,8 +109,8 @@ class MissionSix : Mission
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "Good job, your cut of the reward is already in your account.");
                     Game.Player.Money += 15000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -124,7 +120,7 @@ class MissionSix : Mission
     {
         music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -179,37 +175,37 @@ class MissionSix : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
     void StartScenarios()
     {
-        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].ped.RelationshipGroup, vehicles[0].Position, script));
-        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].ped.RelationshipGroup, vehicles[0].Position, script));
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
 
-        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].ped.RelationshipGroup, vehicles[1].Position, script));
-        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].ped.RelationshipGroup, vehicles[1].Position, script));
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
 
         foreach (MissionPed ped in enemies)
         {
             ped.ShowBlip();
         }
 
-        enemies[(int)Enemies.GuardGroup].ped.Task.AimAt(neutralPeds[(int)Neutrals.OtherWoman].ped, 1800000);
-        enemies[(int)Enemies.GuardAiming].ped.Task.Arrest(neutralPeds[(int)Neutrals.ArrestedWoman].ped);
-        enemies[(int)Enemies.Target].ped.Task.ChatTo(neutralPeds[(int)Neutrals.ArrestedWoman].ped);
-        enemies[(int)Enemies.GuardLookingTarget].ped.Task.AimAt(neutralPeds[(int)Neutrals.OtherWoman].ped, 1800000);
-        neutralPeds[(int)Neutrals.OtherWoman].ped.Task.HandsUp(1800000);
-        neutralPeds[(int)Neutrals.Man01].ped.Task.HandsUp(1800000);
-        neutralPeds[(int)Neutrals.Man02].ped.Task.HandsUp(1800000);
-        neutralPeds[(int)Neutrals.Man03].ped.Task.HandsUp(1800000);
+        enemies[(int)Enemies.GuardGroup].GetTask().AimAt(neutralPeds[(int)Neutrals.OtherWoman].GetPed(), 1800000);
+        enemies[(int)Enemies.GuardAiming].GetTask().Arrest(neutralPeds[(int)Neutrals.ArrestedWoman].GetPed());
+        enemies[(int)Enemies.Target].GetTask().ChatTo(neutralPeds[(int)Neutrals.ArrestedWoman].GetPed());
+        enemies[(int)Enemies.GuardLookingTarget].GetTask().AimAt(neutralPeds[(int)Neutrals.OtherWoman].GetPed(), 1800000);
+        neutralPeds[(int)Neutrals.OtherWoman].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man01].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man02].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man03].GetTask().HandsUp(1800000);
 
-        enemies[(int)Enemies.WallGuard].ped.Task.StartScenario("WORLD_HUMAN_SMOKING", 0);
-        enemies[(int)Enemies.Watcher].ped.Task.StartScenario("WORLD_HUMAN_BINOCULARS", 0);
-        enemies[(int)Enemies.ChattingGuard01].ped.Task.ChatTo(enemies[(int)Enemies.ChattingGuard02].ped);
-        enemies[(int)Enemies.ChattingGuard02].ped.Task.ChatTo(enemies[(int)Enemies.ChattingGuard01].ped);
-        enemies[(int)Enemies.PatrollingGuard01].ped.Task.GuardCurrentPosition();
-        enemies[(int)Enemies.PatrollingGuard02].ped.Task.GuardCurrentPosition();
+        enemies[(int)Enemies.WallGuard].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
+        enemies[(int)Enemies.Watcher].GetTask().StartScenario("WORLD_HUMAN_BINOCULARS", 0);
+        enemies[(int)Enemies.ChattingGuard01].GetTask().ChatTo(enemies[(int)Enemies.ChattingGuard02].GetPed());
+        enemies[(int)Enemies.ChattingGuard02].GetTask().ChatTo(enemies[(int)Enemies.ChattingGuard01].GetPed());
+        enemies[(int)Enemies.PatrollingGuard01].GetTask().GuardCurrentPosition();
+        enemies[(int)Enemies.PatrollingGuard02].GetTask().GuardCurrentPosition();
     }
 }

@@ -7,7 +7,6 @@ public class VigilanteMissions: Script
 {
     bool isPlayerInPoliceVehicle = false;
     Vehicle currentPoliceVehicle;
-    MissionWorld missionWorld;
     Menu menu;
     public static Keys accessComputerKey;
     public static Keys interactMissionKey;
@@ -45,8 +44,8 @@ public class VigilanteMissions: Script
             GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for interacting so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
         }
 
-        missionWorld = new MissionWorld(this);
-        menu = new Menu(missionWorld, this);
+        new MissionWorld(this);
+        menu = new Menu();
 
         Tick += (o, e) =>
         {
@@ -62,18 +61,18 @@ public class VigilanteMissions: Script
                 return;
             }
 
-            if (Game.IsControlJustPressed(GTA.Control.ScriptPadLeft) && missionWorld.isMissionActive)
+            if (Game.IsControlJustPressed(GTA.Control.ScriptPadLeft) && MissionWorld.isMissionActive)
             {
                 startTime = Game.GameTime;
             }
 
-            if (Game.IsControlPressed(GTA.Control.ScriptPadLeft) && missionWorld.isMissionActive)
+            if (Game.IsControlPressed(GTA.Control.ScriptPadLeft) && MissionWorld.isMissionActive)
             {
                 currentTime = Game.GameTime - startTime;
                 if (currentTime >= 3000)
                 {
                     GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
-                    missionWorld.QuitMission();
+                    MissionWorld.QuitMission();
                 }
             }
 
@@ -89,10 +88,10 @@ public class VigilanteMissions: Script
             {
                 menu.mainMenu.Visible = true;
             }
-            if (e.KeyCode == cancelMissionKey && missionWorld.isMissionActive)
+            if (e.KeyCode == cancelMissionKey && MissionWorld.isMissionActive)
             {
                 GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
-                missionWorld.QuitMission();
+                MissionWorld.QuitMission();
             }
         };
     }
@@ -131,9 +130,9 @@ public class VigilanteMissions: Script
 
     void CheckIfPlayerDied()
     {
-        if (Game.Player.IsDead && missionWorld.isMissionActive)
+        if (Game.Player.IsDead && MissionWorld.isMissionActive)
         {
-            missionWorld.QuitMission();
+            MissionWorld.QuitMission();
         }
     }
 }
