@@ -22,6 +22,9 @@ class MissionFive : Mission
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
     MostWantedMissions mostWantedMissions;
+    int loadingCurrentTime;
+    int loadingStartTime;
+    bool loadingTimerStarted = false;
 
     public MissionFive()
     {
@@ -51,18 +54,64 @@ class MissionFive : Mission
                     objectiveLocationBlip.Delete();
                     var peds = mostWantedMissions.InitializeMissionFivePeds();
                     var neutrals = mostWantedMissions.InitializeMissionFiveCivilianPeds();
-                    Script.Wait(1000);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionFivePeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsPedListLoaded(neutrals))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in neutrals)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                neutrals = mostWantedMissions.InitializeMissionFiveCivilianPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
                         neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Save the ~g~woman~w~, kill the ~r~target~w~ before it's too late!", 8000);
                     currentObjective = Objectives.KillTargets;

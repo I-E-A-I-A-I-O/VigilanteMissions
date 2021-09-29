@@ -47,6 +47,9 @@ class MissionFour : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Blip objectiveLocationBlip;
+    int loadingCurrentTime;
+    int loadingStartTime;
+    bool loadingTimerStarted = false;
 
     public MissionFour()
     {
@@ -76,14 +79,60 @@ class MissionFour : Mission
                     objectiveLocationBlip.Delete();
                     vehicles = mostWantedMissions.InitializeMissionFourVehicles();
                     var peds = mostWantedMissions.InitializeMissionFourPeds();
-                    Script.Wait(1000);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionFourPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionFourVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
+                        enemies[i].ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;

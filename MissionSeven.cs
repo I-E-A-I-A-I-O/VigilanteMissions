@@ -96,6 +96,9 @@ class MissionSeven : Mission
     bool countdownMusicStarted = false;
     int startTime;
     int currentTime;
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionSeven()
     {
@@ -129,10 +132,87 @@ class MissionSeven : Mission
                     var peds = mostWantedMissions.InitializeMissionSevenStreetPeds();
                     vehicles = mostWantedMissions.InitializeMissionSevenStreetVehicles();
                     var neutrals = mostWantedMissions.InitializeMissionSevenPolice();
-                    Script.Wait(1000);
-                    foreach(Ped ped in peds)
+                    while (!MissionWorld.IsPedListLoaded(peds))
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup));
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionSevenStreetPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsPedListLoaded(neutrals))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in neutrals)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                neutrals = mostWantedMissions.InitializeMissionSevenPolice();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionSevenStreetVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    for (var i = 0; i < peds.Count; i++)
+                    {
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
+                        enemies[i].GetPed().Accuracy = 80;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
                     }
 
                     for(var i = 0; i < neutrals.Count; i++)
@@ -145,13 +225,6 @@ class MissionSeven : Mission
                     foreach(Vehicle vehicle in vehicles)
                     {
                         vehicle.IsSirenActive = true;
-                    }
-
-                    foreach(MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
-                        enemy.GetPed().Accuracy = 80;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 1);
                     }
 
                     StartStreetScenarios();
@@ -186,7 +259,31 @@ class MissionSeven : Mission
                     objectiveLocationBlip.Delete();
 
                     var peds = mostWantedMissions.InitializeMissionSevenOfficePeds();
-                    Script.Wait(1000);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionSixPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     foreach (Ped ped in peds)
                     {
                         enemies.Add(new MissionPed(ped, enemiesRelGroup));
@@ -276,8 +373,50 @@ class MissionSeven : Mission
 
                     vehicles.Add(mostWantedMissions.InitializeMissionSevenRoofVehicles()[0]);
                     var peds = mostWantedMissions.InitializeMissionSevenRoofPeds();
-                    Script.Wait(1000);
-                    foreach(Ped ped in peds)
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionSixPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsEntityLoaded(vehicles[vehicles.Count - 1]))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                vehicles[vehicles.Count - 1] = mostWantedMissions.InitializeMissionSevenRoofVehicles()[0];
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    foreach (Ped ped in peds)
                     {
                         enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     }

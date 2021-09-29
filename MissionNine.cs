@@ -58,6 +58,9 @@ class MissionNine : Mission
     bool bombTwoPlanted = false;
     bool bombThreePlanted = false;
     bool reinforcementSpawned = false;
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionNine()
     {
@@ -87,7 +90,31 @@ class MissionNine : Mission
                     objectiveLocationBlip.Delete();
                     objectiveLocation = mostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
                     var peds = mostWantedMissions.InitializeMissionNineMotelRoomPeds();
-                    Script.Wait(500);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionNineMotelRoomPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     foreach (Ped ped in peds)
                     {
                         neutralPeds.Add(new MissionPed(ped, pedRelGroup,  true));
@@ -95,7 +122,7 @@ class MissionNine : Mission
                     neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().StartScenario("WORLD_HUMAN_DRUG_DEALER_HARD", 0);
                     neutralPeds[(int)MotelRoomPeds.JesseGF].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
 
-                    GTA.UI.Screen.ShowSubtitle("Enter the motel room.", 8000);
+                    GTA.UI.Screen.ShowSubtitle("Enter the ~b~motel room~w~.", 8000);
 
                     currentObjective = Objectives.EnterMotelRoom;
                     break;
@@ -187,7 +214,31 @@ class MissionNine : Mission
                     music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
                     var peds = mostWantedMissions.InitializeMissionNineLabEntranceGuards();
-                    Script.Wait(500);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionNineLabEntranceGuards();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], neutralRelGroup));
@@ -208,12 +259,61 @@ class MissionNine : Mission
                         objectiveLocation = mostWantedMissions.MISSION_NINE_LAB_INSIDE_LOCATION;
                         props = mostWantedMissions.InitializeMissionNineLabProps();
                         var peds = mostWantedMissions.InitializeMissionNineLabPeds();
-                        Script.Wait(1000);
-                        foreach(Ped ped in peds)
+                        while (!MissionWorld.IsPedListLoaded(peds))
+                        {
+                            Script.Wait(1);
+                            if (!loadingTimerStarted)
+                            {
+                                loadingTimerStarted = true;
+                                loadingStartTime = Game.GameTime;
+                            }
+                            else
+                            {
+                                loadingCurrentTime = Game.GameTime;
+                                if (loadingCurrentTime - loadingStartTime >= 3000)
+                                {
+                                    foreach (Ped ped in peds)
+                                    {
+                                        if (ped != null)
+                                        {
+                                            ped.Delete();
+                                        }
+                                    }
+                                    peds = mostWantedMissions.InitializeMissionNineLabPeds();
+                                    loadingTimerStarted = false;
+                                }
+                            }
+                        }
+                        while (!MissionWorld.IsPropListLoaded(props))
+                        {
+                            Script.Wait(1);
+                            if (!loadingTimerStarted)
+                            {
+                                loadingTimerStarted = true;
+                                loadingStartTime = Game.GameTime;
+                            }
+                            else
+                            {
+                                loadingCurrentTime = Game.GameTime;
+                                if (loadingCurrentTime - loadingStartTime >= 3000)
+                                {
+                                    foreach (Prop prop in props)
+                                    {
+                                        if (prop != null)
+                                        {
+                                            prop.Delete();
+                                        }
+                                    }
+                                    props = mostWantedMissions.InitializeMissionNineLabProps();
+                                    loadingTimerStarted = false;
+                                }
+                            }
+                        }
+                        foreach (Ped ped in peds)
                         {
                             enemies.Add(new MissionPed(ped, aggressiveRelGroup));
                         }
-                        GTA.UI.Screen.ShowSubtitle("Enter the meth lab.", 8000);
+                        GTA.UI.Screen.ShowSubtitle("Enter the ~b~meth lab~w~.", 8000);
                         currentObjective = Objectives.EnterLab;
                     }
                     break;
@@ -344,7 +444,10 @@ class MissionNine : Mission
                             vehicles[(int)Vehicles.Bike01].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                             vehicles[(int)Vehicles.Bike02].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                         };
-                        Script.Wait(1000);
+                        while (!MissionWorld.IsPedListLoaded(peds))
+                        {
+                            Script.Wait(1);
+                        }
                         for (var i = 0; i < peds.Count; i++)
                         {
                             enemies.Add(new MissionPed(peds[i], neutralRelGroup, false, true));
@@ -369,7 +472,31 @@ class MissionNine : Mission
                             if (enemies[0].GetPed().IsInRange(objectiveLocation, 110))
                             {
                                 var peds = mostWantedMissions.InitializeMissionNineReinforcements();
-                                Script.Wait(1000);
+                                while (!MissionWorld.IsPedListLoaded(peds))
+                                {
+                                    Script.Wait(1);
+                                    if (!loadingTimerStarted)
+                                    {
+                                        loadingTimerStarted = true;
+                                        loadingStartTime = Game.GameTime;
+                                    }
+                                    else
+                                    {
+                                        loadingCurrentTime = Game.GameTime;
+                                        if (loadingCurrentTime - loadingStartTime >= 3000)
+                                        {
+                                            foreach (Ped ped in peds)
+                                            {
+                                                if (ped != null)
+                                                {
+                                                    ped.Delete();
+                                                }
+                                            }
+                                            peds = mostWantedMissions.InitializeMissionNineReinforcements();
+                                            loadingTimerStarted = false;
+                                        }
+                                    }
+                                }
                                 for (var i = 0; i < peds.Count; i++)
                                 {
                                     enemies.Add(new MissionPed(peds[i], aggressiveRelGroup));

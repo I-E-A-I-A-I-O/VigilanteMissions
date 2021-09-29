@@ -14,20 +14,19 @@ class SuspectOnTheRun : Mission
         None
     }
 
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    Script script;
     RandomMissions randomMissions;
     Blip objectiveLocationBlip;
+    int loadingCurrentTime;
+    int loadingStartTime;
+    bool loadingTimerStarted = false;
 
-    public SuspectOnTheRun(Script script, MissionWorld missionWorld, RelationshipGroup relationshipGroup)
+    public SuspectOnTheRun()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        enemiesRelGroup = relationshipGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
 
         randomMissions = new RandomMissions();
     }
@@ -45,10 +44,27 @@ class SuspectOnTheRun : Mission
                     objectiveLocationBlip.Delete();
 
                     var ped = randomMissions.CreateCriminal(objectiveLocation);
-                    Script.Wait(1000);
-                    enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                    while(!MissionWorld.IsEntityLoaded(ped))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                ped = randomMissions.CreateCriminal(objectiveLocation);
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     enemies[0].ShowBlip();
-                    enemies[0].ped.Task.FleeFrom(Game.Player.Character);
+                    enemies[0].GetTask().FleeFrom(Game.Player.Character);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -70,8 +86,8 @@ class SuspectOnTheRun : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -80,7 +96,7 @@ class SuspectOnTheRun : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -126,7 +142,7 @@ class SuspectOnTheRun : Mission
             objectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
-            script.Tick += MissionTick;
+            MissionWorld.script.Tick += MissionTick;
             return true;
         }
         catch (Exception)

@@ -14,20 +14,19 @@ class GangActivity : Mission
         None
     }
 
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    Script script;
     RandomMissions randomMissions;
     Blip objectiveLocationBlip;
+    int loadingStartTime;
+    int loadingCurrentTimne;
+    bool loadingTimerStarted = false;
 
-    public GangActivity(Script script, MissionWorld missionWorld, RelationshipGroup relationshipGroup)
+    public GangActivity()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        enemiesRelGroup = relationshipGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
 
         randomMissions = new RandomMissions();
     }
@@ -43,17 +42,36 @@ class GangActivity : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-
                     var peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
-                    Script.Wait(1000);
-                    foreach (Ped ped in peds)
+                    while (!MissionWorld.IsPedListLoaded(peds))
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        } else
+                        {
+                            loadingCurrentTimne = Game.GameTime;
+                            if (loadingCurrentTimne - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
+                                loadingTimerStarted = false;
+                            }
+                        }
                     }
-                    foreach (MissionPed enemy in enemies)
+                    for (var i = 0; i < peds.Count; i++)
                     {
-                        enemy.ShowBlip();
-                        enemy.GiveRandomScenario();
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
+                        enemies[i].GiveRandomScenario();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -76,8 +94,8 @@ class GangActivity : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -86,7 +104,7 @@ class GangActivity : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -132,7 +150,7 @@ class GangActivity : Mission
             objectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
-            script.Tick += MissionTick;
+            MissionWorld.script.Tick += MissionTick;
             return true;
         } catch (Exception)
         {

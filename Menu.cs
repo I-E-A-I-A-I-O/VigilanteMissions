@@ -21,7 +21,8 @@ class Menu
         "Assault",
         "Gang activity",
         "Suspect on the run",
-        "Mass shooter"
+        "Mass shooter",
+        "Pacific Standard robbery"
     };
 
     public Menu()
@@ -77,7 +78,7 @@ class Menu
     {
         if (!timerStarted)
         {
-            new PoliceBackup(MissionWorld.script);
+            new PoliceBackup();
             timerStarted = true;
             startTime = Game.GameTime;
         } else
@@ -86,7 +87,7 @@ class Menu
             if (currentTime - startTime >= 60000)
             {
                 timerStarted = false;
-                new PoliceBackup(MissionWorld.script);
+                new PoliceBackup();
             } else
             {
                 GTA.UI.Notification.Show($"Next police backup available in {60 - ((currentTime - startTime) / 1000)} seconds");
@@ -140,6 +141,11 @@ class Menu
                     case "Mass shooter":
                         {
                             MissionWorld.StartMission(MissionWorld.Missions.MassShooter);
+                            break;
+                        }
+                    case "Pacific Standard robbery":
+                        {
+                            MissionWorld.StartMission(MissionWorld.Missions.PacificStandard);
                             break;
                         }
                 }

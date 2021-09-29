@@ -47,6 +47,9 @@ class MissionSix : Mission
     RelationshipGroup neutralsRelGroup;
     MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionSix()
     {
@@ -77,7 +80,81 @@ class MissionSix : Mission
                     vehicles = mostWantedMissions.InitializeMissionSixVehicles();
                     var peds = mostWantedMissions.InitializeMissionSixPeds();
                     var neutrals = mostWantedMissions.InitializeMissionSixCivilianPeds();
-                    Script.Wait(1000);
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionSixPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsPedListLoaded(neutrals))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in neutrals)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                neutrals = mostWantedMissions.InitializeMissionSixCivilianPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionSixVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

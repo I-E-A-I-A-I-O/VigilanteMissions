@@ -33,6 +33,7 @@ public class MissionWorld
         StolenVehicle,
         SuspectOnTheRun,
         MassShooter,
+        PacificStandard,
         None
     }
 
@@ -120,32 +121,37 @@ public class MissionWorld
                 }
             case Missions.MostWanted10:
                 {
-                    currentMission = new MissionTen(script, this, RELATIONSHIP_MISSION_NEUTRAL, RELATIONSHIP_MISSION_PEDESTRIAN);
+                    currentMission = new MissionTen();
                     break;
                 }
             case Missions.Assault:
                 {
-                    currentMission = new Assault(script, this, RELATIONSHIP_MISSION_AGGRESSIVE, RELATIONSHIP_MISSION_PEDESTRIAN);
+                    currentMission = new Assault();
                     break;
                 }
             case Missions.StolenVehicle:
                 {
-                    currentMission = new StolenVehicle(script, this, RELATIONSHIP_MISSION_NEUTRAL);
+                    currentMission = new StolenVehicle();
                     break;
                 }
             case Missions.GangActivity:
                 {
-                    currentMission = new GangActivity(script, this, RELATIONSHIP_MISSION_NEUTRAL);
+                    currentMission = new GangActivity();
                     break;
                 }
             case Missions.SuspectOnTheRun:
                 {
-                    currentMission = new SuspectOnTheRun(script, this, RELATIONSHIP_MISSION_AGGRESSIVE);
+                    currentMission = new SuspectOnTheRun();
                     break;
                 }
             case Missions.MassShooter:
                 {
-                    currentMission = new MassShooter(script, this, RELATIONSHIP_MISSION_MASS_SHOOTER);
+                    currentMission = new MassShooter();
+                    break;
+                }
+            case Missions.PacificStandard:
+                {
+                    currentMission = new PacificRobbery();
                     break;
                 }
         }
@@ -164,6 +170,50 @@ public class MissionWorld
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
         isMissionActive = false;
         currentMission = null;
+    }
+
+    public static bool IsPedListLoaded(List<Ped> peds)
+    {
+        var loaded = true;
+        foreach (Ped ped in peds)
+        {
+            if (ped == null)
+            {
+                loaded = false;
+            }
+        }
+        return loaded;
+    }
+
+    public static bool IsVehicleListLoaded(List<Vehicle> vehicles)
+    {
+        var loaded = true;
+        foreach (Vehicle vehicle in vehicles)
+        {
+            if (vehicle == null)
+            {
+                loaded = false;
+            }
+        }
+        return loaded;
+    }
+
+    public static bool IsPropListLoaded(List<Prop> props)
+    {
+        var loaded = true;
+        foreach (Prop prop in props)
+        {
+            if (prop == null)
+            {
+                loaded = false;
+            }
+        }
+        return loaded;
+    }
+
+    public static bool IsEntityLoaded(Entity entity)
+    {
+        return entity != null;
     }
 }
 

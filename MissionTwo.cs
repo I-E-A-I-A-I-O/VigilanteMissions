@@ -73,6 +73,9 @@ class MissionTwo : Mission
     RelationshipGroup neutralsRelGroup;
     RelationshipGroup enemiesRelGroup;
     bool messageShown = false;
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionTwo()
     {
@@ -104,7 +107,81 @@ class MissionTwo : Mission
                     vehicles = mostWantedMissions.InitializeMissionTwoVehicles();
                     var peds = mostWantedMissions.InitializeMissionTwoPeds();
                     var neutrals = mostWantedMissions.InitializeMissionTwoCivilianPeds();
-                    Script.Wait(1000);
+                    while(!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionTwoPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionTwoVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsPedListLoaded(neutrals))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in neutrals)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                neutrals = mostWantedMissions.InitializeMissionTwoCivilianPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     for (var i = 0; i < peds.Count; i++)
                     {
                         if (i == (int)Enemies.CaptainGuard)
@@ -113,14 +190,11 @@ class MissionTwo : Mission
                             continue;
                         }
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
                         neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;

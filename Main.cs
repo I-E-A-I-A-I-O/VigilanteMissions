@@ -93,6 +93,12 @@ public class VigilanteMissions: Script
                 GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
                 MissionWorld.QuitMission();
             }
+            if (e.KeyCode == Keys.G)
+            {
+                //code to unlock doors. Fleeca doors specifically in this case
+                var door = World.GetClosestProp(Game.Player.Character.Position, 100, new Model("v_ilev_genbankdoor1"));
+                Function.Call(Hash._DOOR_CONTROL, Game.GenerateHash("v_ilev_genbankdoor1"), door.Position.X, door.Position.Y, door.Position.Z, false, 0, 50, 0);
+            }
         };
     }
 

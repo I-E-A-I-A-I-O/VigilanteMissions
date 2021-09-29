@@ -38,6 +38,9 @@ class MissionOne : Mission
     Music music;
     MostWantedMissions mostWantedMissions;
     RelationshipGroup enemiesRelGroup;
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionOne()
     {
@@ -66,23 +69,61 @@ class MissionOne : Mission
                     objectiveLocationBlip.Delete();
                     vehicles = mostWantedMissions.InitializeMissionOneVehicles();
                     var peds = mostWantedMissions.IntializeMissionOnePeds();
-                    Script.Wait(1000);
-                    for (var i = 0; i < peds.Count; i++)
+                    while(!MissionWorld.IsPedListLoaded(peds))
                     {
-                        try
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
                         {
-                            enemies.Add(new MissionPed(peds[i], enemiesRelGroup, MissionWorld.script));
-                        } catch(Exception ex)
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
                         {
-                            GTA.UI.Notification.Show("Error loading the mission, cancelling...");
-                            MissionWorld.QuitMission();
-                            MissionWorld.script.Tick -= MissionTick;
-                            return;
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.IntializeMissionOnePeds();
+                                loadingTimerStarted = false;
+                            }
                         }
                     }
-                    foreach (MissionPed enemy in enemies)
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
                     {
-                        enemy.ShowBlip();
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionOneVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    for (var i = 0; i < peds.Count; i++)
+                    {
+
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;

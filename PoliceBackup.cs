@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 class PoliceBackup
 {
-    Script script;
     readonly List<VehicleHash> vehicleHashList = new List<VehicleHash>()
     {
         VehicleHash.Police,
@@ -19,10 +18,8 @@ class PoliceBackup
     bool gettingInAgain = false;
     bool leftVehicle = false;
 
-    public PoliceBackup(Script script)
+    public PoliceBackup()
     {
-        this.script = script;
-
         var copRelGroupHash = Function.Call<int>(Hash.GET_HASH_KEY, "COP");
         var copRelGroup = new RelationshipGroup(copRelGroupHash);
 
@@ -37,19 +34,31 @@ class PoliceBackup
         if (backupSize == 1)
         {
             vehicle = World.CreateVehicle(new Model(VehicleHash.Policeb), vehiclePos);
-            Script.Wait(500);
+            while(!MissionWorld.IsEntityLoaded(vehicle))
+            {
+                Script.Wait(1);
+            }
             var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
-            Script.Wait(500);
+            while(!MissionWorld.IsEntityLoaded(ped))
+            {
+                Script.Wait(1);
+            }
             ped.RelationshipGroup = copRelGroup;
             ped.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             police.Add(ped);
         } else
         {
             vehicle = World.CreateVehicle(new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]), vehiclePos);
-            Script.Wait(500);
+            while(!MissionWorld.IsEntityLoaded(vehicle))
+            {
+                Script.Wait(1);
+            }
             var pedDriver = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
             var pedCopilot = vehicle.CreatePedOnSeat(VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
-            Script.Wait(500);
+            while(!MissionWorld.IsEntityLoaded(pedDriver) || !MissionWorld.IsEntityLoaded(pedCopilot))
+            {
+                Script.Wait(1);
+            }
             pedDriver.RelationshipGroup = copRelGroup;
             pedCopilot.RelationshipGroup = copRelGroup;
             pedDriver.Weapons.Give(WeaponHash.Pistol, 100, true, true);
@@ -71,7 +80,7 @@ class PoliceBackup
         driverTask.AddTask.CruiseWithVehicle(vehicle, 50);
 
         police[0].Task.PerformSequence(driverTask);
-        script.Tick += PoliceTick;
+        MissionWorld.script.Tick += PoliceTick;
     }
 
     void PoliceTick(object o, EventArgs e)
@@ -90,7 +99,7 @@ class PoliceBackup
         }
         if (!vehicle.Exists() && police.Count == 0)
         {
-            script.Tick -= PoliceTick;
+            MissionWorld.script.Tick -= PoliceTick;
             return;
         }
         if (police.Count > 0)

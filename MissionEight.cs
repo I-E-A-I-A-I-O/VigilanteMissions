@@ -62,6 +62,9 @@ class MissionEight : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     List<Prop> props = new List<Prop>();
+    int loadingStartTime;
+    int loadingCurrentTime;
+    bool loadingTimerStarted = false;
 
     public MissionEight()
     {
@@ -93,19 +96,85 @@ class MissionEight : Mission
                     var peds = mostWantedMissions.InitializeMissionEightPeds();
                     props = mostWantedMissions.InitializeMissionEightProps();
                     vehicles = mostWantedMissions.InitializeMissionEightVehicles();
-                    Script.Wait(1000);
-                    for(var i = 0; i < peds.Count; i++) {
-                        try
+                    while (!MissionWorld.IsPedListLoaded(peds))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
                         {
-                            enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
-                            enemies[i].ShowBlip();
-                        } catch(Exception ex)
-                        {
-                            GTA.UI.Notification.Show("Error loading mission, cancelling...");
-                            MissionWorld.QuitMission();
-                            MissionWorld.script.Tick -= MissionTick;
-                            return;
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
                         }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Ped ped in peds)
+                                {
+                                    if (ped != null)
+                                    {
+                                        ped.Delete();
+                                    }
+                                }
+                                peds = mostWantedMissions.InitializeMissionEightPeds();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Vehicle vehicle in vehicles)
+                                {
+                                    if (vehicle != null)
+                                    {
+                                        vehicle.Delete();
+                                    }
+                                }
+                                vehicles = mostWantedMissions.InitializeMissionEightVehicles();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    while (!MissionWorld.IsPropListLoaded(props))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingTimerStarted = true;
+                            loadingStartTime = Game.GameTime;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                foreach (Prop prop in props)
+                                {
+                                    if (prop != null)
+                                    {
+                                        prop.Delete();
+                                    }
+                                }
+                                props = mostWantedMissions.InitializeMissionEightProps();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    for (var i = 0; i < peds.Count; i++) 
+                    {
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~bikers~w~.", 8000);
                     StartScenarios();
@@ -146,7 +215,24 @@ class MissionEight : Mission
                             props.RemoveAt((int)Props.Fireaxe);
                             Game.Player.Character.Weapons.Give(WeaponHash.BattleAxe, 1, true, true);
                             var ped = mostWantedMissions.InitializeMissionEightTarget();
-                            Script.Wait(1000);
+                            while (!MissionWorld.IsEntityLoaded(ped))
+                            {
+                                Script.Wait(1);
+                                if (!loadingTimerStarted)
+                                {
+                                    loadingTimerStarted = true;
+                                    loadingStartTime = Game.GameTime;
+                                }
+                                else
+                                {
+                                    loadingCurrentTime = Game.GameTime;
+                                    if (loadingCurrentTime - loadingStartTime >= 3000)
+                                    {
+                                        ped = mostWantedMissions.InitializeMissionEightTarget();
+                                        loadingTimerStarted = false;
+                                    }
+                                }
+                            }
                             enemies.Add(new MissionPed(ped, targetRelGroup));
                             enemies[0].ShowBlip();
                             enemies[0].GetBlip().IsFlashing = true;
