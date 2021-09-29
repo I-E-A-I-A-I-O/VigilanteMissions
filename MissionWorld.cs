@@ -28,12 +28,14 @@ public class MissionWorld
         MostWanted8,
         MostWanted9,
         MostWanted10,
+        MostWanted111,
         Assault,
         GangActivity,
         StolenVehicle,
         SuspectOnTheRun,
         MassShooter,
         PacificStandard,
+        FleecaBank,
         None
     }
 
@@ -124,6 +126,11 @@ public class MissionWorld
                     currentMission = new MissionTen();
                     break;
                 }
+            case Missions.MostWanted111:
+                {
+                    currentMission = new MissionElevenPartOne();
+                    break;
+                }
             case Missions.Assault:
                 {
                     currentMission = new Assault();
@@ -152,6 +159,11 @@ public class MissionWorld
             case Missions.PacificStandard:
                 {
                     currentMission = new PacificRobbery();
+                    break;
+                }
+            case Missions.FleecaBank:
+                {
+                    currentMission = new FleecaRooberies();
                     break;
                 }
         }

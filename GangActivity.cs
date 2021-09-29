@@ -18,7 +18,6 @@ class GangActivity : Mission
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
     int loadingStartTime;
     int loadingCurrentTimne;
@@ -27,8 +26,6 @@ class GangActivity : Mission
     public GangActivity()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
-
-        randomMissions = new RandomMissions();
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -42,7 +39,7 @@ class GangActivity : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    var peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
+                    var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -62,7 +59,7 @@ class GangActivity : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
+                                peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -140,7 +137,7 @@ class GangActivity : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;

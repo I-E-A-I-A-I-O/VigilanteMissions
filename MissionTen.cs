@@ -39,12 +39,10 @@ class MissionTen : Mission
     }
 
     Objectives currentObjective;
-    Music music;
     Vector3 objectiveLocation;
     Blip objectiveLocationBlip;
     List<MissionPed> enemies = new List<MissionPed>();
     Ped hooker;
-    MostWantedMissions mostWantedMissions;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup hookerRelGroup;
     int loadingStartTime;
@@ -56,9 +54,7 @@ class MissionTen : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
         hookerRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_TEN_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_TEN_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -75,10 +71,10 @@ class MissionTen : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionTenEnemies();
-                    hooker = mostWantedMissions.InitializeMissionTenNeutralPed();
+                    var peds = MostWantedMissions.InitializeMissionTenEnemies();
+                    hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -99,7 +95,7 @@ class MissionTen : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionTenEnemies();
+                                peds = MostWantedMissions.InitializeMissionTenEnemies();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -117,7 +113,7 @@ class MissionTen : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                hooker = mostWantedMissions.InitializeMissionTenNeutralPed();
+                                hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -161,7 +157,7 @@ class MissionTen : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         if (hooker != null)
         {
             hooker.MarkAsNoLongerNeeded();
@@ -206,7 +202,7 @@ class MissionTen : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartFunkyTwo();
+        Music.StartFunkyTwo();
         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
         objectiveLocationBlip.Color = BlipColor.Yellow;
         objectiveLocationBlip.Name = "Wanted suspect location";

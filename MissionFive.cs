@@ -16,12 +16,10 @@ class MissionFive : Mission
     Vector3 objectiveLocation;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
-    Music music;
     Objectives currentObjective;
     Blip objectiveLocationBlip;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    MostWantedMissions mostWantedMissions;
     int loadingCurrentTime;
     int loadingStartTime;
     bool loadingTimerStarted = false;
@@ -31,9 +29,7 @@ class MissionFive : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_DISLIKE;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_FIVE_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_FIVE_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -50,10 +46,10 @@ class MissionFive : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionFivePeds();
-                    var neutrals = mostWantedMissions.InitializeMissionFiveCivilianPeds();
+                    var peds = MostWantedMissions.InitializeMissionFivePeds();
+                    var neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -74,7 +70,7 @@ class MissionFive : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionFivePeds();
+                                peds = MostWantedMissions.InitializeMissionFivePeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -99,7 +95,7 @@ class MissionFive : Mission
                                         ped.Delete();
                                     }
                                 }
-                                neutrals = mostWantedMissions.InitializeMissionFiveCivilianPeds();
+                                neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -145,7 +141,7 @@ class MissionFive : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
@@ -188,7 +184,7 @@ class MissionFive : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartTedBundyMusic();
+        Music.StartTedBundyMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;

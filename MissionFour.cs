@@ -42,8 +42,6 @@ class MissionFour : Mission
     Vector3 planeDestination;
     RelationshipGroup enemiesRelGroup;
     Objectives currentObjective;
-    Music music;
-    MostWantedMissions mostWantedMissions;
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Blip objectiveLocationBlip;
@@ -55,10 +53,8 @@ class MissionFour : Mission
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_FOUR_LOCATION;
-        planeDestination = mostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_FOUR_LOCATION;
+        planeDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -75,10 +71,10 @@ class MissionFour : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    vehicles = mostWantedMissions.InitializeMissionFourVehicles();
-                    var peds = mostWantedMissions.InitializeMissionFourPeds();
+                    vehicles = MostWantedMissions.InitializeMissionFourVehicles();
+                    var peds = MostWantedMissions.InitializeMissionFourPeds();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -99,7 +95,7 @@ class MissionFour : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionFourPeds();
+                                peds = MostWantedMissions.InitializeMissionFourPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -124,7 +120,7 @@ class MissionFour : Mission
                                         vehicle.Delete();
                                     }
                                 }
-                                vehicles = mostWantedMissions.InitializeMissionFourVehicles();
+                                vehicles = MostWantedMissions.InitializeMissionFourVehicles();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -167,7 +163,7 @@ class MissionFour : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
@@ -188,7 +184,7 @@ class MissionFour : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartHeistMusic();
+        Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;

@@ -2,6 +2,7 @@
 using GTA.Native;
 using System.Windows.Forms;
 using System;
+using System.IO;
 
 public class VigilanteMissions: Script
 {
@@ -95,9 +96,11 @@ public class VigilanteMissions: Script
             }
             if (e.KeyCode == Keys.G)
             {
-                //code to unlock doors. Fleeca doors specifically in this case
-                var door = World.GetClosestProp(Game.Player.Character.Position, 100, new Model("v_ilev_genbankdoor1"));
-                Function.Call(Hash._DOOR_CONTROL, Game.GenerateHash("v_ilev_genbankdoor1"), door.Position.X, door.Position.Y, door.Position.Z, false, 0, 50, 0);
+                ReadProgress();
+            }
+            if (e.KeyCode == Keys.O)
+            {
+                SaveProgress();
             }
         };
     }
@@ -139,6 +142,58 @@ public class VigilanteMissions: Script
         if (Game.Player.IsDead && MissionWorld.isMissionActive)
         {
             MissionWorld.QuitMission();
+        }
+    }
+
+    public static void SaveProgress()
+    {
+        GTA.UI.LoadingPrompt.Show("Saving vigilante missions progress");
+        try
+        {
+            var currDir = Directory.GetCurrentDirectory();
+            var fileDir = $"{currDir}\\scripts\\VigilanteMissions\\progress.data";
+            if (!Directory.Exists($"{currDir}\\scripts\\VigilanteMissions"))
+            {
+                Directory.CreateDirectory($"{currDir}\\scripts\\VigilanteMissions");
+            }
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileDir, FileMode.OpenOrCreate, FileAccess.Write)))
+            {
+                writer.Write(Progress.partOneUnlocked);
+                writer.Write(Progress.partTwoUnlocked);
+                writer.Write(Progress.completedMostWantedMissionsCount);
+            }
+        } catch (Exception)
+        {
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "Fuck, there was an error saving your Vigilante Missions progress. Any unsaved progress will be lost after you close the game.");
+        } finally
+        {
+            Wait(1000);
+            GTA.UI.LoadingPrompt.Hide();
+        }
+    }
+
+    public static void ReadProgress()
+    {
+        try
+        {
+            var currDir = Directory.GetCurrentDirectory();
+            var fileDir = $"{currDir}\\scripts\\VigilanteMissions\\progress.data";
+            if (!File.Exists(fileDir))
+            {
+                Progress.partOneUnlocked = false;
+                Progress.partTwoUnlocked = false;
+                Progress.completedMostWantedMissionsCount = 0;
+                return;
+            }
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(fileDir)))
+            {
+                Progress.partOneUnlocked = reader.ReadBoolean();
+                Progress.partTwoUnlocked = reader.ReadBoolean();
+                Progress.completedMostWantedMissionsCount = reader.ReadInt32();
+            }
+        } catch (Exception)
+        {
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
         }
     }
 }

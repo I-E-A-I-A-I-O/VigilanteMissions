@@ -46,10 +46,8 @@ class MissionThree : Mission
     Vector3 objectiveLocation;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
-    Music music;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
     Objectives currentObjective;
     int loadingCurrentTime;
@@ -61,9 +59,7 @@ class MissionThree : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_THREE_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_THREE_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -80,10 +76,10 @@ class MissionThree : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionThreePeds();
-                    var neutrals = mostWantedMissions.InitializeMissionThreeCivilianPeds();
+                    var peds = MostWantedMissions.InitializeMissionThreePeds();
+                    var neutrals = MostWantedMissions.InitializeMissionThreeCivilianPeds();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -104,7 +100,7 @@ class MissionThree : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionThreePeds();
+                                peds = MostWantedMissions.InitializeMissionThreePeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -129,7 +125,7 @@ class MissionThree : Mission
                                         ped.Delete();
                                     }
                                 }
-                                neutrals = mostWantedMissions.InitializeMissionThreeCivilianPeds();
+                                neutrals = MostWantedMissions.InitializeMissionThreeCivilianPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -176,7 +172,7 @@ class MissionThree : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
@@ -219,7 +215,7 @@ class MissionThree : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartHeistMusic();
+        Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;

@@ -19,7 +19,6 @@ class StolenVehicle : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Objectives currentObjective;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
     int loadingCurrentTime;
     int loadingStartTime;
@@ -28,8 +27,6 @@ class StolenVehicle : Mission
     public StolenVehicle()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
-
-        randomMissions = new RandomMissions();
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -43,7 +40,7 @@ class StolenVehicle : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    var vehicle = randomMissions.CreateVehicle(objectiveLocation);
+                    var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
                     while (!MissionWorld.IsEntityLoaded(vehicle))
                     {
                         Script.Wait(1);
@@ -57,7 +54,7 @@ class StolenVehicle : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                vehicle = randomMissions.CreateVehicle(objectiveLocation);
+                                vehicle = RandomMissions.CreateVehicle(objectiveLocation);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -156,7 +153,7 @@ class StolenVehicle : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Vehicle);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Vehicle);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;

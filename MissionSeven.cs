@@ -89,9 +89,7 @@ class MissionSeven : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Vector3 markerPosition;
-    MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
-    Music music;
     bool timerStarted = false;
     bool countdownMusicStarted = false;
     int startTime;
@@ -105,9 +103,7 @@ class MissionSeven : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_COP;
 
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_SEVEN_START_LOCATION;
-        music = new Music();
+        objectiveLocation = MostWantedMissions.MISSION_SEVEN_START_LOCATION;
         markerPosition = new Vector3(-77.04752f, -830.2404f, 242.3859f);
     }
 
@@ -127,11 +123,11 @@ class MissionSeven : Mission
                     }
 
                     objectiveLocationBlip.Delete();
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
 
-                    var peds = mostWantedMissions.InitializeMissionSevenStreetPeds();
-                    vehicles = mostWantedMissions.InitializeMissionSevenStreetVehicles();
-                    var neutrals = mostWantedMissions.InitializeMissionSevenPolice();
+                    var peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
+                    vehicles = MostWantedMissions.InitializeMissionSevenStreetVehicles();
+                    var neutrals = MostWantedMissions.InitializeMissionSevenPolice();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -152,7 +148,7 @@ class MissionSeven : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionSevenStreetPeds();
+                                peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -177,7 +173,7 @@ class MissionSeven : Mission
                                         ped.Delete();
                                     }
                                 }
-                                neutrals = mostWantedMissions.InitializeMissionSevenPolice();
+                                neutrals = MostWantedMissions.InitializeMissionSevenPolice();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -202,7 +198,7 @@ class MissionSeven : Mission
                                         vehicle.Delete();
                                     }
                                 }
-                                vehicles = mostWantedMissions.InitializeMissionSevenStreetVehicles();
+                                vehicles = MostWantedMissions.InitializeMissionSevenStreetVehicles();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -241,7 +237,7 @@ class MissionSeven : Mission
                     }
                     else
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_SEVEN_OFFICE_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_SEVEN_OFFICE_LOCATION;
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "Office";
@@ -258,7 +254,7 @@ class MissionSeven : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    var peds = mostWantedMissions.InitializeMissionSevenOfficePeds();
+                    var peds = MostWantedMissions.InitializeMissionSevenOfficePeds();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -279,7 +275,7 @@ class MissionSeven : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionSixPeds();
+                                peds = MostWantedMissions.InitializeMissionSixPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -309,7 +305,7 @@ class MissionSeven : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        props = mostWantedMissions.InitializeMissionSevenBomb();
+                        props = MostWantedMissions.InitializeMissionSevenBomb();
 
                         objectiveLocation = props[0].Position;
                         props[0].AddBlip();
@@ -337,7 +333,7 @@ class MissionSeven : Mission
                         {
                             props[0].Delete();
                             props.Clear();
-                            objectiveLocation = mostWantedMissions.MISSION_SEVEN_ROOF_LOCATION;
+                            objectiveLocation = MostWantedMissions.MISSION_SEVEN_ROOF_LOCATION;
                             objectiveLocationBlip =  World.CreateBlip(objectiveLocation);
                             objectiveLocationBlip.Color = BlipColor.Yellow;
                             objectiveLocationBlip.Name = "Roof";
@@ -360,9 +356,9 @@ class MissionSeven : Mission
                             }
                             else
                             {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press E to go to the ~g~roof");
+                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to go to the ~g~roof");
                             }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(Keys.E)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
+                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
                             {
                                 Game.Player.Character.Position = objectiveLocation;
                             }
@@ -371,8 +367,8 @@ class MissionSeven : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    vehicles.Add(mostWantedMissions.InitializeMissionSevenRoofVehicles()[0]);
-                    var peds = mostWantedMissions.InitializeMissionSevenRoofPeds();
+                    vehicles.Add(MostWantedMissions.InitializeMissionSevenRoofVehicles()[0]);
+                    var peds = MostWantedMissions.InitializeMissionSevenRoofPeds();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -393,7 +389,7 @@ class MissionSeven : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionSixPeds();
+                                peds = MostWantedMissions.InitializeMissionSixPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -411,7 +407,7 @@ class MissionSeven : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                vehicles[vehicles.Count - 1] = mostWantedMissions.InitializeMissionSevenRoofVehicles()[0];
+                                vehicles[vehicles.Count - 1] = MostWantedMissions.InitializeMissionSevenRoofVehicles()[0];
                                 loadingTimerStarted = false;
                             }
                         }
@@ -437,7 +433,7 @@ class MissionSeven : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_SEVEN_EXPLOSION_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_SEVEN_EXPLOSION_LOCATION;
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 40);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "Safe bomb explosion location";
@@ -501,7 +497,7 @@ class MissionSeven : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         objectiveLocationBlip.Delete();
         foreach (MissionPed enemy in enemies)
@@ -549,7 +545,7 @@ class MissionSeven : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartCityMusic();
+        Music.StartCityMusic();
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "They are at the Maze Bank Tower right now trying to blow up the place, hurry up!");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Maze Bank Tower~w~.", 8000);
         currentObjective = Objectives.GoToBuilding;

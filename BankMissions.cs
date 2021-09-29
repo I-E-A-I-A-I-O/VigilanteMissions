@@ -3,11 +3,11 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class BankMissions
+static class BankMissions
 {
-    public Vector3 PACIFIC_LOCATION = new Vector3(224.4161f, 208.0313f, 104.5419f);
+    public static Vector3 PACIFIC_LOCATION = new Vector3(224.4161f, 208.0313f, 104.5419f);
 
-    public List<Ped> InitializePacificRobbers()
+    public static List<Ped> InitializePacificRobbers()
     {
         return new List<Ped>()
         {
@@ -31,7 +31,7 @@ class BankMissions
         };
     }
 
-    public List<Ped> InitializePacificHostages()
+    public static List<Ped> InitializePacificHostages()
     {
         return new List<Ped>()
         {
@@ -52,7 +52,7 @@ class BankMissions
         };
     }
 
-    public List<Ped> InitializePacificPolice()
+    public static List<Ped> InitializePacificPolice()
     {
         return new List<Ped>()
         {
@@ -73,7 +73,7 @@ class BankMissions
         };
     }
 
-    public List<Vehicle> InitializePacificVehicles()
+    public static List<Vehicle> InitializePacificVehicles()
     {
         return new List<Vehicle>()
         {

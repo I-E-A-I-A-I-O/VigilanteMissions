@@ -19,7 +19,6 @@ class Assault : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     Objectives currentObjective;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
     int actionToTake;
     int shootRange;
@@ -36,8 +35,6 @@ class Assault : Mission
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
-
-        randomMissions = new RandomMissions();
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -51,8 +48,8 @@ class Assault : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    var enemy = randomMissions.CreateCriminal(objectiveLocation);
-                    var neutral = randomMissions.CreateVictim(objectiveLocation);
+                    var enemy = RandomMissions.CreateCriminal(objectiveLocation);
+                    var neutral = RandomMissions.CreateVictim(objectiveLocation);
                     while (!MissionWorld.IsEntityLoaded(enemy))
                     {
                         Script.Wait(1);
@@ -66,7 +63,7 @@ class Assault : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                enemy = randomMissions.CreateCriminal(objectiveLocation);
+                                enemy = RandomMissions.CreateCriminal(objectiveLocation);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -84,7 +81,7 @@ class Assault : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                neutral = randomMissions.CreateVictim(objectiveLocation);
+                                neutral = RandomMissions.CreateVictim(objectiveLocation);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -221,7 +218,7 @@ class Assault : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;

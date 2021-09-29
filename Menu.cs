@@ -22,7 +22,8 @@ class Menu
         "Gang activity",
         "Suspect on the run",
         "Mass shooter",
-        "Pacific Standard robbery"
+        "Pacific Standard bank robbery",
+        "Fleeca bank robbery"
     };
 
     public Menu()
@@ -44,7 +45,9 @@ class Menu
             new NativeItem("Catherine Kerkow - Terrorism"),
             new NativeItem("Harry \"Taco\" Bowman - Racketeering"),
             new NativeItem("Heisenberg - Drug trafficking"),
-            new NativeItem("Billy \"The Beaut\" Russo - Murder")
+            new NativeItem("Billy \"The Beaut\" Russo - Murder"),
+            new NativeItem("The Joker - Part 1"),
+            new NativeItem("The Joker - Part 2")
         };
         for (var i = 0; i < listOfItems.Count; i++)
         {
@@ -143,9 +146,14 @@ class Menu
                             MissionWorld.StartMission(MissionWorld.Missions.MassShooter);
                             break;
                         }
-                    case "Pacific Standard robbery":
+                    case "Pacific Standard bank robbery":
                         {
                             MissionWorld.StartMission(MissionWorld.Missions.PacificStandard);
+                            break;
+                        }
+                    case "Fleeca bank robbery":
+                        {
+                            MissionWorld.StartMission(MissionWorld.Missions.FleecaBank);
                             break;
                         }
                 }

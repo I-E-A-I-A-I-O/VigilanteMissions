@@ -18,7 +18,6 @@ class SuspectOnTheRun : Mission
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
     int loadingCurrentTime;
     int loadingStartTime;
@@ -27,8 +26,6 @@ class SuspectOnTheRun : Mission
     public SuspectOnTheRun()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
-
-        randomMissions = new RandomMissions();
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -43,7 +40,7 @@ class SuspectOnTheRun : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    var ped = randomMissions.CreateCriminal(objectiveLocation);
+                    var ped = RandomMissions.CreateCriminal(objectiveLocation);
                     while(!MissionWorld.IsEntityLoaded(ped))
                     {
                         Script.Wait(1);
@@ -57,7 +54,7 @@ class SuspectOnTheRun : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                ped = randomMissions.CreateCriminal(objectiveLocation);
+                                ped = RandomMissions.CreateCriminal(objectiveLocation);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -132,7 +129,7 @@ class SuspectOnTheRun : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;

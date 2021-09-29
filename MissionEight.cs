@@ -54,8 +54,6 @@ class MissionEight : Mission
 
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    Music music;
-    MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup targetRelGroup;
@@ -70,10 +68,7 @@ class MissionEight : Mission
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
         targetRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
-
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_EIGHT_LOCATON;
+        objectiveLocation = MostWantedMissions.MISSION_EIGHT_LOCATON;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -91,11 +86,11 @@ class MissionEight : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionEightPeds();
-                    props = mostWantedMissions.InitializeMissionEightProps();
-                    vehicles = mostWantedMissions.InitializeMissionEightVehicles();
+                    var peds = MostWantedMissions.InitializeMissionEightPeds();
+                    props = MostWantedMissions.InitializeMissionEightProps();
+                    vehicles = MostWantedMissions.InitializeMissionEightVehicles();
                     while (!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -116,7 +111,7 @@ class MissionEight : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionEightPeds();
+                                peds = MostWantedMissions.InitializeMissionEightPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -141,7 +136,7 @@ class MissionEight : Mission
                                         vehicle.Delete();
                                     }
                                 }
-                                vehicles = mostWantedMissions.InitializeMissionEightVehicles();
+                                vehicles = MostWantedMissions.InitializeMissionEightVehicles();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -166,7 +161,7 @@ class MissionEight : Mission
                                         prop.Delete();
                                     }
                                 }
-                                props = mostWantedMissions.InitializeMissionEightProps();
+                                props = MostWantedMissions.InitializeMissionEightProps();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -214,7 +209,7 @@ class MissionEight : Mission
                             props[(int)Props.Fireaxe].Delete();
                             props.RemoveAt((int)Props.Fireaxe);
                             Game.Player.Character.Weapons.Give(WeaponHash.BattleAxe, 1, true, true);
-                            var ped = mostWantedMissions.InitializeMissionEightTarget();
+                            var ped = MostWantedMissions.InitializeMissionEightTarget();
                             while (!MissionWorld.IsEntityLoaded(ped))
                             {
                                 Script.Wait(1);
@@ -228,7 +223,7 @@ class MissionEight : Mission
                                     loadingCurrentTime = Game.GameTime;
                                     if (loadingCurrentTime - loadingStartTime >= 3000)
                                     {
-                                        ped = mostWantedMissions.InitializeMissionEightTarget();
+                                        ped = MostWantedMissions.InitializeMissionEightTarget();
                                         loadingTimerStarted = false;
                                     }
                                 }
@@ -268,7 +263,7 @@ class MissionEight : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
@@ -319,7 +314,7 @@ class MissionEight : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartCountry();
+        Music.StartCountry();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;

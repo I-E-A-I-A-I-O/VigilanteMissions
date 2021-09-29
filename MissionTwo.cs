@@ -66,8 +66,6 @@ class MissionTwo : Mission
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Vector3 targetLocation;
-    MostWantedMissions mostWantedMissions;
-    Music music;
     Blip objectiveLocationBlip;
     Vector3 helicopterDestination;
     RelationshipGroup neutralsRelGroup;
@@ -82,10 +80,7 @@ class MissionTwo : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        mostWantedMissions = new MostWantedMissions();
-        targetLocation = mostWantedMissions.MISSION_TWO_LOCATION;
-
-        music = new Music();
+        targetLocation = MostWantedMissions.MISSION_TWO_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -102,11 +97,11 @@ class MissionTwo : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    vehicles = mostWantedMissions.InitializeMissionTwoVehicles();
-                    var peds = mostWantedMissions.InitializeMissionTwoPeds();
-                    var neutrals = mostWantedMissions.InitializeMissionTwoCivilianPeds();
+                    vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
+                    var peds = MostWantedMissions.InitializeMissionTwoPeds();
+                    var neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
                     while(!MissionWorld.IsPedListLoaded(peds))
                     {
                         Script.Wait(1);
@@ -127,7 +122,7 @@ class MissionTwo : Mission
                                         ped.Delete();
                                     }
                                 }
-                                peds = mostWantedMissions.InitializeMissionTwoPeds();
+                                peds = MostWantedMissions.InitializeMissionTwoPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -152,7 +147,7 @@ class MissionTwo : Mission
                                         vehicle.Delete();
                                     }
                                 }
-                                vehicles = mostWantedMissions.InitializeMissionTwoVehicles();
+                                vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -177,7 +172,7 @@ class MissionTwo : Mission
                                         ped.Delete();
                                     }
                                 }
-                                neutrals = mostWantedMissions.InitializeMissionTwoCivilianPeds();
+                                neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
                                 loadingTimerStarted = false;
                             }
                         }
@@ -229,7 +224,7 @@ class MissionTwo : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
@@ -276,7 +271,7 @@ class MissionTwo : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartHeistMusic();
+        Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;
@@ -292,7 +287,7 @@ class MissionTwo : Mission
 
     void StartScenarios()
     {
-        helicopterDestination = mostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
+        helicopterDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
 
         enemies[(int)Enemies.LietWatchingBoss].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
         enemies[(int)Enemies.BossWife].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);

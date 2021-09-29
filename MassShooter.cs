@@ -16,7 +16,6 @@ class MassShooter : Mission
     MissionPed enemy;
     Vector3 location;
     Objectives currentObjective;
-    RandomMissions randomMissions;
     Blip locationBlip;
     RelationshipGroup enemyRelGroup;
     int loadingStartTime;
@@ -26,8 +25,6 @@ class MassShooter : Mission
     public MassShooter()
     {
         enemyRelGroup = MissionWorld.RELATIONSHIP_MISSION_MASS_SHOOTER;
-
-        randomMissions = new RandomMissions();
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -41,7 +38,7 @@ class MassShooter : Mission
                         return;
                     }
                     locationBlip.Delete();
-                    var ped = randomMissions.CreateCriminal(location);
+                    var ped = RandomMissions.CreateCriminal(location);
                     while(!MissionWorld.IsEntityLoaded(ped))
                     {
                         Script.Wait(1);
@@ -55,7 +52,7 @@ class MassShooter : Mission
                             loadingCurrentTime = Game.GameTime;
                             if (loadingCurrentTime - loadingStartTime >= 3000)
                             {
-                                ped = randomMissions.CreateCriminal(location);
+                                ped = RandomMissions.CreateCriminal(location);
                                 loadingTimerStarted = false;
                             }
                         }
@@ -121,7 +118,7 @@ class MassShooter : Mission
     {
         do
         {
-            location = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+            location = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
         } while (Game.Player.Character.IsInRange(location, 200));
 
         locationBlip = World.CreateBlip(location);
