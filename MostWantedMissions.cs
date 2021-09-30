@@ -31,6 +31,8 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_ELEVEN_SERVER_LOCATION = new Vector3(2265.18f, 2912.432f, -85.71928f);
     public static readonly Vector3 MISSION_ELEVEN_CHASE_START_LOCATION = new Vector3(1182.947f, -334.0395f, 68.17595f);
     public static readonly Vector3 MISSION_ELEVEN_FACILITY_INSIDE_LOCATION = new Vector3(2157.207f, 2921.057f, -82.07529f);
+    public static readonly Vector3 MISSION_ELEVEN_CHASE_END_LOCATION = new Vector3(1771.892f, 3270.796f, 40.59085f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(373.4362f, 4069.974f, 524.1752f);
 
     public static List<Ped> IntializeMissionOnePeds()
     {
@@ -540,6 +542,32 @@ static class MostWantedMissions
     public static Vehicle InitializeMissionElevenChaseVehicle()
     {
         return World.CreateVehicle(new Model(1644055914), new Vector3(1180.15f, -334.5625f, 68.63106f), -78.9879f);
+    }
+
+    public static List<Ped> InitializeMissionElevenAirportPeds()
+    {
+        return new List<Ped>()
+        {
+            World.CreatePed(new Model(1822283721), new Vector3(1737.952f, 3255.82f, 41.34766f), -37.92241f),
+            World.CreatePed(new Model(1822283721), new Vector3(1736.273f, 3258.313f, 41.30162f), -86.99952f),
+            World.CreatePed(new Model(1822283721), new Vector3(1739.728f, 3256.795f, 41.35333f), -19.99984f),
+            World.CreatePed(new Model(1822283721), new Vector3(1733.921f, 3258.41f, 41.278f), -62.99935f),
+            World.CreatePed(new Model(1822283721), new Vector3(1732.081f, 3259.178f, 41.2506f), -59.99976f),
+            World.CreatePed(new Model(1822283721), new Vector3(1733.697f, 3263.778f, 41.21171f), -93.99946f),
+            World.CreatePed(new Model(1822283721), new Vector3(1728.467f, 3265.187f, 41.15613f), -41.0505f),
+            World.CreatePed(new Model(1822283721), new Vector3(1734.73f, 3261.11f, 41.25046f), -63.98955f),
+            World.CreatePed(new Model(71929310), new Vector3(1707.917f, 3248.174f, 41.01706f), 67.99969f)
+        };
+    }
+
+    public static List<Vehicle> InitializeMissionElevenAirportVehicles()
+    {
+        return new List<Vehicle>()
+        {
+            World.CreateVehicle(new Model(1802742206), new Vector3(1731.273f, 3262.358f, 41.36772f), 42.46107f),
+            World.CreateVehicle(new Model(1802742206), new Vector3(1735.125f, 3255.746f, 41.48372f), 168.0585f),
+            World.CreateVehicle(new Model(621481054), new Vector3(1710.78f, 3252.948f, 41.65535f), 103.7908f)
+        };
     }
 }
 

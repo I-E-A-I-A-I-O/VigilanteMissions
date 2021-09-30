@@ -17,6 +17,7 @@ class MissionElevenPartOne : Mission
         LeaveServerFarm,
         LoseCops,
         GoToChase,
+        ChaseGoon,
         Complete,
         None
     }
@@ -30,6 +31,14 @@ class MissionElevenPartOne : Mission
     int loadingStartTime;
     int loadingCurrentTime;
     bool loadingTimerStarted;
+    bool messageOneShown = false;
+    bool messageTwoShown = false;
+    bool planeGotAway = false;
+    bool heliOneSpawned = false;
+    bool heliTwoSpawned = false;
+    bool chaseStarted = false;
+    int chaseStartTime;
+    int chaseCurrentTime;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralGroup;
 
@@ -37,11 +46,18 @@ class MissionElevenPartOne : Mission
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         neutralGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
-        objectiveLocation = MostWantedMissions.MISSION_ELEVEN_SERVER_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_ELEVEN_MEETING_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
     {
+        if (currentObjective != Objectives.LoseCops)
+        {
+            if (Game.Player.WantedLevel >= 2)
+            {
+                Game.Player.WantedLevel = 1;
+            }
+        }
         switch (currentObjective)
         {
             case Objectives.GoToMeeting:
@@ -70,7 +86,7 @@ class MissionElevenPartOne : Mission
                         }
                     }
                     enemies.Add(new MissionPed(ped, neutralGroup));
-                    enemies[0].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
+                    enemies[0].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
                     enemies[0].ShowBlip();
                     enemies[0].GetBlip().Name = "Corrupt IAA agent";
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~corrupt agent~w~.", 8000);
@@ -83,12 +99,30 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    prop = World.CreateProp(new Model(), enemies[0].GetPosition(), true, true);
+                    prop = World.CreateProp(new Model(-1685461222), enemies[0].GetPosition(), true, true);
+                    while (!MissionWorld.IsEntityLoaded(prop))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingStartTime = Game.GameTime;
+                            loadingTimerStarted = true;
+                        } else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                prop = World.CreateProp(new Model(-1685461222), enemies[0].GetPosition(), true, true);
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
                     prop.AddBlip();
                     prop.AttachedBlip.Scale = 0.7f;
                     prop.AttachedBlip.Color = BlipColor.Green;
                     prop.AttachedBlip.Name = "Keycard";
                     RemoveDeadEnemies();
+                    GTA.UI.Screen.ShowSubtitle("Pick up the ~g~keycard~w~.", 8000);
                     currentObjective = Objectives.GrabKeycard;
                     break;
                 }
@@ -113,7 +147,8 @@ class MissionElevenPartOne : Mission
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "IAA Server farm";
-                        GTA.UI.Screen.ShowSubtitle("Go to the ~y~Server farm~w~.", 8000);
+                        objectiveLocationBlip.ShowRoute = true;
+                        GTA.UI.Screen.ShowSubtitle("Go to the ~y~IAA server farm~w~.", 8000);
                         currentObjective = Objectives.GoToServerFarm;
                     }
                     break;
@@ -164,7 +199,6 @@ class MissionElevenPartOne : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    Game.Player.WantedLevel = 4;
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_SERVER_LOCATION;
                     objectiveLocationBlip.Delete();
                     foreach (MissionPed enemy in enemies)
@@ -176,18 +210,21 @@ class MissionElevenPartOne : Mission
                     objectiveLocationBlip = World.CreateBlip(objectiveLocation);
                     objectiveLocationBlip.Color = BlipColor.Yellow;
                     objectiveLocationBlip.Name = "Target server";
-                    GTA.UI.Screen.ShowSubtitle("Insert the device in the ~y~server~w~.", 8000);
                     currentObjective = Objectives.PlaceBackDoor;
                     break;
                 }
             case Objectives.PlaceBackDoor:
                 {
-                    Game.Player.WantedLevel = 4;
+                    if (GTA.UI.Screen.IsFadedIn && !messageOneShown)
+                    {
+                        GTA.UI.Screen.ShowSubtitle("Insert the device in the ~y~server~w~.", 8000);
+                        messageOneShown = true;
+                    }
                     if (enemies.Count > 0)
                     {
                         RemoveDeadEnemies();
                     }
-                    if (!Game.Player.Character.IsInRange(objectiveLocation, 1))
+                    if (!Game.Player.Character.IsInRange(objectiveLocation, 1.3f))
                     {
                         return;
                     }
@@ -215,12 +252,11 @@ class MissionElevenPartOne : Mission
                 }
             case Objectives.LeaveServerFarm:
                 {
-                    Game.Player.WantedLevel = 4;
                     if (enemies.Count > 0)
                     {
                         RemoveDeadEnemies();
                     }
-                    if (!Game.Player.Character.IsInRange(objectiveLocation, 20))
+                    if (!Game.Player.Character.IsInRange(objectiveLocation, 40))
                     {
                         return;
                     }
@@ -228,14 +264,130 @@ class MissionElevenPartOne : Mission
                     {
                         ped.Delete();
                     }
-                    GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
                     Music.LowerIntensinty();
+                    Game.Player.WantedLevel = 4;
                     currentObjective = Objectives.LoseCops;
                     break;
                 }
             case Objectives.LoseCops:
                 {
+                    if (GTA.UI.Screen.IsFadedIn && !messageTwoShown)
+                    {
+                        GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
+                        messageTwoShown = true;
+                    }
                     if (Game.Player.WantedLevel > 0)
+                    {
+                        return;
+                    }
+                    objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_START_LOCATION;
+                    objectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                    objectiveLocationBlip.Name = "Joker's goon location";
+                    objectiveLocationBlip.Color = BlipColor.Yellow;
+                    objectiveLocationBlip.ShowRoute = true;
+                    GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante Mission", "Ok, i tracked 'someone', but i'm not sure if that's him. You better get to that ~y~location~w~ fast.");
+                    GTA.UI.Screen.ShowSubtitle("Go to the ~y~location~w~.", 8000);
+                    currentObjective = Objectives.GoToChase;
+                    Script.Wait(3000);
+                    Music.StartHeistMusic();
+                    break;
+                }
+            case Objectives.GoToChase:
+                {
+                    if (!Game.Player.Character.IsInRange(objectiveLocation, 200))
+                    {
+                        return;
+                    }
+                    objectiveLocationBlip.Delete();
+                    objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_END_LOCATION;
+                    Music.IncreaseIntensity();
+                    var vehicle = MostWantedMissions.InitializeMissionElevenChaseVehicle();
+                    while (!MissionWorld.IsEntityLoaded(vehicle))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingStartTime = Game.GameTime;
+                            loadingTimerStarted = true;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                vehicle = MostWantedMissions.InitializeMissionElevenChaseVehicle();
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    vehicles.Add(vehicle);
+                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01));
+                    while (!MissionWorld.IsEntityLoaded(ped))
+                    {
+                        Script.Wait(1);
+                        if (!loadingTimerStarted)
+                        {
+                            loadingStartTime = Game.GameTime;
+                            loadingTimerStarted = true;
+                        }
+                        else
+                        {
+                            loadingCurrentTime = Game.GameTime;
+                            if (loadingCurrentTime - loadingStartTime >= 3000)
+                            {
+                                ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01));
+                                loadingTimerStarted = false;
+                            }
+                        }
+                    }
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup));
+                    ped.Task.DriveTo(vehicle, objectiveLocation, 15, 350, DrivingStyle.AvoidTraffic);
+                    ped.BlockPermanentEvents = true;
+                    vehicle.AddBlip();
+                    vehicle.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
+                    vehicle.AttachedBlip.Color = BlipColor.Red;
+                    vehicle.AttachedBlip.Name = "Joker's goon";
+                    GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante Mission", "Fuck, that's not him. You better follow him, he might take us to the Joker.");
+                    GTA.UI.Screen.ShowSubtitle("Follow the ~r~goon~w~.", 8000);
+                    currentObjective = Objectives.ChaseGoon;
+                    break;
+                }
+            case Objectives.ChaseGoon:
+                {
+                    if (!enemies[0].GetPed().IsInRange(Game.Player.Character.Position, 350))
+                    {
+                        MissionWorld.QuitMission();
+                        GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon got away!", 8000);
+                        MissionWorld.script.Tick -= MissionTick;
+                        return;
+                    }
+                    if (enemies[0].IsDead())
+                    {
+                        RemoveDeadEnemies();
+                        MissionWorld.QuitMission();
+                        GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon is dead!", 8000);
+                        MissionWorld.script.Tick -= MissionTick;
+                        return;
+                    }
+                    if (!chaseStarted)
+                    {
+                        chaseStartTime = Game.GameTime;
+                        chaseStarted = true;
+                    } else
+                    {
+                        chaseCurrentTime = Game.GameTime;
+                        if (chaseCurrentTime - chaseStartTime >= 45000 && !heliOneSpawned)
+                        {
+                            SpawnChaseHelicopter();
+                            heliOneSpawned = true;
+                        }
+                        if (chaseCurrentTime - chaseStartTime >= 60000 && !heliTwoSpawned)
+                        {
+                            SpawnChaseHelicopter();
+                            heliTwoSpawned = true;
+                        }
+                    }
+                    if (!Game.Player.Character.IsInRange(objectiveLocation, 200))
                     {
                         return;
                     }
@@ -268,9 +420,9 @@ class MissionElevenPartOne : Mission
         {
             objectiveLocationBlip.Delete();
         }
-        if (prop.Exists())
+        if (prop != null)
         {
-            if (prop.AttachedBlip.Exists())
+            if (prop.AttachedBlip != null)
             {
                 prop.AttachedBlip.Delete();
             }
@@ -310,13 +462,85 @@ class MissionElevenPartOne : Mission
         }
         Music.StartFunky();
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "We are going to need access to the IAA servers if we want to find this fucker. I set up a fake ~y~meeting~w~ with a corrupt agent, go get his ~g~keycard~w~.");
+        objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_START_LOCATION;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
         objectiveLocationBlip.Color = BlipColor.Yellow;
         objectiveLocationBlip.Name = "Meeting with IAA agent";
         objectiveLocationBlip.ShowRoute = true;
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~meeting~w~.", 8000);
-        currentObjective = Objectives.GoToMeeting;
+        currentObjective = Objectives.GoToChase;
         MissionWorld.script.Tick += MissionTick;
         return true;
+    }
+
+    void SpawnChaseHelicopter()
+    {
+        var position = Game.Player.Character.Position;
+        var heli = World.CreateVehicle(new Model(VehicleHash.Buzzard), new Vector3(position.X, position.Y, position.Z + 30));
+        while (!MissionWorld.IsEntityLoaded(heli))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    heli = World.CreateVehicle(new Model(VehicleHash.Buzzard), new Vector3(position.X, position.Y, position.Z + 30));
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        heli.IsEngineRunning = true;
+        heli.AddBlip();
+        heli.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
+        heli.AttachedBlip.Color = BlipColor.Red;
+        heli.AttachedBlip.Name = "Enemy";
+        vehicles.Add(heli);
+        var peds = new List<Ped>
+        {
+            heli.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01)),
+            heli.CreatePedOnSeat(VehicleSeat.LeftRear, new Model(PedHash.MPros01)),
+            heli.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.MPros01))
+        };
+        while (!MissionWorld.IsPedListLoaded(peds))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Ped ped in peds)
+                    {
+                        if (ped != null)
+                        {
+                            ped.Delete();
+                        }
+                    }
+                    peds.Clear();
+                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01)));
+                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.LeftRear, new Model(PedHash.MPros01)));
+                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.MPros01)));
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        foreach (Ped ped in peds)
+        {
+            enemies.Add(new MissionPed(ped, enemiesRelGroup));
+        }
+        peds[0].Task.ChaseWithHelicopter(Game.Player.Character, new Vector3(4, 4, -10));
+        peds[1].Task.VehicleShootAtPed(Game.Player.Character);
+        peds[2].Task.VehicleShootAtPed(Game.Player.Character);
     }
 }

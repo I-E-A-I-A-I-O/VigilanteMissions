@@ -46,8 +46,7 @@ class Menu
             new NativeItem("Harry \"Taco\" Bowman - Racketeering"),
             new NativeItem("Heisenberg - Drug trafficking"),
             new NativeItem("Billy \"The Beaut\" Russo - Murder"),
-            new NativeItem("The Joker - Part 1"),
-            new NativeItem("The Joker - Part 2")
+            new NativeItem("The Joker")
         };
         for (var i = 0; i < listOfItems.Count; i++)
         {
