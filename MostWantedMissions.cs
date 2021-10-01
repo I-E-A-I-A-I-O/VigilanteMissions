@@ -21,8 +21,8 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_NINE_JESSE_LOCATION = new Vector3(1121.41736f, 2643.13184f, 37.1487274f);
     public static readonly Vector3 MISSION_NINE_LAB_LOCATION = new Vector3(640.0001f, 2773.23047f, 41.0256233f);
     public static readonly Vector3 MISSION_NINE_LAB_INSIDE_LOCATION = new Vector3(1118.97827f, -3194.53955f, -41.3989334f);
-    public static readonly Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION = new Vector3(1133.70923f, -3198.914f, -40.6607f);
-    public static readonly Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION = new Vector3(1122.70459f, -3199.04419f, -41.3888321f);
+    public static readonly Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION = new Vector3(1132.146f, -3197.032f, -40.6607f);
+    public static readonly Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION = new Vector3(1123.822f, -3194.421f, -41.39821f);
     public static readonly Vector3 MISSION_NINE_LAB_BOMB_THREE_POSITION = new Vector3(1136.906f, -3193.216f, -41.3908653f);
     public static readonly Vector3 MISSION_NINE_REINFORCEMENT_LOCATION = new Vector3(181.875916f, 2242.46826f, 88.96377f);
     public static readonly Vector3 MISSION_TEN_LOCATION = new Vector3(-1388.65723f, -586.457153f, 29.2190189f);
@@ -32,7 +32,10 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_ELEVEN_CHASE_START_LOCATION = new Vector3(1182.947f, -334.0395f, 68.17595f);
     public static readonly Vector3 MISSION_ELEVEN_FACILITY_INSIDE_LOCATION = new Vector3(2157.207f, 2921.057f, -82.07529f);
     public static readonly Vector3 MISSION_ELEVEN_CHASE_END_LOCATION = new Vector3(1771.892f, 3270.796f, 40.59085f);
-    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(373.4362f, 4069.974f, 524.1752f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(-307.7658f, 2833.251f, 389.7252f);
+    public static readonly Vector3 MISSION_ELEVEN_MARINE_TRUCK_LOCATION = new Vector3(-94.85383f, 2835.197f, 51.03303f);
+    public static readonly Vector3 MISSION_ELEVEN_FORT_ZANCUDO_LOCATION = new Vector3(-1569.331f, 2776.975f, 16.18228f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_CRASH_LOCATION = new Vector3(-70.05057f, -803.7344f, 298.687f);
 
     public static List<Ped> IntializeMissionOnePeds()
     {
@@ -306,12 +309,9 @@ static class MostWantedMissions
         };
     }
 
-    public static List<Vehicle> InitializeMissionSevenRoofVehicles()
+    public static Vehicle InitializeMissionSevenRoofVehicles()
     {
-        return new List<Vehicle>()
-        {
-            World.CreateVehicle(new Model(788747387), new Vector3(-74.93462f, -818.5611f, 326.0729f), -18.93448f)
-        };
+        return World.CreateVehicle(new Model(788747387), new Vector3(-74.93462f, -818.5611f, 326.0729f), -18.93448f);
     }
 
     public static List<Prop> InitializeMissionSevenBomb()
@@ -389,42 +389,14 @@ static class MostWantedMissions
         };
     }
 
-    public static List<Prop> InitializeMissionNineLabProps()
-    {
-        return new List<Prop>()
-        {
-            World.CreateProp(new Model(558857511), new Vector3(1134.592f, -3193.113f, -40.59204f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(558857511), new Vector3(1130.37f, -3193.382f, -40.59204f), new Vector3(0f, 0f, 90.99965f), true, false),
-            World.CreateProp(new Model(558857511), new Vector3(1128.734f, -3193.384f, -40.59204f), new Vector3(0f, 0f, 41.99991f), true, false),
-            World.CreateProp(new Model(16180688), new Vector3(1134.359f, -3193.516f, -40.59204f), new Vector3(0f, 0f, -77.99979f), true, false),
-            World.CreateProp(new Model(1523490836), new Vector3(1134.018f, -3192.921f, -40.59204f), new Vector3(0f, 0f, -5.999955f), true, false),
-            World.CreateProp(new Model(538990259), new Vector3(1138.927f, -3197.324f, -40.6607f), new Vector3(0f, 0f, 93.99951f), true, false),
-            World.CreateProp(new Model(1957941287), new Vector3(1135.136f, -3193.604f, -40.59204f), new Vector3(0f, 0f, -89.99951f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.564f, -3199.103f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1128.849f, -3199.16f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.872f, -3198.412f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(410069066), new Vector3(1121.144f, -3198.377f, -40.59204f), new Vector3(0f, 0f, -39.99995f), true, false),
-            World.CreateProp(new Model(-742198632), new Vector3(1125.883f, -3192.895f, -41.3889f), new  Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(539422188), new Vector3(1121.25732f, -3194.31738f, -41.39758f), new Vector3(0f, 0f, -90.99963f), false, false),
-            World.CreateProp(new Model(936543891), new Vector3(1127.582f, -3198.729f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(1242409737), new Vector3(1126.847f, -3198.745f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            //World.CreateProp(new Model(-1397853612), new Vector3(1134.826f, -3198.674f, -40.6607f), new Vector3(0f, 0f, 0f), false, false),
-            //World.CreateProp(new Model(-1397853612), new Vector3(1132.534f, -3198.728f, -40.6607f), new Vector3(0f, 0f, 0f), false, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.102f, -3198.424f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            //World.CreateProp(new Model(1541924614), new Vector3(1118.543f, -3197.803f, -40.59204f), new Vector3(0f, 0f, -113.9996f), true, false),
-            //World.CreateProp(new Model(1541924614), new Vector3(1118.36f, -3197.343f, -40.59204f), new Vector3(0f, 0f, -32.99996f),true, false),
-            World.CreateProp(new Model(-566369276), new Vector3(1131.478f, -3198.564f, -40.6607f), new Vector3(0f, 0f, 173.001f), true, false)
-        };
-    }
-
     public static Prop InitializeMissionNineBombOne()
     {
-        return World.CreateProp(new Model(1929884544), new Vector3(1133.88879f, -3199.462f, -39.1957932f), new Vector3(0f, 0f, 174.0009f), true, false);
+        return World.CreateProp(new Model(1929884544), new Vector3(1132.07f, -3197.629f, -39.48698f), new Vector3(0f, 0f, 174.0009f), true, false);
     }
     
     public static Prop InitializeMissionNineBombTwo()
     {
-        return World.CreateProp(new Model(1929884544), new Vector3(1122.752f, -3199.231f, -40.18187f), new Vector3(0f, 0f, 175.9989f), true, false);
+        return World.CreateProp(new Model(1929884544), new Vector3(1123.833f, -3193.982f, -39.61546f), new Vector3(0f, 0f, -2.000000f), true, false);
     }
     
     public static Prop InitializeMissionNineBombThree()
@@ -446,8 +418,8 @@ static class MostWantedMissions
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(1329576454), new Vector3(1125.89f, -3193.608f, -40.39346f), 10.22112f),
-            World.CreatePed(new Model(1329576454), new Vector3(1126.63f, -3192.943f, -40.39281f), 162.8383f),
+            //World.CreatePed(new Model(1329576454), new Vector3(1125.89f, -3193.608f, -40.39346f), 10.22112f),
+            //World.CreatePed(new Model(1329576454), new Vector3(1126.63f, -3192.943f, -40.39281f), 162.8383f),
             World.CreatePed(new Model(-306958529), new Vector3(1129.715f, -3194.148f, -40.4f), -0.648681f),
             World.CreatePed(new Model(-306958529), new Vector3(1135.114f, -3194.221f, -40.39701f), 3.727203f),
             World.CreatePed(new Model(-306958529), new Vector3(1138.177f, -3197.398f, -39.66595f), -87.08331f),
@@ -556,7 +528,7 @@ static class MostWantedMissions
             World.CreatePed(new Model(1822283721), new Vector3(1733.697f, 3263.778f, 41.21171f), -93.99946f),
             World.CreatePed(new Model(1822283721), new Vector3(1728.467f, 3265.187f, 41.15613f), -41.0505f),
             World.CreatePed(new Model(1822283721), new Vector3(1734.73f, 3261.11f, 41.25046f), -63.98955f),
-            World.CreatePed(new Model(71929310), new Vector3(1707.917f, 3248.174f, 41.01706f), 67.99969f)
+            //World.CreatePed(new Model(71929310), new Vector3(1707.917f, 3248.174f, 41.01706f), 67.99969f)
         };
     }
 
@@ -568,6 +540,11 @@ static class MostWantedMissions
             World.CreateVehicle(new Model(1802742206), new Vector3(1735.125f, 3255.746f, 41.48372f), 168.0585f),
             World.CreateVehicle(new Model(621481054), new Vector3(1710.78f, 3252.948f, 41.65535f), 103.7908f)
         };
+    }
+
+    public static Vehicle InitializeMissionElevenMarineTruck()
+    {
+        return World.CreateVehicle(new Model(-823509173), new Vector3(-99.77962f, 2837.321f, 51.35239f), 65.08549f);
     }
 }
 

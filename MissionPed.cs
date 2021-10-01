@@ -149,11 +149,17 @@ public class MissionPed
         return ped.IsDead;
     }
 
-    public void Delete()
+    public void Delete(bool force = false)
     {
-        if (ped.AttachedBlip != null)
-            RemoveBlip();
-        ped.MarkAsNoLongerNeeded();
+        if (!force)
+        {
+            if (ped.AttachedBlip != null)
+                RemoveBlip();
+            ped.MarkAsNoLongerNeeded();
+        } else
+        {
+            ped.Delete();
+        }
     }
 
     public void RemoveBlip()

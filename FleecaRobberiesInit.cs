@@ -54,8 +54,9 @@ static class FleecaRobberiesInit
         }
     }
 
-    public static void SelectLocationRobbers(int missionIndex, out List<Ped> enemyPeds)
+    public static List<Ped> SelectLocationRobbers(int missionIndex)
     {
+        List<Ped> enemyPeds;
         switch (missionIndex)
         {
             case 0:
@@ -94,10 +95,12 @@ static class FleecaRobberiesInit
                     break;
                 }
         }
+        return enemyPeds;
     }
 
-    public static void SelectLocationHostages(int missionIndex, out List<Ped> hostagePeds)
+    public static List<Ped> SelectLocationHostages(int missionIndex)
     {
+        List<Ped> hostagePeds;
         switch (missionIndex)
         {
             case 0:
@@ -136,6 +139,7 @@ static class FleecaRobberiesInit
                     break;
                 }
         }
+        return hostagePeds;
     }
 
     static List<Ped> InitializeLocationOneRobbers()

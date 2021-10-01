@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 class MissionFive : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -20,9 +22,6 @@ class MissionFive : Mission
     Blip objectiveLocationBlip;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    int loadingCurrentTime;
-    int loadingStartTime;
-    bool loadingTimerStarted = false;
 
     public MissionFive()
     {
@@ -50,56 +49,8 @@ class MissionFive : Mission
                     objectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionFivePeds();
                     var neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionFivePeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsPedListLoaded(neutrals))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in neutrals)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFivePeds);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionFiveCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

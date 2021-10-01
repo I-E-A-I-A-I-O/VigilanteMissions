@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class MissionOne : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -36,9 +38,6 @@ class MissionOne : Mission
     Vector3 targetLocation;
     Blip objectiveLocationBlip;
     RelationshipGroup enemiesRelGroup;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public MissionOne()
     {
@@ -65,56 +64,8 @@ class MissionOne : Mission
                     objectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionOneVehicles();
                     var peds = MostWantedMissions.IntializeMissionOnePeds();
-                    while(!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.IntializeMissionOnePeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Vehicle vehicle in vehicles)
-                                {
-                                    if (vehicle != null)
-                                    {
-                                        vehicle.Delete();
-                                    }
-                                }
-                                vehicles = MostWantedMissions.InitializeMissionOneVehicles();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionOneVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.IntializeMissionOnePeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
 

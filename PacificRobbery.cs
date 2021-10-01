@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class PacificRobbery : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -23,9 +25,6 @@ class PacificRobbery : Mission
     List<MissionPed> hostages = new List<MissionPed>();
     List<MissionPed> police = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted;
 
     public PacificRobbery()
     {
@@ -50,108 +49,10 @@ class PacificRobbery : Mission
                     var policePeds = BankMissions.InitializePacificPolice();
                     var hostagePeds = BankMissions.InitializePacificHostages();
                     vehicles = BankMissions.InitializePacificVehicles();
-                    while (!MissionWorld.IsPedListLoaded(enemyPeds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        } else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in enemyPeds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                enemyPeds = BankMissions.InitializePacificRobbers();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    loadingTimerStarted = false;
-                    while (!MissionWorld.IsPedListLoaded(policePeds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in policePeds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                policePeds = BankMissions.InitializePacificPolice();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    loadingTimerStarted = false;
-                    while (!MissionWorld.IsPedListLoaded(hostagePeds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in hostagePeds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                hostagePeds = BankMissions.InitializePacificHostages();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    loadingTimerStarted = false;
-                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Vehicle vehicle in vehicles)
-                                {
-                                    if (vehicle != null)
-                                    {
-                                        vehicle.Delete();
-                                    }
-                                }
-                                vehicles = BankMissions.InitializePacificVehicles();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    enemyPeds = MissionWorld.PedListLoadLoop(enemyPeds, BankMissions.InitializePacificRobbers);
+                    policePeds = MissionWorld.PedListLoadLoop(policePeds, BankMissions.InitializePacificPolice);
+                    hostagePeds = MissionWorld.PedListLoadLoop(hostagePeds, BankMissions.InitializePacificHostages);
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, BankMissions.InitializePacificVehicles);
                     for (var i = 0; i < enemyPeds.Count; i++)
                     {
                         enemies.Add(new MissionPed(enemyPeds[i], robberRelGroup));

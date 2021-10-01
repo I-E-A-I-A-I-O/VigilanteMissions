@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class MissionSix : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -45,9 +47,6 @@ class MissionSix : Mission
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
     Blip objectiveLocationBlip;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public MissionSix()
     {
@@ -76,81 +75,9 @@ class MissionSix : Mission
                     vehicles = MostWantedMissions.InitializeMissionSixVehicles();
                     var peds = MostWantedMissions.InitializeMissionSixPeds();
                     var neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionSixPeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsPedListLoaded(neutrals))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in neutrals)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Vehicle vehicle in vehicles)
-                                {
-                                    if (vehicle != null)
-                                    {
-                                        vehicle.Delete();
-                                    }
-                                }
-                                vehicles = MostWantedMissions.InitializeMissionSixVehicles();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSixVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSixPeds);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSixCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

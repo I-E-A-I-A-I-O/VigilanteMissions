@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class MassShooter : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -18,9 +20,6 @@ class MassShooter : Mission
     Objectives currentObjective;
     Blip locationBlip;
     RelationshipGroup enemyRelGroup;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public MassShooter()
     {
@@ -39,24 +38,7 @@ class MassShooter : Mission
                     }
                     locationBlip.Delete();
                     var ped = RandomMissions.CreateCriminal(location);
-                    while(!MissionWorld.IsEntityLoaded(ped))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                ped = RandomMissions.CreateCriminal(location);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, location);
                     enemy = new MissionPed(ped, enemyRelGroup);
                     enemy.GetPed().FiringPattern = FiringPattern.FullAuto;
                     enemy.GetPed().Accuracy = 80;

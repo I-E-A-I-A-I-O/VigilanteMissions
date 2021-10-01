@@ -11,6 +11,7 @@ class Menu
     public NativeMenu mostWantedMenu;
     public NativeMenu currentCrimesMenu;
     public NativeItem callBackupOption;
+    public bool jokerAdded = false;
     bool timerStarted = false;
     int startTime;
     int currentTime;
@@ -46,7 +47,6 @@ class Menu
             new NativeItem("Harry \"Taco\" Bowman - Racketeering"),
             new NativeItem("Heisenberg - Drug trafficking"),
             new NativeItem("Billy \"The Beaut\" Russo - Murder"),
-            new NativeItem("The Joker")
         };
         for (var i = 0; i < listOfItems.Count; i++)
         {
@@ -74,6 +74,27 @@ class Menu
         mainMenu.Add(callBackupOption);
         callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
+    }
+
+    public void AddJoker()
+    {
+        var item = new NativeItem("The Joker");
+        mostWantedMenu.Add(item);
+        item.Activated += (o, e) =>
+        {
+            if (MissionWorld.isMissionActive)
+            {
+                GTA.UI.Notification.Show("A mission is already in progress!");
+                return;
+            }
+            if (!Game.Player.CanStartMission)
+            {
+                GTA.UI.Notification.Show("Mission not available.");
+                return;
+            }
+            MissionWorld.StartMission(MissionWorld.Missions.MostWanted111);
+        };
+        jokerAdded = true;
     }
 
     void BackUpCalled(object o, EventArgs e)

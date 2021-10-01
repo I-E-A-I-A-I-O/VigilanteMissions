@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 class Assault : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -27,9 +29,6 @@ class Assault : Mission
     int currentTime;
     bool timerStarted = false;
     bool actionStarted = false;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public Assault()
     {
@@ -50,42 +49,8 @@ class Assault : Mission
                     objectiveLocationBlip.Delete();
                     var enemy = RandomMissions.CreateCriminal(objectiveLocation);
                     var neutral = RandomMissions.CreateVictim(objectiveLocation);
-                    while (!MissionWorld.IsEntityLoaded(enemy))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                enemy = RandomMissions.CreateCriminal(objectiveLocation);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsEntityLoaded(neutral))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                neutral = RandomMissions.CreateVictim(objectiveLocation);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    enemy = (Ped)MissionWorld.EntityLoadLoop(enemy, RandomMissions.CreateCriminal, objectiveLocation);
+                    neutral = (Ped)MissionWorld.EntityLoadLoop(neutral, RandomMissions.CreateVictim, objectiveLocation);
                     enemies.Add(new MissionPed(enemy, enemiesRelGroup));
                     neutralPeds.Add(new MissionPed(neutral, neutralsRelGroup, true));
                     enemies[0].ShowBlip();

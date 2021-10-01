@@ -3,10 +3,11 @@ using GTA.Native;
 using GTA.Math;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 class MissionNine : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToMotelRoom,
@@ -56,9 +57,6 @@ class MissionNine : Mission
     bool bombTwoPlanted = false;
     bool bombThreePlanted = false;
     bool reinforcementSpawned = false;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public MissionNine()
     {
@@ -86,31 +84,7 @@ class MissionNine : Mission
                     objectiveLocationBlip.Delete();
                     objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
                     var peds = MostWantedMissions.InitializeMissionNineMotelRoomPeds();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionNineMotelRoomPeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineMotelRoomPeds);
                     foreach (Ped ped in peds)
                     {
                         neutralPeds.Add(new MissionPed(ped, pedRelGroup,  true));
@@ -210,31 +184,7 @@ class MissionNine : Mission
                     Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionNineLabEntranceGuards();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionNineLabEntranceGuards();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabEntranceGuards);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], neutralRelGroup));
@@ -253,58 +203,8 @@ class MissionNine : Mission
                     } else
                     {
                         objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_INSIDE_LOCATION;
-                        props = MostWantedMissions.InitializeMissionNineLabProps();
                         var peds = MostWantedMissions.InitializeMissionNineLabPeds();
-                        while (!MissionWorld.IsPedListLoaded(peds))
-                        {
-                            Script.Wait(1);
-                            if (!loadingTimerStarted)
-                            {
-                                loadingTimerStarted = true;
-                                loadingStartTime = Game.GameTime;
-                            }
-                            else
-                            {
-                                loadingCurrentTime = Game.GameTime;
-                                if (loadingCurrentTime - loadingStartTime >= 3000)
-                                {
-                                    foreach (Ped ped in peds)
-                                    {
-                                        if (ped != null)
-                                        {
-                                            ped.Delete();
-                                        }
-                                    }
-                                    peds = MostWantedMissions.InitializeMissionNineLabPeds();
-                                    loadingTimerStarted = false;
-                                }
-                            }
-                        }
-                        while (!MissionWorld.IsPropListLoaded(props))
-                        {
-                            Script.Wait(1);
-                            if (!loadingTimerStarted)
-                            {
-                                loadingTimerStarted = true;
-                                loadingStartTime = Game.GameTime;
-                            }
-                            else
-                            {
-                                loadingCurrentTime = Game.GameTime;
-                                if (loadingCurrentTime - loadingStartTime >= 3000)
-                                {
-                                    foreach (Prop prop in props)
-                                    {
-                                        if (prop != null)
-                                        {
-                                            prop.Delete();
-                                        }
-                                    }
-                                    props = MostWantedMissions.InitializeMissionNineLabProps();
-                                    loadingTimerStarted = false;
-                                }
-                            }
-                        }
+                        peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabPeds);
                         foreach (Ped ped in peds)
                         {
                             enemies.Add(new MissionPed(ped, aggressiveRelGroup));
@@ -371,7 +271,6 @@ class MissionNine : Mission
                                 props.Add(MostWantedMissions.InitializeMissionNineBombOne());
                                 bombOneBlip.Delete();
                                 bombOnePlanted = true;
-                                vehicles = MostWantedMissions.InitializeMissionNineVehicles();
                             }
                         }
                     }
@@ -389,7 +288,7 @@ class MissionNine : Mission
                             }
                             if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                             {
-                                PlayPlantBombAnim(Vector3.RelativeBack.ToHeading());
+                                PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
                                 Script.Wait(2000);
                                 props.Add(MostWantedMissions.InitializeMissionNineBombTwo());
                                 bombTwoBlip.Delete();
@@ -431,6 +330,8 @@ class MissionNine : Mission
                 {
                     if (Game.Player.Character.IsInRange(objectiveLocation, 20))
                     {
+                        vehicles = MostWantedMissions.InitializeMissionNineVehicles();
+                        vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionNineVehicles);
                         objectiveLocation = MostWantedMissions.MISSION_NINE_REINFORCEMENT_LOCATION;
                         var peds = new List<Ped>
                         {
@@ -440,10 +341,11 @@ class MissionNine : Mission
                             vehicles[(int)Vehicles.Bike01].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                             vehicles[(int)Vehicles.Bike02].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                         };
-                        while (!MissionWorld.IsPedListLoaded(peds))
-                        {
-                            Script.Wait(1);
-                        }
+                        peds[0] = (Ped)MissionWorld.EntityLoadLoop(peds[0], vehicles[(int)Vehicles.Car], VehicleSeat.Driver, new Model(PedHash.Chef));
+                        peds[1] = (Ped)MissionWorld.EntityLoadLoop(peds[1], vehicles[(int)Vehicles.Bike01], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
+                        peds[2] = (Ped)MissionWorld.EntityLoadLoop(peds[2], vehicles[(int)Vehicles.Bike01], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
+                        peds[3] = (Ped)MissionWorld.EntityLoadLoop(peds[3], vehicles[(int)Vehicles.Bike02], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
+                        peds[4] = (Ped)MissionWorld.EntityLoadLoop(peds[4], vehicles[(int)Vehicles.Bike02], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
                         for (var i = 0; i < peds.Count; i++)
                         {
                             enemies.Add(new MissionPed(peds[i], neutralRelGroup, false, true));
@@ -468,31 +370,7 @@ class MissionNine : Mission
                             if (enemies[0].GetPed().IsInRange(objectiveLocation, 110))
                             {
                                 var peds = MostWantedMissions.InitializeMissionNineReinforcements();
-                                while (!MissionWorld.IsPedListLoaded(peds))
-                                {
-                                    Script.Wait(1);
-                                    if (!loadingTimerStarted)
-                                    {
-                                        loadingTimerStarted = true;
-                                        loadingStartTime = Game.GameTime;
-                                    }
-                                    else
-                                    {
-                                        loadingCurrentTime = Game.GameTime;
-                                        if (loadingCurrentTime - loadingStartTime >= 3000)
-                                        {
-                                            foreach (Ped ped in peds)
-                                            {
-                                                if (ped != null)
-                                                {
-                                                    ped.Delete();
-                                                }
-                                            }
-                                            peds = MostWantedMissions.InitializeMissionNineReinforcements();
-                                            loadingTimerStarted = false;
-                                        }
-                                    }
-                                }
+                                peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineReinforcements);
                                 for (var i = 0; i < peds.Count; i++)
                                 {
                                     enemies.Add(new MissionPed(peds[i], aggressiveRelGroup));

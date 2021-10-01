@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class GangActivity : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -19,9 +21,6 @@ class GangActivity : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
     Blip objectiveLocationBlip;
-    int loadingStartTime;
-    int loadingCurrentTimne;
-    bool loadingTimerStarted = false;
 
     public GangActivity()
     {
@@ -40,30 +39,7 @@ class GangActivity : Mission
                     }
                     objectiveLocationBlip.Delete();
                     var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        } else
-                        {
-                            loadingCurrentTimne = Game.GameTime;
-                            if (loadingCurrentTimne - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    peds = MissionWorld.PedListLoadLoop(peds, RandomMissions.CreateGroupOfCriminals, objectiveLocation);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

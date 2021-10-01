@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class FleecaRooberies : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -15,11 +17,8 @@ class FleecaRooberies : Mission
 
     Vector3 objectiveLocation;
     Blip objectiveLocationBlip;
-    int loadingStartTime;
-    int loadingCurrentTime;
     int missionIndex;
     bool doorsUnlocked = false;
-    bool loadingTimerStarted = false;
     Objectives currentObjective;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup hostagesRelGroup;
@@ -42,58 +41,10 @@ class FleecaRooberies : Mission
                     {
                         return;
                     }
-                    FleecaRobberiesInit.SelectLocationRobbers(missionIndex, out var enemyPeds);
-                    FleecaRobberiesInit.SelectLocationHostages(missionIndex, out var hostagePeds);
-                    while(!MissionWorld.IsPedListLoaded(enemyPeds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        } else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in enemyPeds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                FleecaRobberiesInit.SelectLocationRobbers(missionIndex, out enemyPeds);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    loadingTimerStarted = false;
-                    while (!MissionWorld.IsPedListLoaded(hostagePeds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingStartTime = Game.GameTime;
-                            loadingTimerStarted = true;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in hostagePeds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                FleecaRobberiesInit.SelectLocationHostages(missionIndex, out hostagePeds);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    var enemyPeds = FleecaRobberiesInit.SelectLocationRobbers(missionIndex);
+                    var hostagePeds = FleecaRobberiesInit.SelectLocationHostages(missionIndex);
+                    enemyPeds = MissionWorld.PedListLoadLoop(enemyPeds, FleecaRobberiesInit.SelectLocationRobbers, missionIndex);
+                    hostagePeds = MissionWorld.PedListLoadLoop(hostagePeds, FleecaRobberiesInit.SelectLocationHostages, missionIndex);
                     for (var i = 0; i < enemyPeds.Count; i++)
                     {
                         enemies.Add(new MissionPed(enemyPeds[i], enemiesRelGroup));

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class SuspectOnTheRun : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -19,9 +21,6 @@ class SuspectOnTheRun : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
     Blip objectiveLocationBlip;
-    int loadingCurrentTime;
-    int loadingStartTime;
-    bool loadingTimerStarted = false;
 
     public SuspectOnTheRun()
     {
@@ -41,24 +40,8 @@ class SuspectOnTheRun : Mission
                     objectiveLocationBlip.Delete();
 
                     var ped = RandomMissions.CreateCriminal(objectiveLocation);
-                    while(!MissionWorld.IsEntityLoaded(ped))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                ped = RandomMissions.CreateCriminal(objectiveLocation);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
+
                     enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     enemies[0].ShowBlip();
                     enemies[0].GetTask().FleeFrom(Game.Player.Character);

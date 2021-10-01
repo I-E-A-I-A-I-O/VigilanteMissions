@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class StolenVehicle : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -20,9 +22,6 @@ class StolenVehicle : Mission
     List<Vehicle> vehicles = new List<Vehicle>();
     Objectives currentObjective;
     Blip objectiveLocationBlip;
-    int loadingCurrentTime;
-    int loadingStartTime;
-    bool loadingTimerStarted = false;
 
     public StolenVehicle()
     {
@@ -41,43 +40,9 @@ class StolenVehicle : Mission
                     }
                     objectiveLocationBlip.Delete();
                     var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
-                    while (!MissionWorld.IsEntityLoaded(vehicle))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                vehicle = RandomMissions.CreateVehicle(objectiveLocation);
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, RandomMissions.CreateVehicle, objectiveLocation);
                     var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
-                    while (!MissionWorld.IsEntityLoaded(ped))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
                     enemies.Add(new MissionPed(ped, enemiesRelGroup, false, true));
                     vehicles.Add(vehicle);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);

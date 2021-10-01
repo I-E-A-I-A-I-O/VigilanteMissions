@@ -1,5 +1,6 @@
 ﻿using GTA;
 using GTA.Native;
+using GTA.Math;
 using System;
 using System.Collections.Generic;
 
@@ -13,8 +14,12 @@ public class MissionWorld
     public static RelationshipGroup RELATIONSHIP_MISSION_DISLIKE;
     public static RelationshipGroup RELATIONSHIP_MISSION_MASS_SHOOTER;
     public static RelationshipGroup RELATIONSHIP_MISSION_COP;
+    public static RelationshipGroup RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY;
     public static bool isMissionActive;
     static Mission currentMission;
+    static bool loadingTimerStarted = false;
+    static int loadingStartTime;
+    static int loadingCurrentTime;
     
     public enum Missions
     {
@@ -54,6 +59,7 @@ public class MissionWorld
         RELATIONSHIP_MISSION_AGGRESSIVE = World.AddRelationshipGroup("VIGILANTE_MISSION_AGGRESSIVE");
         RELATIONSHIP_MISSION_DISLIKE = World.AddRelationshipGroup("VIGILANTE_MISSION_DISLIKE");
         RELATIONSHIP_MISSION_MASS_SHOOTER = World.AddRelationshipGroup("VIGILANTE_MISSION_MASS_SHOOTER");
+        RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY = World.AddRelationshipGroup("VIGILANTE_MISSION_NEUTRAL_COP_FRIENDLY");
         RELATIONSHIP_MISSION_COP = new RelationshipGroup(RELATIONSHIP_COPS);
 
         RELATIONSHIP_MISSION_LIKE.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Respect);
@@ -68,6 +74,7 @@ public class MissionWorld
         RELATIONSHIP_MISSION_MASS_SHOOTER.SetRelationshipBetweenGroups(RELATIONSHIP_CIVFEMALE, Relationship.Hate, true);
         RELATIONSHIP_MISSION_MASS_SHOOTER.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Hate);
         RELATIONSHIP_MISSION_MASS_SHOOTER.SetRelationshipBetweenGroups(RELATIONSHIP_COPS, Relationship.Hate, true);
+        RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
 
         isMissionActive = false;
     }
@@ -181,7 +188,294 @@ public class MissionWorld
     {
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
         isMissionActive = false;
+        if (currentMission.IsMostWanted)
+        {
+            Progress.completedMostWantedMissionsCount += 1;
+            if (Progress.completedMostWantedMissionsCount >= VigilanteMissions.jokerMissionCount)
+            {
+                if (!Progress.jokerUnlockedMessageSent)
+                {
+                    GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante Missions", "There's a new bounty out for this sicko called 'The Joker'. Let me know when you want to go after him");
+                    Progress.jokerUnlockedMessageSent = true;                
+                }
+                if (!Progress.jokerUnlocked)
+                {
+                    Progress.jokerUnlocked = true;
+                }
+                VigilanteMissions.AddJoker();
+            }
+            VigilanteMissions.SaveProgress();
+        }
         currentMission = null;
+    }
+
+    public static List<Ped> PedListLoadLoop(List<Ped> peds, Func<List<Ped>> ListFunction)
+    {
+        while (!IsPedListLoaded(peds))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            } else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Ped ped in peds)
+                    {
+                        if (ped != null)
+                        {
+                            ped.Delete();
+                        }
+                    }
+                    peds.Clear();
+                    peds = ListFunction();
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return peds;
+    }
+
+    public static List<Ped> PedListLoadLoop(List<Ped> peds, Func<Vector3, List<Ped>> ListFunction, Vector3 location)
+    {
+        while (!IsPedListLoaded(peds))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Ped ped in peds)
+                    {
+                        if (ped != null)
+                        {
+                            ped.Delete();
+                        }
+                    }
+                    peds.Clear();
+                    peds = ListFunction(location);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return peds;
+    }
+
+    public static List<Ped> PedListLoadLoop(List<Ped> peds, Func<int, List<Ped>> ListFunction, int listParameter)
+    {
+        while (!IsPedListLoaded(peds))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Ped ped in peds)
+                    {
+                        if (ped != null)
+                        {
+                            ped.Delete();
+                        }
+                    }
+                    peds.Clear();
+                    peds = ListFunction(listParameter);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return peds;
+    }
+
+    public static List<Vehicle> VehicleListLoadLoop(List<Vehicle> vehicles, Func<List<Vehicle>> ListFunction)
+    {
+        while (!IsVehicleListLoaded(vehicles))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Vehicle vehicle in vehicles)
+                    {
+                        if (vehicle != null)
+                        {
+                            vehicle.Delete();
+                        }
+                    }
+                    vehicles.Clear();
+                    vehicles = ListFunction();
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return vehicles;
+    }
+
+    public static List<Prop> PropListLoadLoop(List<Prop> props, Func<List<Prop>> ListFunction)
+    {
+        while (!IsPropListLoaded(props))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    foreach (Prop prop in props)
+                    {
+                        if (prop != null)
+                        {
+                            prop.Delete();
+                        }
+                    }
+                    props.Clear();
+                    props = ListFunction();
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return props;
+    }
+
+    public static Entity EntityLoadLoop(Entity entity, Func<Entity> EntityFunction)
+    {
+        while (!IsEntityLoaded(entity))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    entity = EntityFunction();
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return entity;
+    }
+
+    public static Entity EntityLoadLoop(Entity entity, Func<Vector3, Entity> EntityFunction, Vector3 location)
+    {
+        while (!IsEntityLoaded(entity))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    entity = EntityFunction(location);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return entity;
+    }
+
+    public static Entity EntityLoadLoop(Entity entity, Vehicle vehicle, VehicleSeat seat, Model model)
+    {
+        while (!IsEntityLoaded(entity))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    entity = vehicle.CreatePedOnSeat(seat, model);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return entity;
+    }
+
+    public static Entity EntityLoadLoop(Entity entity, Model vehicleModel, Vector3 vehiclePosition)
+    {
+        while (!IsEntityLoaded(entity))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    entity = World.CreateVehicle(vehicleModel, vehiclePosition);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return entity;
+    }
+
+    public static Entity EntityLoadLoop(Entity entity, Model propModel, Vector3 propLocation, bool dynamic, bool ground)
+    {
+        while (!IsEntityLoaded(entity))
+        {
+            Script.Wait(1);
+            if (!loadingTimerStarted)
+            {
+                loadingStartTime = Game.GameTime;
+                loadingTimerStarted = true;
+            }
+            else
+            {
+                loadingCurrentTime = Game.GameTime;
+                if (loadingCurrentTime - loadingStartTime >= 3000)
+                {
+                    entity = World.CreateProp(propModel, propLocation, dynamic, ground);
+                    loadingTimerStarted = false;
+                }
+            }
+        }
+        return entity;
     }
 
     public static bool IsPedListLoaded(List<Ped> peds)

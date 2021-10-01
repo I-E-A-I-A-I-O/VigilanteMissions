@@ -8,7 +8,7 @@ public class VigilanteMissions: Script
 {
     bool isPlayerInPoliceVehicle = false;
     Vehicle currentPoliceVehicle;
-    Menu menu;
+    static Menu menu;
     public static Keys accessComputerKey;
     public static Keys interactMissionKey;
     public static Keys cancelMissionKey;
@@ -18,6 +18,7 @@ public class VigilanteMissions: Script
     ScriptSettings iniFile;
     int startTime;
     int currentTime;
+    public static int jokerMissionCount = 15;
 
     public VigilanteMissions()
     {
@@ -47,6 +48,8 @@ public class VigilanteMissions: Script
 
         new MissionWorld(this);
         menu = new Menu();
+        ReadProgress();
+        AddJoker();
 
         Tick += (o, e) =>
         {
@@ -94,14 +97,6 @@ public class VigilanteMissions: Script
                 GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
                 MissionWorld.QuitMission();
             }
-            if (e.KeyCode == Keys.G)
-            {
-                ReadProgress();
-            }
-            if (e.KeyCode == Keys.O)
-            {
-                SaveProgress();
-            }
         };
     }
 
@@ -145,6 +140,14 @@ public class VigilanteMissions: Script
         }
     }
 
+    public static void AddJoker()
+    {
+        if (Progress.jokerUnlocked && !menu.jokerAdded)
+        {
+            menu.AddJoker();
+        }
+    }
+
     public static void SaveProgress()
     {
         GTA.UI.LoadingPrompt.Show("Saving vigilante missions progress");
@@ -158,8 +161,8 @@ public class VigilanteMissions: Script
             }
             using (BinaryWriter writer = new BinaryWriter(File.Open(fileDir, FileMode.OpenOrCreate, FileAccess.Write)))
             {
-                writer.Write(Progress.partOneUnlocked);
-                writer.Write(Progress.partTwoUnlocked);
+                writer.Write(Progress.jokerUnlocked);
+                writer.Write(Progress.jokerUnlockedMessageSent);
                 writer.Write(Progress.completedMostWantedMissionsCount);
             }
         } catch (Exception)
@@ -167,7 +170,7 @@ public class VigilanteMissions: Script
             GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "Fuck, there was an error saving your Vigilante Missions progress. Any unsaved progress will be lost after you close the game.");
         } finally
         {
-            Wait(1000);
+            Wait(2500);
             GTA.UI.LoadingPrompt.Hide();
         }
     }
@@ -180,20 +183,23 @@ public class VigilanteMissions: Script
             var fileDir = $"{currDir}\\scripts\\VigilanteMissions\\progress.data";
             if (!File.Exists(fileDir))
             {
-                Progress.partOneUnlocked = false;
-                Progress.partTwoUnlocked = false;
+                Progress.jokerUnlocked = false;
+                Progress.jokerUnlockedMessageSent = false;
                 Progress.completedMostWantedMissionsCount = 0;
                 return;
             }
             using (BinaryReader reader = new BinaryReader(File.OpenRead(fileDir)))
             {
-                Progress.partOneUnlocked = reader.ReadBoolean();
-                Progress.partTwoUnlocked = reader.ReadBoolean();
+                Progress.jokerUnlocked = reader.ReadBoolean();
+                Progress.jokerUnlockedMessageSent = reader.ReadBoolean();
                 Progress.completedMostWantedMissionsCount = reader.ReadInt32();
             }
-        } catch (Exception)
+        } catch(Exception)
         {
-            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
+            Progress.jokerUnlocked = false;
+            Progress.jokerUnlockedMessageSent = false;
+            Progress.completedMostWantedMissionsCount = 0;
+            //GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
         }
     }
 }

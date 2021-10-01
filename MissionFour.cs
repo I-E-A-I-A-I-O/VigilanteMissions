@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 class MissionFour : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -45,9 +47,6 @@ class MissionFour : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Blip objectiveLocationBlip;
-    int loadingCurrentTime;
-    int loadingStartTime;
-    bool loadingTimerStarted = false;
 
     public MissionFour()
     {
@@ -75,56 +74,8 @@ class MissionFour : Mission
                     objectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionFourVehicles();
                     var peds = MostWantedMissions.InitializeMissionFourPeds();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionFourPeds();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsVehicleListLoaded(vehicles))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Vehicle vehicle in vehicles)
-                                {
-                                    if (vehicle != null)
-                                    {
-                                        vehicle.Delete();
-                                    }
-                                }
-                                vehicles = MostWantedMissions.InitializeMissionFourVehicles();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionFourVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFourPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -242,12 +193,12 @@ class MissionFour : Mission
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
 
         Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed(), vehicles[(int)Vehicles.Plane], 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
-        this.enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);
+        enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);
 
         MissionWorld.script.Tick += CheckPlaneLocation;
     }
 
-    void CheckPlaneLocation(Object o, EventArgs e)
+    void CheckPlaneLocation(object o, EventArgs e)
     {
         if (!MissionWorld.isMissionActive || enemies.Count == 0)
         {

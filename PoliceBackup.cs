@@ -34,31 +34,20 @@ class PoliceBackup
         if (backupSize == 1)
         {
             vehicle = World.CreateVehicle(new Model(VehicleHash.Policeb), vehiclePos);
-            while(!MissionWorld.IsEntityLoaded(vehicle))
-            {
-                Script.Wait(1);
-            }
+            vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, new Model(VehicleHash.Policeb), vehiclePos);
             var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
-            while(!MissionWorld.IsEntityLoaded(ped))
-            {
-                Script.Wait(1);
-            }
+            ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
             ped.RelationshipGroup = copRelGroup;
             ped.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             police.Add(ped);
         } else
         {
             vehicle = World.CreateVehicle(new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]), vehiclePos);
-            while(!MissionWorld.IsEntityLoaded(vehicle))
-            {
-                Script.Wait(1);
-            }
+            vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]), vehiclePos);
             var pedDriver = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
             var pedCopilot = vehicle.CreatePedOnSeat(VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
-            while(!MissionWorld.IsEntityLoaded(pedDriver) || !MissionWorld.IsEntityLoaded(pedCopilot))
-            {
-                Script.Wait(1);
-            }
+            pedDriver = (Ped)MissionWorld.EntityLoadLoop(pedDriver, vehicle, VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
+            pedCopilot = (Ped)MissionWorld.EntityLoadLoop(pedCopilot, vehicle, VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
             pedDriver.RelationshipGroup = copRelGroup;
             pedCopilot.RelationshipGroup = copRelGroup;
             pedDriver.Weapons.Give(WeaponHash.Pistol, 100, true, true);

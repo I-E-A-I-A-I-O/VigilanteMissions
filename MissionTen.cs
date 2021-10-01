@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class MissionTen : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -45,9 +47,6 @@ class MissionTen : Mission
     Ped hooker;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup hookerRelGroup;
-    int loadingStartTime;
-    int loadingCurrentTime;
-    bool loadingTimerStarted = false;
 
     public MissionTen()
     {
@@ -75,49 +74,8 @@ class MissionTen : Mission
                     objectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionTenEnemies();
                     hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
-                    while (!MissionWorld.IsPedListLoaded(peds))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                foreach (Ped ped in peds)
-                                {
-                                    if (ped != null)
-                                    {
-                                        ped.Delete();
-                                    }
-                                }
-                                peds = MostWantedMissions.InitializeMissionTenEnemies();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
-                    while (!MissionWorld.IsEntityLoaded(hooker))
-                    {
-                        Script.Wait(1);
-                        if (!loadingTimerStarted)
-                        {
-                            loadingTimerStarted = true;
-                            loadingStartTime = Game.GameTime;
-                        }
-                        else
-                        {
-                            loadingCurrentTime = Game.GameTime;
-                            if (loadingCurrentTime - loadingStartTime >= 3000)
-                            {
-                                hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
-                                loadingTimerStarted = false;
-                            }
-                        }
-                    }
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionTenEnemies);
+                    hooker = (Ped)MissionWorld.EntityLoadLoop(hooker, MostWantedMissions.InitializeMissionTenNeutralPed);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
