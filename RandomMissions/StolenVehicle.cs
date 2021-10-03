@@ -4,7 +4,7 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class SuspectOnTheRun : Mission
+class StolenVehicle : Mission
 {
     public override bool IsMostWanted => false;
 
@@ -19,14 +19,11 @@ class SuspectOnTheRun : Mission
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
+    List<Vehicle> vehicles = new List<Vehicle>();
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
 
-    public SuspectOnTheRun()
+    public StolenVehicle()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
@@ -42,14 +39,15 @@ class SuspectOnTheRun : Mission
                         return;
                     }
                     ObjectiveLocationBlip.Delete();
-
-                    var ped = RandomMissions.CreateCriminal(objectiveLocation);
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
-
-                    enemies.Add(new MissionPed(ped, enemiesRelGroup));
-                    enemies[0].ShowBlip();
-                    enemies[0].GetTask().FleeFrom(Game.Player.Character);
+                    var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
+                    vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, RandomMissions.CreateVehicle, objectiveLocation);
+                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup, false, true));
+                    vehicles.Add(vehicle);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
+                    enemies[0].ShowBlip();
+                    enemies[0].GetPed().Task.CruiseWithVehicle(vehicle, 250, DrivingStyle.Rushed);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
@@ -70,6 +68,7 @@ class SuspectOnTheRun : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
+                    RemoveVehiclesAndNeutrals();
                     MissionWorld.CompleteMission();
                     MissionWorld.script.Tick -= MissionTick;
                     break;
@@ -107,7 +106,10 @@ class SuspectOnTheRun : Mission
 
     public override void RemoveVehiclesAndNeutrals()
     {
-        //Not needed
+        foreach (Vehicle vehicle in vehicles)
+        {
+            vehicle.MarkAsNoLongerNeeded();
+        }
     }
 
     public override bool StartMission()
@@ -116,7 +118,7 @@ class SuspectOnTheRun : Mission
         {
             do
             {
-                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Vehicle);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;

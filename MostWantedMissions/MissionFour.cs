@@ -46,11 +46,7 @@ class MissionFour : Mission
     Objectives currentObjective;
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
 
     public MissionFour()
     {

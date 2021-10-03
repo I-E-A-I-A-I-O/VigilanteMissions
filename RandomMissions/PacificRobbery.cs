@@ -16,11 +16,7 @@ class PacificRobbery : Mission
     }
 
     Vector3 objectiveLocation;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     Objectives currentObjective;
     RelationshipGroup policeRelGroup;
     RelationshipGroup robberRelGroup;

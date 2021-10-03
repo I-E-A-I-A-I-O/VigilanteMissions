@@ -68,11 +68,7 @@ class MissionTwo : Mission
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Vector3 targetLocation;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     Vector3 helicopterDestination;
     RelationshipGroup neutralsRelGroup;
     RelationshipGroup enemiesRelGroup;

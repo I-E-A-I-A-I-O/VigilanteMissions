@@ -4,7 +4,7 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class StolenVehicle : Mission
+class GangActivity : Mission
 {
     public override bool IsMostWanted => false;
 
@@ -19,22 +19,17 @@ class StolenVehicle : Mission
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
-    List<Vehicle> vehicles = new List<Vehicle>();
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
 
-    public StolenVehicle()
+    public GangActivity()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
     public override void MissionTick(object o, EventArgs e)
     {
-        switch (currentObjective)
+        switch(currentObjective)
         {
             case Objectives.GoToLocation:
                 {
@@ -43,15 +38,15 @@ class StolenVehicle : Mission
                         return;
                     }
                     ObjectiveLocationBlip.Delete();
-                    var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
-                    vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, RandomMissions.CreateVehicle, objectiveLocation);
-                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
-                    enemies.Add(new MissionPed(ped, enemiesRelGroup, false, true));
-                    vehicles.Add(vehicle);
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
-                    enemies[0].ShowBlip();
-                    enemies[0].GetPed().Task.CruiseWithVehicle(vehicle, 250, DrivingStyle.Rushed);
+                    var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
+                    peds = MissionWorld.PedListLoadLoop(peds, RandomMissions.CreateGroupOfCriminals, objectiveLocation);
+                    for (var i = 0; i < peds.Count; i++)
+                    {
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
+                        enemies[i].GiveRandomScenario();
+                    }
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
@@ -72,7 +67,6 @@ class StolenVehicle : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
-                    RemoveVehiclesAndNeutrals();
                     MissionWorld.CompleteMission();
                     MissionWorld.script.Tick -= MissionTick;
                     break;
@@ -110,10 +104,7 @@ class StolenVehicle : Mission
 
     public override void RemoveVehiclesAndNeutrals()
     {
-        foreach (Vehicle vehicle in vehicles)
-        {
-            vehicle.MarkAsNoLongerNeeded();
-        }
+        //Not needed
     }
 
     public override bool StartMission()
@@ -122,7 +113,7 @@ class StolenVehicle : Mission
         {
             do
             {
-                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Vehicle);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
@@ -134,8 +125,7 @@ class StolenVehicle : Mission
 
             MissionWorld.script.Tick += MissionTick;
             return true;
-        }
-        catch (Exception)
+        } catch (Exception)
         {
             return false;
         }

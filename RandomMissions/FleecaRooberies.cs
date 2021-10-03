@@ -16,11 +16,7 @@ class FleecaRooberies : Mission
     }
 
     Vector3 objectiveLocation;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     int missionIndex;
     bool doorsUnlocked = false;
     Objectives currentObjective;

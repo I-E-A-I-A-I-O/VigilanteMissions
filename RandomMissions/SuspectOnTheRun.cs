@@ -4,7 +4,7 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class GangActivity : Mission
+class SuspectOnTheRun : Mission
 {
     public override bool IsMostWanted => false;
 
@@ -20,20 +20,16 @@ class GangActivity : Mission
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
 
-    public GangActivity()
+    public SuspectOnTheRun()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
     public override void MissionTick(object o, EventArgs e)
     {
-        switch(currentObjective)
+        switch (currentObjective)
         {
             case Objectives.GoToLocation:
                 {
@@ -42,15 +38,14 @@ class GangActivity : Mission
                         return;
                     }
                     ObjectiveLocationBlip.Delete();
-                    var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
-                    peds = MissionWorld.PedListLoadLoop(peds, RandomMissions.CreateGroupOfCriminals, objectiveLocation);
-                    for (var i = 0; i < peds.Count; i++)
-                    {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
-                        enemies[i].ShowBlip();
-                        enemies[i].GiveRandomScenario();
-                    }
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
+
+                    var ped = RandomMissions.CreateCriminal(objectiveLocation);
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
+
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup));
+                    enemies[0].ShowBlip();
+                    enemies[0].GetTask().FleeFrom(Game.Player.Character);
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
@@ -129,7 +124,8 @@ class GangActivity : Mission
 
             MissionWorld.script.Tick += MissionTick;
             return true;
-        } catch (Exception)
+        }
+        catch (Exception)
         {
             return false;
         }

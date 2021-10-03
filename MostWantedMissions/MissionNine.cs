@@ -46,11 +46,7 @@ class MissionNine : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     Blip bombOneBlip;
     Blip bombTwoBlip;
     Blip bombThreeBlip;

@@ -56,11 +56,7 @@ class MissionEight : Mission
 
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup targetRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();

@@ -90,11 +90,7 @@ class MissionSeven : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Vector3 markerPosition;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     bool timerStarted = false;
     bool countdownMusicStarted = false;
     int startTime;

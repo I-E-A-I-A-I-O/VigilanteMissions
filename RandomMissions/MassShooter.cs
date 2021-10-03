@@ -17,11 +17,7 @@ class MassShooter : Mission
     MissionPed enemy;
     Vector3 location;
     Objectives currentObjective;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     RelationshipGroup enemyRelGroup;
 
     public MassShooter()

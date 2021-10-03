@@ -4,7 +4,7 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class MissionThree : Mission
+class MissionSix : Mission
 {
     public override bool IsMostWanted => true;
 
@@ -18,51 +18,42 @@ class MissionThree : Mission
 
     enum Enemies
     {
-        Madrazo,
-        HouseEntranceGuard,
-        SideFrontDoor,
-        SideFrontDoorLeft01,
-        SideFrontDoorLeft02,
-        GolfGuard01,
-        GolfGuard02,
-        GolfGuard03,
-        ChefGuard,
-        PoolGuard01,
-        PoolGuard02,
-        GardenGuard,
-        SideBackGuard01,
-        SideBackGuard02,
-        SideBackGuard03,
-        GarageGuard01,
-        GarageGuard02,
-        SideBackGuard,
-        FrontGardenGuard
+        GuardGroup,
+        GuardAiming,
+        Watcher,
+        GuardLookingTarget,
+        Target,
+        ChattingGuard01,
+        ChattingGuard02,
+        PatrollingGuard01,
+        WallGuard,
+        PatrollingGuard02,
     }
 
     enum Neutrals
     {
-        Patricia,
-        Chef
+        OtherWoman,
+        ArrestedWoman,
+        Man01,
+        Man02,
+        Man03
     }
 
     Vector3 objectiveLocation;
+    List<Vehicle> vehicles = new List<Vehicle>();
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
+    Objectives currentObjective;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
-    Objectives currentObjective;
+    public override Blip ObjectiveLocationBlip { get; set; }
 
-    public MissionThree()
+    public MissionSix()
     {
-        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        objectiveLocation = MostWantedMissions.MISSION_THREE_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_SIX_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -81,14 +72,15 @@ class MissionThree : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
-                    var peds = MostWantedMissions.InitializeMissionThreePeds();
-                    var neutrals = MostWantedMissions.InitializeMissionThreeCivilianPeds();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionThreePeds);
-                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionTwoCivilianPeds);
+                    vehicles = MostWantedMissions.InitializeMissionSixVehicles();
+                    var peds = MostWantedMissions.InitializeMissionSixPeds();
+                    var neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSixVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSixPeds);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSixCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
-                        enemies[i].ShowBlip();
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
@@ -116,7 +108,6 @@ class MissionThree : Mission
                     RemoveVehiclesAndNeutrals();
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "Good job, your cut of the reward is already in your account.");
                     Game.Player.Money += 15000;
-                    Game.Player.WantedLevel = 3;
                     currentObjective = Objectives.None;
                     MissionWorld.CompleteMission();
                     MissionWorld.script.Tick -= MissionTick;
@@ -157,6 +148,10 @@ class MissionThree : Mission
 
     public override void RemoveVehiclesAndNeutrals()
     {
+        foreach (Vehicle vehicle in vehicles)
+        {
+            vehicle.MarkAsNoLongerNeeded();
+        }
         foreach (MissionPed neutral in neutralPeds)
         {
             neutral.Delete();
@@ -186,29 +181,31 @@ class MissionThree : Mission
 
     void StartScenarios()
     {
-        enemies[(int)Enemies.Madrazo].GetTask().ChatTo(neutralPeds[(int)Neutrals.Patricia].GetPed());
-        neutralPeds[(int)Neutrals.Patricia].GetTask().StartScenario("WORLD_HUMAN_MAID_CLEAN", 0);
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
 
-        enemies[(int)Enemies.FrontGardenGuard].GetTask().GuardCurrentPosition();
-        enemies[(int)Enemies.HouseEntranceGuard].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
-        enemies[(int)Enemies.SideFrontDoor].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
-        enemies[(int)Enemies.SideFrontDoorLeft01].GetTask().UseMobilePhone();
-        enemies[(int)Enemies.SideFrontDoorLeft02].GetTask().StartScenario("WORLD_HUMAN_LEANING", 0);
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
 
-        enemies[(int)Enemies.ChefGuard].GetTask().ChatTo(neutralPeds[(int)Neutrals.Chef].GetPed());
-        neutralPeds[(int)Neutrals.Chef].GetTask().ChatTo(enemies[(int)Enemies.ChefGuard].GetPed());
+        foreach (MissionPed ped in enemies)
+        {
+            ped.ShowBlip();
+        }
 
-        enemies[(int)Enemies.GardenGuard].GetTask().GuardCurrentPosition();
-        enemies[(int)Enemies.GolfGuard01].GetTask().UseMobilePhone();
-        enemies[(int)Enemies.GolfGuard02].GetTask().StartScenario("WORLD_HUMAN_GOLF_PlAYER", 0);
-        enemies[(int)Enemies.GolfGuard03].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
-        enemies[(int)Enemies.GarageGuard01].GetTask().StartScenario("WORLD_HUMAN_VEHICLE_MECHANIC", 0);
-        enemies[(int)Enemies.GarageGuard02].GetTask().ChatTo(enemies[(int)Enemies.GarageGuard01].GetPed());
-        enemies[(int)Enemies.PoolGuard01].GetTask().ChatTo(enemies[(int)Enemies.PoolGuard01].GetPed());
-        enemies[(int)Enemies.PoolGuard02].GetTask().UseMobilePhone();
-        enemies[(int)Enemies.SideBackGuard01].GetTask().StartScenario("WOLRD_HUMAN_DRUG_DEALER", 0);
-        enemies[(int)Enemies.SideBackGuard02].GetTask().StartScenario("WORLD_HUMAN_LEANING", 0);
-        enemies[(int)Enemies.SideBackGuard03].GetTask().UseMobilePhone();
-        enemies[(int)Enemies.SideBackGuard].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)Enemies.GuardGroup].GetTask().AimAt(neutralPeds[(int)Neutrals.OtherWoman].GetPed(), 1800000);
+        enemies[(int)Enemies.GuardAiming].GetTask().Arrest(neutralPeds[(int)Neutrals.ArrestedWoman].GetPed());
+        enemies[(int)Enemies.Target].GetTask().ChatTo(neutralPeds[(int)Neutrals.ArrestedWoman].GetPed());
+        enemies[(int)Enemies.GuardLookingTarget].GetTask().AimAt(neutralPeds[(int)Neutrals.OtherWoman].GetPed(), 1800000);
+        neutralPeds[(int)Neutrals.OtherWoman].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man01].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man02].GetTask().HandsUp(1800000);
+        neutralPeds[(int)Neutrals.Man03].GetTask().HandsUp(1800000);
+
+        enemies[(int)Enemies.WallGuard].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
+        enemies[(int)Enemies.Watcher].GetTask().StartScenario("WORLD_HUMAN_BINOCULARS", 0);
+        enemies[(int)Enemies.ChattingGuard01].GetTask().ChatTo(enemies[(int)Enemies.ChattingGuard02].GetPed());
+        enemies[(int)Enemies.ChattingGuard02].GetTask().ChatTo(enemies[(int)Enemies.ChattingGuard01].GetPed());
+        enemies[(int)Enemies.PatrollingGuard01].GetTask().GuardCurrentPosition();
+        enemies[(int)Enemies.PatrollingGuard02].GetTask().GuardCurrentPosition();
     }
 }

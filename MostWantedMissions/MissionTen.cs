@@ -42,11 +42,7 @@ class MissionTen : Mission
 
     Objectives currentObjective;
     Vector3 objectiveLocation;
-    public override Blip ObjectiveLocationBlip 
-    {
-        get => ObjectiveLocationBlip;
-        set => ObjectiveLocationBlip = value;
-    }
+    public override Blip ObjectiveLocationBlip { get; set; }
     List<MissionPed> enemies = new List<MissionPed>();
     Ped hooker;
     RelationshipGroup enemiesRelGroup;
