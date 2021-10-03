@@ -16,7 +16,11 @@ class PacificRobbery : Mission
     }
 
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     Objectives currentObjective;
     RelationshipGroup policeRelGroup;
     RelationshipGroup robberRelGroup;
@@ -77,7 +81,7 @@ class PacificRobbery : Mission
                         vehicle.IsSirenActive = true;
                         vehicle.IsSirenSilent = false;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~bank robbers~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -109,9 +113,9 @@ class PacificRobbery : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -153,10 +157,10 @@ class PacificRobbery : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Pacific Standard robbery";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Pacific Standard robbery";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Pacific Standard bank~w~ and stop the robbery.", 8000);
         currentObjective = Objectives.GoToLocation;

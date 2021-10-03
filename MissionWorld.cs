@@ -20,6 +20,9 @@ public class MissionWorld
     static bool loadingTimerStarted = false;
     static int loadingStartTime;
     static int loadingCurrentTime;
+    bool blipCheckTimerStarted = false;
+    int blipCheckStartTime;
+    int blipCheckCurrentTime;
     
     public enum Missions
     {
@@ -77,6 +80,34 @@ public class MissionWorld
         RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
 
         isMissionActive = false;
+        script.Tick += ObjectiveBlipCheck;
+    }
+
+    void ObjectiveBlipCheck(object o, EventArgs e)
+    {
+        if (!isMissionActive)
+        {
+            return;
+        }
+        if (currentMission.ObjectiveLocationBlip == null || !currentMission.ObjectiveLocationBlip.Exists())
+        {
+            return;
+        }
+        if (!blipCheckTimerStarted)
+        {
+            blipCheckStartTime = Game.GameTime;
+            blipCheckTimerStarted = true;
+        } else
+        {
+            blipCheckCurrentTime = Game.GameTime;
+            if (blipCheckCurrentTime - blipCheckStartTime >= 8000)
+            {
+                currentMission.ObjectiveLocationBlip.ShowRoute = false;
+                Script.Wait(1);
+                currentMission.ObjectiveLocationBlip.ShowRoute = true;
+                blipCheckTimerStarted = false;
+            }
+        }
     }
 
     public static void StartMission(Missions mission)

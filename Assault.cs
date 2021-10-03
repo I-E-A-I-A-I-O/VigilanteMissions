@@ -21,7 +21,11 @@ class Assault : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     int actionToTake;
     int shootRange;
     bool actionTaken = false;
@@ -46,7 +50,7 @@ class Assault : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var enemy = RandomMissions.CreateCriminal(objectiveLocation);
                     var neutral = RandomMissions.CreateVictim(objectiveLocation);
                     enemy = (Ped)MissionWorld.EntityLoadLoop(enemy, RandomMissions.CreateCriminal, objectiveLocation);
@@ -148,9 +152,9 @@ class Assault : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -187,10 +191,10 @@ class Assault : Mission
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
-            objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-            objectiveLocationBlip.Color = BlipColor.Yellow;
-            objectiveLocationBlip.ShowRoute = true;
-            objectiveLocationBlip.Name = "Crime scene";
+            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+            ObjectiveLocationBlip.Color = BlipColor.Yellow;
+            ObjectiveLocationBlip.ShowRoute = true;
+            ObjectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
             MissionWorld.script.Tick += MissionTick;

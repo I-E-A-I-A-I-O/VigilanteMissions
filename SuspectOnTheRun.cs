@@ -20,7 +20,11 @@ class SuspectOnTheRun : Mission
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
 
     public SuspectOnTheRun()
     {
@@ -37,7 +41,7 @@ class SuspectOnTheRun : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
 
                     var ped = RandomMissions.CreateCriminal(objectiveLocation);
                     ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
@@ -81,9 +85,9 @@ class SuspectOnTheRun : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
     }
 
@@ -116,10 +120,10 @@ class SuspectOnTheRun : Mission
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
-            objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-            objectiveLocationBlip.Color = BlipColor.Yellow;
-            objectiveLocationBlip.ShowRoute = true;
-            objectiveLocationBlip.Name = "Crime scene";
+            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+            ObjectiveLocationBlip.Color = BlipColor.Yellow;
+            ObjectiveLocationBlip.ShowRoute = true;
+            ObjectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
             MissionWorld.script.Tick += MissionTick;

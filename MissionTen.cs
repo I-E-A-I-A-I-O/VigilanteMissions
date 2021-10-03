@@ -42,7 +42,11 @@ class MissionTen : Mission
 
     Objectives currentObjective;
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     List<MissionPed> enemies = new List<MissionPed>();
     Ped hooker;
     RelationshipGroup enemiesRelGroup;
@@ -71,7 +75,7 @@ class MissionTen : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionTenEnemies();
                     hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionTenEnemies);
@@ -120,9 +124,9 @@ class MissionTen : Mission
         {
             hooker.MarkAsNoLongerNeeded();
         }
-        if (objectiveLocationBlip != null)
+        if (ObjectiveLocationBlip != null)
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         foreach (MissionPed enemy in enemies)
         {
@@ -161,10 +165,10 @@ class MissionTen : Mission
             return false;
         }
         Music.StartFunkyTwo();
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Wanted suspect location";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "Found him, ~r~Billy Russo and his gang~w~ are hanging out at the ~y~Bahama nighclub~w~.");
 

@@ -16,7 +16,11 @@ class FleecaRooberies : Mission
     }
 
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     int missionIndex;
     bool doorsUnlocked = false;
     Objectives currentObjective;
@@ -60,7 +64,7 @@ class FleecaRooberies : Mission
                         hostages[i].GetTask().HandsUp(1800000);
                         hostages[i].GetPed().BlockPermanentEvents = true;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~bank robbers~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -100,9 +104,9 @@ class FleecaRooberies : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -138,10 +142,10 @@ class FleecaRooberies : Mission
             FleecaRobberiesInit.SelectLocation(missionIndex, out objectiveLocation);
         } while (Game.Player.Character.IsInRange(objectiveLocation, 200));
 
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Fleeca robbery";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Fleeca robbery";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         currentObjective = Objectives.GoToLocation;
         MissionWorld.script.Tick += MissionTick;

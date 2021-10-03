@@ -46,7 +46,11 @@ class MissionNine : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     Blip bombOneBlip;
     Blip bombTwoBlip;
     Blip bombThreeBlip;
@@ -81,7 +85,7 @@ class MissionNine : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
                     var peds = MostWantedMissions.InitializeMissionNineMotelRoomPeds();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineMotelRoomPeds);
@@ -167,10 +171,10 @@ class MissionNine : Mission
                     {
                         GTA.UI.Screen.ShowSubtitle("Go to the ~y~meth lab~w~.", 8000);
                         objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "Meth lab";
-                        objectiveLocationBlip.ShowRoute = true;
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "Meth lab";
+                        ObjectiveLocationBlip.ShowRoute = true;
                         currentObjective = Objectives.GoToLab;
                     }
                     break;
@@ -182,7 +186,7 @@ class MissionNine : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionNineLabEntranceGuards();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabEntranceGuards);
                     for (var i = 0; i < peds.Count; i++)
@@ -448,9 +452,9 @@ class MissionNine : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -497,11 +501,11 @@ class MissionNine : Mission
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "I couldn't find this ~r~Heisenberg~w~ guy, but i know where his associate ~r~Jesse Pinkman~w~ is. Head to ~y~The motor motel~w~.");
 
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Scale = 0.9f;
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Jesse Pinkman's location";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.Scale = 0.9f;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Jesse Pinkman's location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Screen.ShowSubtitle("Go to ~y~The Motor motel~w~.", 8000);
 

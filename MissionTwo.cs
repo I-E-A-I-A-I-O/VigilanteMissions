@@ -68,7 +68,11 @@ class MissionTwo : Mission
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Vector3 targetLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     Vector3 helicopterDestination;
     RelationshipGroup neutralsRelGroup;
     RelationshipGroup enemiesRelGroup;
@@ -97,7 +101,7 @@ class MissionTwo : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
                     var peds = MostWantedMissions.InitializeMissionTwoPeds();
                     var neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
@@ -158,9 +162,9 @@ class MissionTwo : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -200,10 +204,10 @@ class MissionTwo : Mission
         }
         Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");

@@ -2,7 +2,6 @@
 using GTA.Native;
 using GTA.Math;
 using System;
-using System.Collections.Generic;
 
 class MassShooter : Mission
 {
@@ -18,7 +17,11 @@ class MassShooter : Mission
     MissionPed enemy;
     Vector3 location;
     Objectives currentObjective;
-    Blip locationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     RelationshipGroup enemyRelGroup;
 
     public MassShooter()
@@ -36,7 +39,7 @@ class MassShooter : Mission
                     {
                         return;
                     }
-                    locationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var ped = RandomMissions.CreateCriminal(location);
                     ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, location);
                     enemy = new MissionPed(ped, enemyRelGroup);
@@ -76,9 +79,9 @@ class MassShooter : Mission
     {
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
-        if (locationBlip != null && locationBlip.Exists())
+        if (ObjectiveLocationBlip != null && ObjectiveLocationBlip.Exists())
         {
-            locationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         if (enemy != null)
         {
@@ -103,10 +106,10 @@ class MassShooter : Mission
             location = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
         } while (Game.Player.Character.IsInRange(location, 200));
 
-        locationBlip = World.CreateBlip(location);
-        locationBlip.Color = BlipColor.Yellow;
-        locationBlip.Name = "Mass shooter location";
-        locationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(location);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Mass shooter location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 

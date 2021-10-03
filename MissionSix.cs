@@ -46,7 +46,11 @@ class MissionSix : Mission
     Objectives currentObjective;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
 
     public MissionSix()
     {
@@ -71,7 +75,7 @@ class MissionSix : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionSixVehicles();
                     var peds = MostWantedMissions.InitializeMissionSixPeds();
                     var neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
@@ -125,9 +129,9 @@ class MissionSix : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -167,10 +171,10 @@ class MissionSix : Mission
         }
         Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");

@@ -8,6 +8,10 @@ public abstract class Mission
     {
         get;
     }
+    public abstract Blip ObjectiveLocationBlip 
+    {
+        get; set;
+    }
     public abstract void MissionTick(object o, EventArgs e);
     public abstract bool StartMission();
     public abstract void QuitMission();

@@ -21,7 +21,11 @@ class StolenVehicle : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
 
     public StolenVehicle()
     {
@@ -38,7 +42,7 @@ class StolenVehicle : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
                     vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, RandomMissions.CreateVehicle, objectiveLocation);
                     var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
@@ -84,9 +88,9 @@ class StolenVehicle : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
     }
 
@@ -122,10 +126,10 @@ class StolenVehicle : Mission
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
-            objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-            objectiveLocationBlip.Color = BlipColor.Yellow;
-            objectiveLocationBlip.ShowRoute = true;
-            objectiveLocationBlip.Name = "Crime scene";
+            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+            ObjectiveLocationBlip.Color = BlipColor.Yellow;
+            ObjectiveLocationBlip.ShowRoute = true;
+            ObjectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
             MissionWorld.script.Tick += MissionTick;

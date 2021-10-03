@@ -56,7 +56,11 @@ class MissionEight : Mission
 
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup targetRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
@@ -86,7 +90,7 @@ class MissionEight : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
 
                     var peds = MostWantedMissions.InitializeMissionEightPeds();
                     props = MostWantedMissions.InitializeMissionEightProps();
@@ -182,9 +186,9 @@ class MissionEight : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -228,10 +232,10 @@ class MissionEight : Mission
         }
         Music.StartCountry();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");

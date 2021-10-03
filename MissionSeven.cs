@@ -90,7 +90,11 @@ class MissionSeven : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Vector3 markerPosition;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip 
+    {
+        get => ObjectiveLocationBlip;
+        set => ObjectiveLocationBlip = value;
+    }
     bool timerStarted = false;
     bool countdownMusicStarted = false;
     int startTime;
@@ -120,7 +124,7 @@ class MissionSeven : Mission
                         return;
                     }
 
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     Music.IncreaseIntensity();
 
                     var peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
@@ -165,9 +169,9 @@ class MissionSeven : Mission
                     else
                     {
                         objectiveLocation = MostWantedMissions.MISSION_SEVEN_OFFICE_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "Office";
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "Office";
                         GTA.UI.Screen.ShowSubtitle("Enter the ~y~office~w~.", 8000);
                         currentObjective = Objectives.EnterOffice;
                     }
@@ -179,7 +183,7 @@ class MissionSeven : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
 
                     var peds = MostWantedMissions.InitializeMissionSevenOfficePeds();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenOfficePeds);
@@ -239,9 +243,9 @@ class MissionSeven : Mission
                             props[0].Delete();
                             props.Clear();
                             objectiveLocation = MostWantedMissions.MISSION_SEVEN_ROOF_LOCATION;
-                            objectiveLocationBlip =  World.CreateBlip(objectiveLocation);
-                            objectiveLocationBlip.Color = BlipColor.Yellow;
-                            objectiveLocationBlip.Name = "Roof";
+                            ObjectiveLocationBlip =  World.CreateBlip(objectiveLocation);
+                            ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                            ObjectiveLocationBlip.Name = "Roof";
                             GTA.UI.Screen.ShowSubtitle("Go to the ~y~roof~w~.", 8000);
                             currentObjective = Objectives.GoToRoof;
                         }
@@ -270,7 +274,7 @@ class MissionSeven : Mission
                         }
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
 
                     vehicles.Add(MostWantedMissions.InitializeMissionSevenRoofVehicles());
                     var peds = MostWantedMissions.InitializeMissionSevenRoofPeds();
@@ -299,9 +303,9 @@ class MissionSeven : Mission
                     } else
                     {
                         objectiveLocation = MostWantedMissions.MISSION_SEVEN_EXPLOSION_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 40);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "Safe bomb explosion location";
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 40);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "Safe bomb explosion location";
                         GTA.UI.Screen.ShowSubtitle("Get rid of the bomb, drop it in the ~y~sea~w~!", 8000);
                         currentObjective = Objectives.DisposeBomb;
                     }
@@ -327,7 +331,7 @@ class MissionSeven : Mission
                             GTA.UI.Screen.ShowHelpTextThisFrame($"Remaining time: {65 - ((currentTime - startTime) / 1000)} seconds");
                         } else
                         {
-                            objectiveLocationBlip.Delete();
+                            ObjectiveLocationBlip.Delete();
                             World.AddExplosion(Game.Player.Character.Position, ExplosionType.StickyBomb, 100, 15);
                             if (Game.Player.IsAlive)
                             {
@@ -337,7 +341,7 @@ class MissionSeven : Mission
                         }
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
 
                     World.AddExplosion(objectiveLocation, ExplosionType.StickyBomb, 10, 15);
                     World.AddExplosion(objectiveLocation, ExplosionType.StickyBomb, 10, 15);
@@ -364,7 +368,7 @@ class MissionSeven : Mission
     {
         Music.StopMusic();
         currentObjective = Objectives.None;
-        objectiveLocationBlip.Delete();
+        ObjectiveLocationBlip.Delete();
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -414,10 +418,10 @@ class MissionSeven : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "They are at the Maze Bank Tower right now trying to blow up the place, hurry up!");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Maze Bank Tower~w~.", 8000);
         currentObjective = Objectives.GoToBuilding;
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Wanted suspect location";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         MissionWorld.script.Tick += MissionTick;
         return true;
