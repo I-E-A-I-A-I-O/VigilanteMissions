@@ -410,6 +410,10 @@ class MissionElevenPartOne : Mission
                 {
                     if (Game.Player.WantedLevel > 0)
                     {
+                        if (vehicles[0].AttachedBlip != null && vehicles[0].AttachedBlip.Exists())
+                        {
+                            vehicles[0].AttachedBlip.Delete();
+                        }
                         GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
                         currentObjective = Objectives.LoseCopsTruck;
                         return;
@@ -439,6 +443,10 @@ class MissionElevenPartOne : Mission
                     }
                     if (Game.Player.WantedLevel > 0)
                     {
+                        if (ObjectiveLocationBlip!= null && ObjectiveLocationBlip.Exists())
+                        {
+                            ObjectiveLocationBlip.Delete();
+                        }
                         GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
                         currentObjective = Objectives.LoseCopsTruck;
                         return;
