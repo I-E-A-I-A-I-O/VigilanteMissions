@@ -6,6 +6,7 @@ using System.Collections.Generic;
 class MissionEight : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Enemies
     {
@@ -70,7 +71,7 @@ class MissionEight : Mission
         objectiveLocation = MostWantedMissions.MISSION_EIGHT_LOCATON;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -189,7 +190,7 @@ class MissionEight : Mission
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -203,7 +204,7 @@ class MissionEight : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Prop prop in props)
         {

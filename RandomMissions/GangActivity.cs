@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class GangActivity : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -27,7 +28,7 @@ class GangActivity : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch(currentObjective)
         {
@@ -88,7 +89,7 @@ class GangActivity : Mission
         }
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -102,7 +103,7 @@ class GangActivity : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         //Not needed
     }

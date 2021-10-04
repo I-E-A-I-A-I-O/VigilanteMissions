@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class MissionSeven : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -105,7 +106,7 @@ class MissionSeven : Mission
         markerPosition = new Vector3(-77.04752f, -830.2404f, 242.3859f);
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -377,7 +378,7 @@ class MissionSeven : Mission
         MissionWorld.script.Tick -= MissionTick;
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -391,7 +392,7 @@ class MissionSeven : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {

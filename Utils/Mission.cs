@@ -12,9 +12,13 @@ public abstract class Mission
     {
         get; set;
     }
-    public abstract void MissionTick(object o, EventArgs e);
+    public abstract bool IsJokerMission
+    {
+        get;
+    }
+    protected abstract void MissionTick(object o, EventArgs e);
     public abstract bool StartMission();
     public abstract void QuitMission();
-    public abstract void RemoveDeadEnemies();
-    public abstract void RemoveVehiclesAndNeutrals();
+    protected abstract void RemoveDeadEnemies();
+    protected abstract void RemoveVehiclesAndNeutrals();
 }

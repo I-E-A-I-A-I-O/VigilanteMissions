@@ -8,6 +8,7 @@ using System.Collections.Generic;
 class MissionFour : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -56,7 +57,7 @@ class MissionFour : Mission
         planeDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -149,7 +150,7 @@ class MissionFour : Mission
         return true;
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -163,7 +164,7 @@ class MissionFour : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {

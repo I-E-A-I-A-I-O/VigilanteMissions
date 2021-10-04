@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class StolenVehicle : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -28,7 +29,7 @@ class StolenVehicle : Mission
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch (currentObjective)
         {
@@ -90,7 +91,7 @@ class StolenVehicle : Mission
         }
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -104,7 +105,7 @@ class StolenVehicle : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {

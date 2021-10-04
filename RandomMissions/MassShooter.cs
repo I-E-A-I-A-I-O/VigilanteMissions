@@ -6,6 +6,7 @@ using System;
 class MassShooter : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -25,7 +26,7 @@ class MassShooter : Mission
         enemyRelGroup = MissionWorld.RELATIONSHIP_MISSION_MASS_SHOOTER;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch(currentObjective)
         {
@@ -85,12 +86,12 @@ class MassShooter : Mission
         }
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         enemy.Delete();
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         //Not needed
     }

@@ -9,6 +9,7 @@ public class VigilanteMissions: Script
     bool isPlayerInStoppedPoliceVehicle = false;
     bool isMenuOpenable = false;
     bool isInStationComputer = false;
+    bool rewardEnabled = false;
     static Menu menu;
     public static Keys accessComputerKey;
     public static Keys interactMissionKey;
@@ -27,6 +28,7 @@ public class VigilanteMissions: Script
         accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
         cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
         interactKey = iniFile.GetValue("Controls", "Interact", "E");
+        rewardEnabled = iniFile.GetValue<bool>("Gameplay", "RewardEnabled", false);
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
         {
@@ -149,13 +151,8 @@ public class VigilanteMissions: Script
 
     void IsPlayerIsInPoliceCar()
     {
-        if (Game.Player.Character.IsInPoliceVehicle)
-        {
-            isPlayerInStoppedPoliceVehicle = Game.Player.Character.CurrentVehicle.IsStopped;
-        } else
-        {
-            isPlayerInStoppedPoliceVehicle = false;
-        }
+        bool isInVehicle = Progress.jokerKilled && rewardEnabled ? Game.Player.Character.IsInVehicle() : Game.Player.Character.IsInPoliceVehicle;
+        isPlayerInStoppedPoliceVehicle = isInVehicle ? Game.Player.Character.CurrentVehicle.IsStopped : false;
     }
 
     void IsPlayerDead()
@@ -190,6 +187,7 @@ public class VigilanteMissions: Script
                 writer.Write(Progress.jokerUnlocked);
                 writer.Write(Progress.jokerUnlockedMessageSent);
                 writer.Write(Progress.completedMostWantedMissionsCount);
+                writer.Write(Progress.jokerKilled);
             }
         } catch (Exception)
         {
@@ -212,6 +210,7 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlocked = false;
                 Progress.jokerUnlockedMessageSent = false;
                 Progress.completedMostWantedMissionsCount = 0;
+                Progress.jokerKilled = false;
                 return;
             }
             using (BinaryReader reader = new BinaryReader(File.OpenRead(fileDir)))
@@ -219,12 +218,14 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlocked = reader.ReadBoolean();
                 Progress.jokerUnlockedMessageSent = reader.ReadBoolean();
                 Progress.completedMostWantedMissionsCount = reader.ReadInt32();
+                Progress.jokerKilled = reader.ReadBoolean();
             }
         } catch(Exception)
         {
             Progress.jokerUnlocked = false;
             Progress.jokerUnlockedMessageSent = false;
             Progress.completedMostWantedMissionsCount = 0;
+            Progress.jokerKilled = false;
             //GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
         }
     }

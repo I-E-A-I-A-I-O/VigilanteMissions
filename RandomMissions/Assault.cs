@@ -6,6 +6,7 @@ using System.Collections.Generic;
 class Assault : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -36,7 +37,7 @@ class Assault : Mission
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch (currentObjective)
         {
@@ -155,7 +156,7 @@ class Assault : Mission
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -169,7 +170,7 @@ class Assault : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach(MissionPed neutral in neutralPeds)
         {

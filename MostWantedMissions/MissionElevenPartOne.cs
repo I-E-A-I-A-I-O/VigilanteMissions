@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class MissionElevenPartOne : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => true;
 
     enum Objectives
     {
@@ -58,7 +59,7 @@ class MissionElevenPartOne : Mission
         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_MEETING_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (currentObjective != Objectives.LoseCops && currentObjective != Objectives.StealJet && currentObjective != Objectives.KillTarget)
         {
@@ -602,7 +603,7 @@ class MissionElevenPartOne : Mission
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
@@ -616,7 +617,7 @@ class MissionElevenPartOne : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {

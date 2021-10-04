@@ -235,6 +235,10 @@ public class MissionWorld
                 }
                 VigilanteMissions.AddJoker();
             }
+            if (currentMission.IsJokerMission && !Progress.jokerKilled)
+            {
+                Progress.jokerKilled = true;
+            }
             VigilanteMissions.SaveProgress();
         }
         currentMission = null;
