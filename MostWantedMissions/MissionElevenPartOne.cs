@@ -23,6 +23,7 @@ class MissionElevenPartOne : Mission
         AirportShootout,
         GoToTruck,
         StealTruck,
+        LoseCopsTruck,
         GoToBase,
         StealJet,
         KillTarget,
@@ -66,7 +67,7 @@ class MissionElevenPartOne : Mission
                 Game.Player.WantedLevel = 1;
             }
         }
-        if (currentObjective == Objectives.StealTruck || currentObjective == Objectives.GoToBase)
+        if (currentObjective == Objectives.StealTruck || currentObjective == Objectives.GoToBase || currentObjective == Objectives.LoseCopsTruck)
         {
             if (vehicles[0].IsDead)
             {
@@ -407,6 +408,12 @@ class MissionElevenPartOne : Mission
                 }
             case Objectives.StealTruck:
                 {
+                    if (Game.Player.WantedLevel > 0)
+                    {
+                        GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
+                        currentObjective = Objectives.LoseCopsTruck;
+                        return;
+                    }
                     if (enemies.Count > 0)
                     {
                         RemoveDeadEnemies();
@@ -430,6 +437,12 @@ class MissionElevenPartOne : Mission
                     {
                         RemoveDeadEnemies();
                     }
+                    if (Game.Player.WantedLevel > 0)
+                    {
+                        GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
+                        currentObjective = Objectives.LoseCopsTruck;
+                        return;
+                    }
                     if (vehicles[0].Driver == null)
                     {
                         ObjectiveLocationBlip.Delete();
@@ -449,6 +462,18 @@ class MissionElevenPartOne : Mission
                         vehicles.Clear();
                         currentObjective = Objectives.StealJet;
                         return;
+                    }
+                    break;
+                }
+            case Objectives.LoseCopsTruck:
+                {
+                    if (Game.Player.WantedLevel == 0)
+                    {
+                        currentObjective = Objectives.StealTruck;
+                        vehicles[0].AddBlip();
+                        vehicles[0].AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
+                        vehicles[0].AttachedBlip.Color = BlipColor.Yellow;
+                        vehicles[0].AttachedBlip.Name = "Truck";
                     }
                     break;
                 }
