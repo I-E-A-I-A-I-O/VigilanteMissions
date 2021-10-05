@@ -159,6 +159,7 @@ class PacificRobbery : Mission
             return false;
         }
         ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.Name = "Pacific Standard robbery";
         ObjectiveLocationBlip.ShowRoute = true;

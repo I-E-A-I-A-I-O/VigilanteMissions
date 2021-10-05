@@ -419,7 +419,8 @@ class MissionSeven : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "They are at the Maze Bank Tower right now trying to blow up the place, hurry up!");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Maze Bank Tower~w~.", 8000);
         currentObjective = Objectives.GoToBuilding;
-        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.Name = "Wanted suspect location";
         ObjectiveLocationBlip.ShowRoute = true;

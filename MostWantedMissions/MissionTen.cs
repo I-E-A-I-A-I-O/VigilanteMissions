@@ -167,6 +167,7 @@ class MissionTen : Mission
         }
         Music.StartFunkyTwo();
         ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.Name = "Wanted suspect location";
         ObjectiveLocationBlip.ShowRoute = true;

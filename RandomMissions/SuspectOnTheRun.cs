@@ -121,7 +121,8 @@ class SuspectOnTheRun : Mission
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
-            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+            ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
             ObjectiveLocationBlip.Color = BlipColor.Yellow;
             ObjectiveLocationBlip.ShowRoute = true;
             ObjectiveLocationBlip.Name = "Crime scene";

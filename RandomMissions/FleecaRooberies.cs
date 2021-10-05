@@ -144,6 +144,7 @@ class FleecaRooberies : Mission
         } while (Game.Player.Character.IsInRange(objectiveLocation, 200));
 
         ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.Name = "Fleeca robbery";
         ObjectiveLocationBlip.ShowRoute = true;

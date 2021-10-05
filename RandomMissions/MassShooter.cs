@@ -108,6 +108,7 @@ class MassShooter : Mission
         } while (Game.Player.Character.IsInRange(location, 200));
 
         ObjectiveLocationBlip = World.CreateBlip(location);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.Name = "Mass shooter location";
         ObjectiveLocationBlip.ShowRoute = true;

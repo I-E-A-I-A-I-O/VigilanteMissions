@@ -142,7 +142,8 @@ class MissionFive : Mission
         }
         Music.StartTedBundyMusic();
         currentObjective = Objectives.GoToLocation;
-        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
         ObjectiveLocationBlip.Name = "Wanted suspect location";

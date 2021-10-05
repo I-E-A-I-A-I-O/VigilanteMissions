@@ -205,7 +205,8 @@ class MissionTwo : Mission
         }
         Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
-        ObjectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
+        ObjectiveLocationBlip = World.CreateBlip(targetLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
         ObjectiveLocationBlip.Name = "Wanted suspect location";
