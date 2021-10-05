@@ -475,6 +475,9 @@ class MissionElevenPartOne : Mission
                         GTA.UI.Screen.ShowSubtitle("Enter the base and steal a lazer.", 8000);
                         RemoveVehiclesAndNeutrals();
                         vehicles.Clear();
+                        var lazer = MostWantedMissions.InitializeMissionElevenLazer();
+                        lazer = (Vehicle)MissionWorld.EntityLoadLoop(lazer, MostWantedMissions.InitializeMissionElevenLazer);
+                        vehicles.Add(lazer);
                         currentObjective = Objectives.StealJet;
                         return;
                     }
@@ -517,6 +520,8 @@ class MissionElevenPartOne : Mission
                             }
                             enemies.Clear();
                         }
+                        RemoveVehiclesAndNeutrals();
+                        vehicles.Clear();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_PLANE_GETAWAY_LOCATION;
                         var plane = World.CreateVehicle(new Model(VehicleHash.Luxor), objectiveLocation);
                         plane = (Vehicle)MissionWorld.EntityLoadLoop(plane, new Model(VehicleHash.Luxor), objectiveLocation);
