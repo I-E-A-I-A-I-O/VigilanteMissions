@@ -163,12 +163,12 @@ class Assault : Mission
         {
             if (enemies[i].IsDead())
             {
-                enemies[i].Delete();
-                aliveEnemies.RemoveAt(i);
                 if (enemies[i].GetPed().Killer == Game.Player.Character)
                 {
                     Progress.enemiesKilledCount += 1;
                 }
+                enemies[i].Delete();
+                aliveEnemies.RemoveAt(i);
             }
         }
         enemies = aliveEnemies;
@@ -193,7 +193,7 @@ class Assault : Mission
 
             currentObjective = Objectives.GoToLocation;
             ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+            ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
             ObjectiveLocationBlip.Color = BlipColor.Yellow;
             ObjectiveLocationBlip.ShowRoute = true;
             ObjectiveLocationBlip.Name = "Crime scene";

@@ -115,12 +115,12 @@ class FleecaRooberies : Mission
         {
             if (enemies[i].IsDead())
             {
-                enemies[i].Delete();
-                aliveEnemies.RemoveAt(i);
                 if (enemies[i].GetPed().Killer == Game.Player.Character)
                 {
                     Progress.enemiesKilledCount += 1;
                 }
+                enemies[i].Delete();
+                aliveEnemies.RemoveAt(i);
             }
         }
         enemies = aliveEnemies;
