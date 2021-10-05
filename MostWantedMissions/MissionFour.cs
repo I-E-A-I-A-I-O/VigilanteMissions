@@ -220,6 +220,8 @@ class MissionFour : Mission
         if (vehicles[(int)Vehicles.Plane].IsInRange(planeDestination, 100))
         {
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            VigilanteMissions.SaveProgress();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the target escaped!");
             MissionWorld.script.Tick -= CheckPlaneLocation;
         }

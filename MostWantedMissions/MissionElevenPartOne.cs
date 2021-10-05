@@ -74,6 +74,8 @@ class MissionElevenPartOne : Mission
             {
                 GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the truck was destroyed.", 8000);
                 MissionWorld.QuitMission();
+                Progress.missionsFailedCount += 1;
+                VigilanteMissions.SaveProgress();
             }
         }
         switch (currentObjective)
@@ -288,6 +290,8 @@ class MissionElevenPartOne : Mission
                     if (!enemies[0].GetPed().IsInRange(Game.Player.Character.Position, 350))
                     {
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon got away!", 8000);
                         return;
                     }
@@ -295,6 +299,8 @@ class MissionElevenPartOne : Mission
                     {
                         RemoveDeadEnemies();
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon is dead!", 8000);
                         return;
                     }
@@ -547,6 +553,8 @@ class MissionElevenPartOne : Mission
                     {
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed.", 8000);
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         return;
                     }
                     if (Game.Player.LastVehicle != null && Game.Player.LastVehicle.IsInAir && !flyingMusicPlayed)

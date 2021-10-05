@@ -189,6 +189,8 @@ class MissionFive : Mission
         {
             neutralPeds[0].GetBlip().Delete();
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            VigilanteMissions.SaveProgress();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the woman was killed!", 8000);
             MissionWorld.script.Tick -= CheckWomanStatus;
             return;
