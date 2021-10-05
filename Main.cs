@@ -160,6 +160,8 @@ public class VigilanteMissions: Script
         if (Game.Player.IsDead && MissionWorld.isMissionActive)
         {
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            SaveProgress();
         }
     }
 
@@ -188,6 +190,9 @@ public class VigilanteMissions: Script
                 writer.Write(Progress.jokerUnlockedMessageSent);
                 writer.Write(Progress.completedMostWantedMissionsCount);
                 writer.Write(Progress.jokerKilled);
+                writer.Write(Progress.completedCurrentCrimesMissionsCount);
+                writer.Write(Progress.enemiesKilledCount);
+                writer.Write(Progress.missionsFailedCount);
             }
         } catch (Exception)
         {
@@ -211,6 +216,9 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlockedMessageSent = false;
                 Progress.completedMostWantedMissionsCount = 0;
                 Progress.jokerKilled = false;
+                Progress.completedCurrentCrimesMissionsCount = 0;
+                Progress.enemiesKilledCount = 0;
+                Progress.missionsFailedCount = 0;
                 return;
             }
             using (BinaryReader reader = new BinaryReader(File.OpenRead(fileDir)))
@@ -219,6 +227,9 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlockedMessageSent = reader.ReadBoolean();
                 Progress.completedMostWantedMissionsCount = reader.ReadInt32();
                 Progress.jokerKilled = reader.ReadBoolean();
+                Progress.completedCurrentCrimesMissionsCount = reader.ReadInt32();
+                Progress.enemiesKilledCount = reader.ReadInt32();
+                Progress.missionsFailedCount = reader.ReadInt32();
             }
         } catch(Exception)
         {
@@ -226,6 +237,9 @@ public class VigilanteMissions: Script
             Progress.jokerUnlockedMessageSent = false;
             Progress.completedMostWantedMissionsCount = 0;
             Progress.jokerKilled = false;
+            Progress.completedCurrentCrimesMissionsCount = 0;
+            Progress.enemiesKilledCount = 0;
+            Progress.missionsFailedCount = 0;
             //GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
         }
     }

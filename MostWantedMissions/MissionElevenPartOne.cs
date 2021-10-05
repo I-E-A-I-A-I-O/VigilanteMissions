@@ -612,6 +612,10 @@ class MissionElevenPartOne : Mission
             {
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
             }
         }
         enemies = aliveEnemies;

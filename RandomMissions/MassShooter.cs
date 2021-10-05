@@ -88,6 +88,10 @@ class MassShooter : Mission
 
     protected override void RemoveDeadEnemies()
     {
+        if (enemy.GetPed().Killer == Game.Player.Character)
+        {
+            Progress.enemiesKilledCount += 1;
+        }
         enemy.Delete();
     }
 

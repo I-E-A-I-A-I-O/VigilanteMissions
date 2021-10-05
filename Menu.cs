@@ -8,9 +8,10 @@ class Menu
 {
     public ObjectPool menuPool;
     public NativeMenu mainMenu;
-    public NativeMenu mostWantedMenu;
-    public NativeMenu currentCrimesMenu;
-    public NativeItem callBackupOption;
+    NativeMenu mostWantedMenu;
+    NativeMenu currentCrimesMenu;
+    NativeItem callBackupOption;
+    NativeMenu statsMenu;
     public bool jokerAdded = false;
     bool timerStarted = false;
     int startTime;
@@ -72,6 +73,10 @@ class Menu
         mainMenu.AddSubMenu(currentCrimesMenu);
         callBackupOption = new NativeItem("Call police backup");
         mainMenu.Add(callBackupOption);
+        statsMenu = new NativeMenu("Stats", "Stats");
+        menuPool.Add(statsMenu);
+        mainMenu.AddSubMenu(statsMenu);
+        statsMenu.Shown += StatsMenuShown;
         callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
     }
@@ -118,7 +123,17 @@ class Menu
         }
     }
 
-    private void CurrentCrimesMenu_Shown(object sender, EventArgs e)
+    void StatsMenuShown(object o, EventArgs e)
+    {
+        statsMenu.Clear();
+        statsMenu.Add(new NativeItem($"Most wanted targets killed: {Progress.completedMostWantedMissionsCount}"));
+        statsMenu.Add(new NativeItem($"Crime scenes cleared: {Progress.completedCurrentCrimesMissionsCount}"));
+        statsMenu.Add(new NativeItem($"Total missions completed: {Progress.completedCurrentCrimesMissionsCount + Progress.completedMostWantedMissionsCount}"));
+        statsMenu.Add(new NativeItem($"Missions failed: {Progress.missionsFailedCount}"));
+        statsMenu.Add(new NativeItem($"Enemies killed: {Progress.enemiesKilledCount}"));
+    }
+
+    void CurrentCrimesMenu_Shown(object sender, EventArgs e)
     {
         var random = new Random();
         currentCrimesMenu.Clear();

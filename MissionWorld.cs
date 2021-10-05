@@ -240,8 +240,11 @@ public class MissionWorld
                 Progress.jokerKilled = true;
                 GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante reward", "Now that you hacked the IAA servers to kill the Joker, you can now access the police computer using any vehicle. NOTE: you have to enable the reward in the ini file first!");
             }
-            VigilanteMissions.SaveProgress();
+        } else
+        {
+            Progress.completedCurrentCrimesMissionsCount += 1;
         }
+        VigilanteMissions.SaveProgress();
         currentMission = null;
     }
 
