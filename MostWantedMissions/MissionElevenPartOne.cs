@@ -172,6 +172,7 @@ class MissionElevenPartOne : Mission
                         enemy.ShowBlip();
                         enemy.GetBlip().Name = "IAA agent";
                         enemy.GetTask().GuardCurrentPosition();
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed().Handle, 3);
                     }
                     ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
                     ObjectiveLocationBlip.Color = BlipColor.Yellow;
