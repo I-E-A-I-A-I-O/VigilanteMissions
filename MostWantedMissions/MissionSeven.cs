@@ -129,19 +129,19 @@ class MissionSeven : Mission
                     vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSevenStreetVehicles);
                     neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSevenPolice);
 
+                    for(var i = 0; i < neutrals.Count; i++)
+                    {
+                        neutralPeds.Add(new MissionPed(neutrals[i], "COP"));
+                        neutralPeds[i].GetPed().Accuracy = 10;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].GetPed().Handle, 1);
+                    }
+
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
                         enemies[i].ShowBlip();
                         enemies[i].GetPed().Accuracy = 80;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
-                    }
-
-                    for(var i = 0; i < neutrals.Count; i++)
-                    {
-                        neutralPeds.Add(new MissionPed(neutrals[i], "COP"));
-                        neutralPeds[i].GetPed().Accuracy = 10;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed().Handle, 1);
                     }
 
                     foreach(Vehicle vehicle in vehicles)
@@ -192,7 +192,7 @@ class MissionSeven : Mission
                     {
                         enemy.ShowBlip();
                         enemy.GetPed().Accuracy = 80;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 3);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed().Handle, 3);
                     }
 
                     StartOfficeScenarios();
@@ -312,7 +312,7 @@ class MissionSeven : Mission
                     {
                         if (timerStarted && (65 - ((currentTime - startTime) / 1000)) <= 30 && !countdownMusicStarted)
                         {
-                            Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_30_SEC");
+                            Music.Play30SecCountDown();
                             countdownMusicStarted = true;
                         }
                         if (!timerStarted)

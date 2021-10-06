@@ -341,7 +341,7 @@ class MissionElevenPartOne : Mission
                     jokerPed = (Ped)MissionWorld.EntityLoadLoop(jokerPed, vehicles[vehicles.Count - 1], VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                     enemies.Add(new MissionPed(jokerPed, enemiesRelGroup));
                     jokerPed.BlockPermanentEvents = true;
-                    Function.Call(Hash.TASK_PLANE_MISSION, jokerPed, vehicles[vehicles.Count - 1], 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
+                    Function.Call(Hash.TASK_PLANE_MISSION, jokerPed.Handle, vehicles[vehicles.Count - 1].Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
                     vehicles[vehicles.Count - 1].AddBlip();
                     vehicles[vehicles.Count - 1].AttachedBlip.Sprite = BlipSprite.Plane;
                     vehicles[vehicles.Count - 1].AttachedBlip.Color = BlipColor.Red;
@@ -534,7 +534,7 @@ class MissionElevenPartOne : Mission
                         var joker = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker = (Ped)MissionWorld.EntityLoadLoop(joker, plane, VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker.BlockPermanentEvents = true;
-                        Function.Call(Hash.TASK_PLANE_MISSION, joker, plane, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
+                        Function.Call(Hash.TASK_PLANE_MISSION, joker.Handle, plane.Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
                         enemies.Add(new MissionPed(joker, enemiesRelGroup));
                         vehicles.Add(plane);
                         GTA.UI.Screen.ShowSubtitle("Kill ~r~The Joker~w~.", 8000);

@@ -51,7 +51,7 @@ class FleecaRooberies : Mission
                         enemies.Add(new MissionPed(enemyPeds[i], enemiesRelGroup));
                         enemies[i].GetPed().Accuracy = 80;
                         enemies[i].GetPed().Armor = 100;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed().Handle, 1);
                         enemies[i].ShowBlip();
                         enemies[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
                     }

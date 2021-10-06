@@ -215,7 +215,7 @@ public class MissionWorld
 
     public static void CompleteMission()
     {
-        Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
+        Music.PlayMissionCompleted();
         isMissionActive = false;
         if (currentMission.IsMostWanted)
         {

@@ -300,7 +300,7 @@ class MissionTwo : Mission
         }
         else if (vehicles[(int)Vehicles.Helicopter].Driver != null && vehicles[(int)Vehicles.Helicopter].Driver != Game.Player.Character)
         {
-            Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.CaptainGuard].GetPed(), vehicles[(int)Vehicles.Helicopter], 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
+            Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.CaptainGuard].GetPed().Handle, vehicles[(int)Vehicles.Helicopter].Handle, 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
             vehicles[(int)Vehicles.Helicopter].AddBlip();
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Color = BlipColor.Red;

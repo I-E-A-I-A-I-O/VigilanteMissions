@@ -48,7 +48,7 @@ class MassShooter : Mission
                     enemy.GetPed().MaxHealth = 450;
                     enemy.GetPed().Health = 450;
                     enemy.GetPed().Armor = 300;
-                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 3);
+                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed().Handle, 3);
                     enemy.ShowBlip();
                     enemy.GetTask().FightAgainstHatedTargets(190);
 

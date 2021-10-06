@@ -57,13 +57,13 @@ class PacificRobbery : Mission
                         enemies.Add(new MissionPed(enemyPeds[i], robberRelGroup));
                         enemies[i].ShowBlip();
                         enemies[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed().Handle, 1);
                     }
                     for (var i = 0; i < policePeds.Count; i++)
                     {
                         police.Add(new MissionPed(policePeds[i], "COP"));
                         police[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, police[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, police[i].GetPed().Handle, 1);
                     }
                     for (var i = 0; i < hostagePeds.Count; i++)
                     {
