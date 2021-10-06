@@ -19,7 +19,6 @@ class PacificRobbery : Mission
     Vector3 objectiveLocation;
     public override Blip ObjectiveLocationBlip { get; set; }
     Objectives currentObjective;
-    RelationshipGroup policeRelGroup;
     RelationshipGroup robberRelGroup;
     RelationshipGroup hostagesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
@@ -29,7 +28,6 @@ class PacificRobbery : Mission
 
     public PacificRobbery()
     {
-        policeRelGroup = MissionWorld.RELATIONSHIP_MISSION_COP;
         robberRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         hostagesRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
@@ -63,7 +61,7 @@ class PacificRobbery : Mission
                     }
                     for (var i = 0; i < policePeds.Count; i++)
                     {
-                        police.Add(new MissionPed(policePeds[i], policeRelGroup, false, true));
+                        police.Add(new MissionPed(policePeds[i], "COP"));
                         police[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
                         Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, police[i].GetPed(), 1);
                     }

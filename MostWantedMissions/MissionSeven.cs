@@ -84,7 +84,6 @@ class MissionSeven : Mission
 
     Objectives currentObjective;
     RelationshipGroup enemiesRelGroup;
-    RelationshipGroup neutralsRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
@@ -100,7 +99,6 @@ class MissionSeven : Mission
     public MissionSeven()
     {
         enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
-        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_COP;
 
         objectiveLocation = MostWantedMissions.MISSION_SEVEN_START_LOCATION;
         markerPosition = new Vector3(-77.04752f, -830.2404f, 242.3859f);
@@ -141,7 +139,7 @@ class MissionSeven : Mission
 
                     for(var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup));
+                        neutralPeds.Add(new MissionPed(neutrals[i], "COP"));
                         neutralPeds[i].GetPed().Accuracy = 10;
                         Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].GetPed(), 1);
                     }

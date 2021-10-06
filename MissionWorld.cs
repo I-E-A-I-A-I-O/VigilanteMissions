@@ -13,7 +13,6 @@ public class MissionWorld
     public static RelationshipGroup RELATIONSHIP_MISSION_PEDESTRIAN;
     public static RelationshipGroup RELATIONSHIP_MISSION_DISLIKE;
     public static RelationshipGroup RELATIONSHIP_MISSION_MASS_SHOOTER;
-    public static RelationshipGroup RELATIONSHIP_MISSION_COP;
     public static RelationshipGroup RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY;
     public static bool isMissionActive;
     static Mission currentMission;
@@ -63,7 +62,6 @@ public class MissionWorld
         RELATIONSHIP_MISSION_DISLIKE = World.AddRelationshipGroup("VIGILANTE_MISSION_DISLIKE");
         RELATIONSHIP_MISSION_MASS_SHOOTER = World.AddRelationshipGroup("VIGILANTE_MISSION_MASS_SHOOTER");
         RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY = World.AddRelationshipGroup("VIGILANTE_MISSION_NEUTRAL_COP_FRIENDLY");
-        RELATIONSHIP_MISSION_COP = new RelationshipGroup(RELATIONSHIP_COPS);
 
         RELATIONSHIP_MISSION_LIKE.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Respect);
         RELATIONSHIP_MISSION_NEUTRAL.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
