@@ -6,6 +6,7 @@ using System.Collections.Generic;
 class MissionFive : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -19,7 +20,7 @@ class MissionFive : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
 
@@ -31,7 +32,7 @@ class MissionFive : Mission
         objectiveLocation = MostWantedMissions.MISSION_FIVE_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -46,7 +47,7 @@ class MissionFive : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionFivePeds();
                     var neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFivePeds);
@@ -99,20 +100,24 @@ class MissionFive : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -120,7 +125,7 @@ class MissionFive : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (MissionPed neutral in neutralPeds)
         {
@@ -137,10 +142,11 @@ class MissionFive : Mission
         }
         Music.StartTedBundyMusic();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
@@ -183,6 +189,8 @@ class MissionFive : Mission
         {
             neutralPeds[0].GetBlip().Delete();
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            VigilanteMissions.SaveProgress();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the woman was killed!", 8000);
             MissionWorld.script.Tick -= CheckWomanStatus;
             return;

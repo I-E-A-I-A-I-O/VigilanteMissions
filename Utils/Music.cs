@@ -59,4 +59,9 @@ static class Music
     {
         Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
     }
+
+    public static void Play30SecCountDown()
+    {
+        Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_30_SEC");
+    }
 }

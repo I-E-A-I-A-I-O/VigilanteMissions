@@ -13,13 +13,15 @@ public class MissionWorld
     public static RelationshipGroup RELATIONSHIP_MISSION_PEDESTRIAN;
     public static RelationshipGroup RELATIONSHIP_MISSION_DISLIKE;
     public static RelationshipGroup RELATIONSHIP_MISSION_MASS_SHOOTER;
-    public static RelationshipGroup RELATIONSHIP_MISSION_COP;
     public static RelationshipGroup RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY;
     public static bool isMissionActive;
     static Mission currentMission;
     static bool loadingTimerStarted = false;
     static int loadingStartTime;
     static int loadingCurrentTime;
+    bool blipCheckTimerStarted = false;
+    int blipCheckStartTime;
+    int blipCheckCurrentTime;
     
     public enum Missions
     {
@@ -60,7 +62,6 @@ public class MissionWorld
         RELATIONSHIP_MISSION_DISLIKE = World.AddRelationshipGroup("VIGILANTE_MISSION_DISLIKE");
         RELATIONSHIP_MISSION_MASS_SHOOTER = World.AddRelationshipGroup("VIGILANTE_MISSION_MASS_SHOOTER");
         RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY = World.AddRelationshipGroup("VIGILANTE_MISSION_NEUTRAL_COP_FRIENDLY");
-        RELATIONSHIP_MISSION_COP = new RelationshipGroup(RELATIONSHIP_COPS);
 
         RELATIONSHIP_MISSION_LIKE.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Respect);
         RELATIONSHIP_MISSION_NEUTRAL.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
@@ -77,6 +78,34 @@ public class MissionWorld
         RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY.SetRelationshipBetweenGroups(RELATIONSHIP_PLAYER, Relationship.Neutral, true);
 
         isMissionActive = false;
+        script.Tick += ObjectiveBlipCheck;
+    }
+
+    void ObjectiveBlipCheck(object o, EventArgs e)
+    {
+        if (!isMissionActive)
+        {
+            return;
+        }
+        if (currentMission.ObjectiveLocationBlip == null || !currentMission.ObjectiveLocationBlip.Exists())
+        {
+            return;
+        }
+        if (!blipCheckTimerStarted)
+        {
+            blipCheckStartTime = Game.GameTime;
+            blipCheckTimerStarted = true;
+        } else
+        {
+            blipCheckCurrentTime = Game.GameTime;
+            if (blipCheckCurrentTime - blipCheckStartTime >= 8000)
+            {
+                currentMission.ObjectiveLocationBlip.ShowRoute = false;
+                Script.Wait(1);
+                currentMission.ObjectiveLocationBlip.ShowRoute = true;
+                blipCheckTimerStarted = false;
+            }
+        }
     }
 
     public static void StartMission(Missions mission)
@@ -186,7 +215,7 @@ public class MissionWorld
 
     public static void CompleteMission()
     {
-        Function.Call(Hash.TRIGGER_MUSIC_EVENT, "MP_DM_COUNTDOWN_KILL");
+        Music.PlayMissionCompleted();
         isMissionActive = false;
         if (currentMission.IsMostWanted)
         {
@@ -204,8 +233,16 @@ public class MissionWorld
                 }
                 VigilanteMissions.AddJoker();
             }
-            VigilanteMissions.SaveProgress();
+            if (currentMission.IsJokerMission && !Progress.jokerKilled)
+            {
+                Progress.jokerKilled = true;
+                GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante reward", "Now that you hacked the IAA servers to kill the Joker, you can now access the police computer using any vehicle. NOTE: you have to enable the reward in the ini file first!");
+            }
+        } else
+        {
+            Progress.completedCurrentCrimesMissionsCount += 1;
         }
+        VigilanteMissions.SaveProgress();
         currentMission = null;
     }
 

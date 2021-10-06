@@ -52,6 +52,14 @@ public class MissionPed
         }
     }
 
+    public MissionPed(Ped ped, RelationshipGroup relationshipGroup, string RelGroupName)
+    {
+        this.ped = ped;
+        Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, this.ped.Handle, Game.GenerateHash(RelGroupName));
+        this.ped.Weapons.Give(WeaponHash.PumpShotgun, 500, false, true);
+        this.ped.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+    }
+
     void PedTick(object o, EventArgs args)
     {
         if (!ped.IsAlive || ped.IsInCombatAgainst(Game.Player.Character))

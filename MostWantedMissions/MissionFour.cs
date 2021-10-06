@@ -8,6 +8,7 @@ using System.Collections.Generic;
 class MissionFour : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -46,7 +47,7 @@ class MissionFour : Mission
     Objectives currentObjective;
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
 
     public MissionFour()
     {
@@ -56,7 +57,7 @@ class MissionFour : Mission
         planeDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -71,7 +72,7 @@ class MissionFour : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionFourVehicles();
                     var peds = MostWantedMissions.InitializeMissionFourPeds();
                     vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionFourVehicles);
@@ -121,9 +122,9 @@ class MissionFour : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
@@ -137,10 +138,11 @@ class MissionFour : Mission
         }
         Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
@@ -149,13 +151,17 @@ class MissionFour : Mission
         return true;
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -163,7 +169,7 @@ class MissionFour : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {
@@ -192,7 +198,7 @@ class MissionFour : Mission
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
 
-        Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed(), vehicles[(int)Vehicles.Plane], 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
+        Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed().Handle, vehicles[(int)Vehicles.Plane].Handle, 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
         enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);
 
         MissionWorld.script.Tick += CheckPlaneLocation;
@@ -214,6 +220,8 @@ class MissionFour : Mission
         if (vehicles[(int)Vehicles.Plane].IsInRange(planeDestination, 100))
         {
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            VigilanteMissions.SaveProgress();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the target escaped!");
             MissionWorld.script.Tick -= CheckPlaneLocation;
         }

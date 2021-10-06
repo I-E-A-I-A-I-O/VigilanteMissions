@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class PacificRobbery : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -16,9 +17,8 @@ class PacificRobbery : Mission
     }
 
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     Objectives currentObjective;
-    RelationshipGroup policeRelGroup;
     RelationshipGroup robberRelGroup;
     RelationshipGroup hostagesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
@@ -28,14 +28,13 @@ class PacificRobbery : Mission
 
     public PacificRobbery()
     {
-        policeRelGroup = MissionWorld.RELATIONSHIP_MISSION_COP;
         robberRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
         hostagesRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
         objectiveLocation = BankMissions.PACIFIC_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch (currentObjective)
         {
@@ -58,13 +57,13 @@ class PacificRobbery : Mission
                         enemies.Add(new MissionPed(enemyPeds[i], robberRelGroup));
                         enemies[i].ShowBlip();
                         enemies[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed().Handle, 1);
                     }
                     for (var i = 0; i < policePeds.Count; i++)
                     {
-                        police.Add(new MissionPed(policePeds[i], policeRelGroup, false, true));
+                        police.Add(new MissionPed(policePeds[i], "COP"));
                         police[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, police[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, police[i].GetPed().Handle, 1);
                     }
                     for (var i = 0; i < hostagePeds.Count; i++)
                     {
@@ -77,7 +76,7 @@ class PacificRobbery : Mission
                         vehicle.IsSirenActive = true;
                         vehicle.IsSirenSilent = false;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~bank robbers~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -109,20 +108,24 @@ class PacificRobbery : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -130,7 +133,7 @@ class PacificRobbery : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {
@@ -153,10 +156,11 @@ class PacificRobbery : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Pacific Standard robbery";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Pacific Standard robbery";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Pacific Standard bank~w~ and stop the robbery.", 8000);
         currentObjective = Objectives.GoToLocation;

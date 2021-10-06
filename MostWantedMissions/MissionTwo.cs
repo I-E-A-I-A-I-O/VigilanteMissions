@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class MissionTwo : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -68,7 +69,7 @@ class MissionTwo : Mission
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Vector3 targetLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     Vector3 helicopterDestination;
     RelationshipGroup neutralsRelGroup;
     RelationshipGroup enemiesRelGroup;
@@ -82,7 +83,7 @@ class MissionTwo : Mission
         targetLocation = MostWantedMissions.MISSION_TWO_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -97,7 +98,7 @@ class MissionTwo : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
                     var peds = MostWantedMissions.InitializeMissionTwoPeds();
                     var neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
@@ -158,20 +159,24 @@ class MissionTwo : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -179,7 +184,7 @@ class MissionTwo : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {
@@ -200,10 +205,11 @@ class MissionTwo : Mission
         }
         Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
-        objectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.ShowRoute = true;
-        objectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip = World.CreateBlip(targetLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
@@ -294,7 +300,7 @@ class MissionTwo : Mission
         }
         else if (vehicles[(int)Vehicles.Helicopter].Driver != null && vehicles[(int)Vehicles.Helicopter].Driver != Game.Player.Character)
         {
-            Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.CaptainGuard].GetPed(), vehicles[(int)Vehicles.Helicopter], 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
+            Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.CaptainGuard].GetPed().Handle, vehicles[(int)Vehicles.Helicopter].Handle, 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
             vehicles[(int)Vehicles.Helicopter].AddBlip();
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Color = BlipColor.Red;

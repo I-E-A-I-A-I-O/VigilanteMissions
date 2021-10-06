@@ -546,5 +546,10 @@ static class MostWantedMissions
     {
         return World.CreateVehicle(new Model(-823509173), new Vector3(-99.77962f, 2837.321f, 51.35239f), 65.08549f);
     }
+
+    public static Vehicle InitializeMissionElevenLazer()
+    {
+        return World.CreateVehicle(new Model(-1281684762), new Vector3(-2277.063f, 3085.458f, 33.31231f), 15.72911f);
+    }
 }
 

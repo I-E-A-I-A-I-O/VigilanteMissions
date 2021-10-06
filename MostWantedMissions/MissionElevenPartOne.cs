@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class MissionElevenPartOne : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => true;
 
     enum Objectives
     {
@@ -23,6 +24,7 @@ class MissionElevenPartOne : Mission
         AirportShootout,
         GoToTruck,
         StealTruck,
+        LoseCopsTruck,
         GoToBase,
         StealJet,
         KillTarget,
@@ -32,7 +34,7 @@ class MissionElevenPartOne : Mission
 
     Objectives currentObjective;
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Prop prop;
@@ -57,7 +59,7 @@ class MissionElevenPartOne : Mission
         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_MEETING_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (currentObjective != Objectives.LoseCops && currentObjective != Objectives.StealJet && currentObjective != Objectives.KillTarget)
         {
@@ -66,12 +68,14 @@ class MissionElevenPartOne : Mission
                 Game.Player.WantedLevel = 1;
             }
         }
-        if (currentObjective == Objectives.StealTruck || currentObjective == Objectives.GoToBase)
+        if (currentObjective == Objectives.StealTruck || currentObjective == Objectives.GoToBase || currentObjective == Objectives.LoseCopsTruck)
         {
             if (vehicles[0].IsDead)
             {
                 GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the truck was destroyed.", 8000);
                 MissionWorld.QuitMission();
+                Progress.missionsFailedCount += 1;
+                VigilanteMissions.SaveProgress();
             }
         }
         switch (currentObjective)
@@ -82,7 +86,7 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var ped = MostWantedMissions.InitializeMissionElevenMeetingPed();
                     ped = (Ped)MissionWorld.EntityLoadLoop(ped, MostWantedMissions.InitializeMissionElevenMeetingPed);
                     enemies.Add(new MissionPed(ped, neutralGroup));
@@ -128,10 +132,10 @@ class MissionElevenPartOne : Mission
                     {
                         prop.Delete();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_FACILITY_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "IAA Server farm";
-                        objectiveLocationBlip.ShowRoute = true;
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "IAA Server farm";
+                        ObjectiveLocationBlip.ShowRoute = true;
                         GTA.UI.Screen.ShowSubtitle("Go to the ~y~IAA server farm~w~.", 8000);
                         currentObjective = Objectives.GoToServerFarm;
                     }
@@ -162,16 +166,17 @@ class MissionElevenPartOne : Mission
                     }
                     Music.IncreaseIntensity();
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_SERVER_LOCATION;
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     foreach (MissionPed enemy in enemies)
                     {
                         enemy.ShowBlip();
                         enemy.GetBlip().Name = "IAA agent";
                         enemy.GetTask().GuardCurrentPosition();
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed().Handle, 3);
                     }
-                    objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                    objectiveLocationBlip.Color = BlipColor.Yellow;
-                    objectiveLocationBlip.Name = "Target server";
+                    ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                    ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                    ObjectiveLocationBlip.Name = "Target server";
                     currentObjective = Objectives.PlaceBackDoor;
                     break;
                 }
@@ -205,7 +210,7 @@ class MissionElevenPartOne : Mission
                         sequence.AddTask.PlayAnimation("weapons@first_person@aim_rng@generic@projectile@thermal_charge@", "plant_vertical", 8, -1, AnimationFlags.UpperBodyOnly);
                         Game.Player.Character.Task.PerformSequence(sequence);
                         Script.Wait(2000);
-                        objectiveLocationBlip.Delete();
+                        ObjectiveLocationBlip.Delete();
                         GTA.UI.Screen.ShowSubtitle("Leave the server farm.", 8000);
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_FACILITY_LOCATION;
                         currentObjective = Objectives.LeaveServerFarm;
@@ -244,10 +249,10 @@ class MissionElevenPartOne : Mission
                         return;
                     }
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_START_LOCATION;
-                    objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                    objectiveLocationBlip.Name = "Joker's goon location";
-                    objectiveLocationBlip.Color = BlipColor.Yellow;
-                    objectiveLocationBlip.ShowRoute = true;
+                    ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                    ObjectiveLocationBlip.Name = "Joker's goon location";
+                    ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                    ObjectiveLocationBlip.ShowRoute = true;
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante Mission", "Ok, i tracked 'someone', but i'm not sure if that's him. You better get to that ~y~location~w~ fast.");
                     GTA.UI.Screen.ShowSubtitle("Go to the ~y~location~w~.", 8000);
                     currentObjective = Objectives.GoToChase;
@@ -261,7 +266,7 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_END_LOCATION;
                     Music.IncreaseIntensity();
                     var vehicle = MostWantedMissions.InitializeMissionElevenChaseVehicle();
@@ -286,6 +291,8 @@ class MissionElevenPartOne : Mission
                     if (!enemies[0].GetPed().IsInRange(Game.Player.Character.Position, 350))
                     {
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon got away!", 8000);
                         return;
                     }
@@ -293,6 +300,8 @@ class MissionElevenPartOne : Mission
                     {
                         RemoveDeadEnemies();
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the goon is dead!", 8000);
                         return;
                     }
@@ -333,7 +342,7 @@ class MissionElevenPartOne : Mission
                     jokerPed = (Ped)MissionWorld.EntityLoadLoop(jokerPed, vehicles[vehicles.Count - 1], VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                     enemies.Add(new MissionPed(jokerPed, enemiesRelGroup));
                     jokerPed.BlockPermanentEvents = true;
-                    Function.Call(Hash.TASK_PLANE_MISSION, jokerPed, vehicles[vehicles.Count - 1], 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
+                    Function.Call(Hash.TASK_PLANE_MISSION, jokerPed.Handle, vehicles[vehicles.Count - 1].Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
                     vehicles[vehicles.Count - 1].AddBlip();
                     vehicles[vehicles.Count - 1].AttachedBlip.Sprite = BlipSprite.Plane;
                     vehicles[vehicles.Count - 1].AttachedBlip.Color = BlipColor.Red;
@@ -368,10 +377,10 @@ class MissionElevenPartOne : Mission
                         }
                         Music.LowerIntensinty();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_MARINE_TRUCK_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "Military truck location";
-                        objectiveLocationBlip.ShowRoute = true;
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "Military truck location";
+                        ObjectiveLocationBlip.ShowRoute = true;
                         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante Mission", "I tracked down a ~y~military truck~w~ use it to get into ~y~Fort Zancudo~w~ and steal a lazer.");
                         GTA.UI.Screen.ShowSubtitle("Find the ~y~truck~w~.", 8000);
                         RemoveVehiclesAndNeutrals();
@@ -386,7 +395,7 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var truck = MostWantedMissions.InitializeMissionElevenMarineTruck();
                     truck = (Vehicle)MissionWorld.EntityLoadLoop(truck, MostWantedMissions.InitializeMissionElevenMarineTruck);
                     var truckDriver = truck.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Marine01SMM));
@@ -407,6 +416,16 @@ class MissionElevenPartOne : Mission
                 }
             case Objectives.StealTruck:
                 {
+                    if (Game.Player.WantedLevel > 0)
+                    {
+                        if (vehicles[0].AttachedBlip != null && vehicles[0].AttachedBlip.Exists())
+                        {
+                            vehicles[0].AttachedBlip.Delete();
+                        }
+                        GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
+                        currentObjective = Objectives.LoseCopsTruck;
+                        return;
+                    }
                     if (enemies.Count > 0)
                     {
                         RemoveDeadEnemies();
@@ -415,10 +434,10 @@ class MissionElevenPartOne : Mission
                     {
                         vehicles[0].AttachedBlip.Delete();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_FORT_ZANCUDO_LOCATION;
-                        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-                        objectiveLocationBlip.Color = BlipColor.Yellow;
-                        objectiveLocationBlip.Name = "Fort Zancudo";
-                        objectiveLocationBlip.ShowRoute = true;
+                        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+                        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+                        ObjectiveLocationBlip.Name = "Fort Zancudo";
+                        ObjectiveLocationBlip.ShowRoute = true;
                         GTA.UI.Screen.ShowSubtitle("Go to ~y~Fort Zancudo~w~.", 8000);
                         currentObjective = Objectives.GoToBase;
                     }
@@ -430,9 +449,19 @@ class MissionElevenPartOne : Mission
                     {
                         RemoveDeadEnemies();
                     }
+                    if (Game.Player.WantedLevel > 0)
+                    {
+                        if (ObjectiveLocationBlip!= null && ObjectiveLocationBlip.Exists())
+                        {
+                            ObjectiveLocationBlip.Delete();
+                        }
+                        GTA.UI.Screen.ShowSubtitle("Lose the cops.", 8000);
+                        currentObjective = Objectives.LoseCopsTruck;
+                        return;
+                    }
                     if (vehicles[0].Driver == null)
                     {
-                        objectiveLocationBlip.Delete();
+                        ObjectiveLocationBlip.Delete();
                         vehicles[0].AddBlip();
                         vehicles[0].AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
                         vehicles[0].AttachedBlip.Color = BlipColor.Yellow;
@@ -443,12 +472,27 @@ class MissionElevenPartOne : Mission
                     }
                     if (vehicles[0].IsInRange(objectiveLocation, 5))
                     {
-                        objectiveLocationBlip.Delete();
+                        ObjectiveLocationBlip.Delete();
                         GTA.UI.Screen.ShowSubtitle("Enter the base and steal a lazer.", 8000);
                         RemoveVehiclesAndNeutrals();
                         vehicles.Clear();
+                        var lazer = MostWantedMissions.InitializeMissionElevenLazer();
+                        lazer = (Vehicle)MissionWorld.EntityLoadLoop(lazer, MostWantedMissions.InitializeMissionElevenLazer);
+                        vehicles.Add(lazer);
                         currentObjective = Objectives.StealJet;
                         return;
+                    }
+                    break;
+                }
+            case Objectives.LoseCopsTruck:
+                {
+                    if (Game.Player.WantedLevel == 0)
+                    {
+                        currentObjective = Objectives.StealTruck;
+                        vehicles[0].AddBlip();
+                        vehicles[0].AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
+                        vehicles[0].AttachedBlip.Color = BlipColor.Yellow;
+                        vehicles[0].AttachedBlip.Name = "Truck";
                     }
                     break;
                 }
@@ -477,6 +521,8 @@ class MissionElevenPartOne : Mission
                             }
                             enemies.Clear();
                         }
+                        RemoveVehiclesAndNeutrals();
+                        vehicles.Clear();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_PLANE_GETAWAY_LOCATION;
                         var plane = World.CreateVehicle(new Model(VehicleHash.Luxor), objectiveLocation);
                         plane = (Vehicle)MissionWorld.EntityLoadLoop(plane, new Model(VehicleHash.Luxor), objectiveLocation);
@@ -489,7 +535,7 @@ class MissionElevenPartOne : Mission
                         var joker = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker = (Ped)MissionWorld.EntityLoadLoop(joker, plane, VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker.BlockPermanentEvents = true;
-                        Function.Call(Hash.TASK_PLANE_MISSION, joker, plane, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
+                        Function.Call(Hash.TASK_PLANE_MISSION, joker.Handle, plane.Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
                         enemies.Add(new MissionPed(joker, enemiesRelGroup));
                         vehicles.Add(plane);
                         GTA.UI.Screen.ShowSubtitle("Kill ~r~The Joker~w~.", 8000);
@@ -513,6 +559,8 @@ class MissionElevenPartOne : Mission
                     {
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed.", 8000);
                         MissionWorld.QuitMission();
+                        Progress.missionsFailedCount += 1;
+                        VigilanteMissions.SaveProgress();
                         return;
                     }
                     if (Game.Player.LastVehicle != null && Game.Player.LastVehicle.IsInAir && !flyingMusicPlayed)
@@ -554,9 +602,9 @@ class MissionElevenPartOne : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         if (prop != null)
         {
@@ -569,13 +617,17 @@ class MissionElevenPartOne : Mission
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -583,7 +635,7 @@ class MissionElevenPartOne : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (Vehicle vehicle in vehicles)
         {
@@ -603,10 +655,11 @@ class MissionElevenPartOne : Mission
         }
         Music.StartFunky();
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "We are going to need access to the IAA servers if we want to find this fucker. I set up a fake ~y~meeting~w~ with a corrupt agent, go get his ~g~keycard~w~.");
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Meeting with IAA agent";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Meeting with IAA agent";
+        ObjectiveLocationBlip.ShowRoute = true;
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~meeting~w~.", 8000);
         currentObjective = Objectives.GoToMeeting;
         MissionWorld.script.Tick += MissionTick;

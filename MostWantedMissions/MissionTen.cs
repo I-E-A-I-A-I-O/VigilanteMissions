@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class MissionTen : Mission
 {
     public override bool IsMostWanted => true;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -42,7 +43,7 @@ class MissionTen : Mission
 
     Objectives currentObjective;
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     List<MissionPed> enemies = new List<MissionPed>();
     Ped hooker;
     RelationshipGroup enemiesRelGroup;
@@ -56,7 +57,7 @@ class MissionTen : Mission
         objectiveLocation = MostWantedMissions.MISSION_TEN_LOCATION;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         if (Game.Player.WantedLevel >= 2)
         {
@@ -71,7 +72,7 @@ class MissionTen : Mission
                         return;
                     }
                     Music.IncreaseIntensity();
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var peds = MostWantedMissions.InitializeMissionTenEnemies();
                     hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
                     peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionTenEnemies);
@@ -120,9 +121,9 @@ class MissionTen : Mission
         {
             hooker.MarkAsNoLongerNeeded();
         }
-        if (objectiveLocationBlip != null)
+        if (ObjectiveLocationBlip != null)
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         foreach (MissionPed enemy in enemies)
         {
@@ -131,13 +132,17 @@ class MissionTen : Mission
         MissionWorld.script.Tick -= MissionTick;
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -145,7 +150,7 @@ class MissionTen : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         if (hooker != null)
         {
@@ -161,10 +166,11 @@ class MissionTen : Mission
             return false;
         }
         Music.StartFunkyTwo();
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Wanted suspect location";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "Found him, ~r~Billy Russo and his gang~w~ are hanging out at the ~y~Bahama nighclub~w~.");
 

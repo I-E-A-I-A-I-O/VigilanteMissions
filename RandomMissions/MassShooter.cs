@@ -2,11 +2,11 @@
 using GTA.Native;
 using GTA.Math;
 using System;
-using System.Collections.Generic;
 
 class MassShooter : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -18,7 +18,7 @@ class MassShooter : Mission
     MissionPed enemy;
     Vector3 location;
     Objectives currentObjective;
-    Blip locationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     RelationshipGroup enemyRelGroup;
 
     public MassShooter()
@@ -26,7 +26,7 @@ class MassShooter : Mission
         enemyRelGroup = MissionWorld.RELATIONSHIP_MISSION_MASS_SHOOTER;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch(currentObjective)
         {
@@ -36,7 +36,7 @@ class MassShooter : Mission
                     {
                         return;
                     }
-                    locationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var ped = RandomMissions.CreateCriminal(location);
                     ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, location);
                     enemy = new MissionPed(ped, enemyRelGroup);
@@ -48,7 +48,7 @@ class MassShooter : Mission
                     enemy.GetPed().MaxHealth = 450;
                     enemy.GetPed().Health = 450;
                     enemy.GetPed().Armor = 300;
-                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 3);
+                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed().Handle, 3);
                     enemy.ShowBlip();
                     enemy.GetTask().FightAgainstHatedTargets(190);
 
@@ -76,9 +76,9 @@ class MassShooter : Mission
     {
         currentObjective = Objectives.None;
         MissionWorld.script.Tick -= MissionTick;
-        if (locationBlip != null && locationBlip.Exists())
+        if (ObjectiveLocationBlip != null && ObjectiveLocationBlip.Exists())
         {
-            locationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         if (enemy != null)
         {
@@ -86,12 +86,16 @@ class MassShooter : Mission
         }
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
+        if (enemy.GetPed().Killer == Game.Player.Character)
+        {
+            Progress.enemiesKilledCount += 1;
+        }
         enemy.Delete();
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         //Not needed
     }
@@ -103,10 +107,11 @@ class MassShooter : Mission
             location = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
         } while (Game.Player.Character.IsInRange(location, 200));
 
-        locationBlip = World.CreateBlip(location);
-        locationBlip.Color = BlipColor.Yellow;
-        locationBlip.Name = "Mass shooter location";
-        locationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(location);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Mass shooter location";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 

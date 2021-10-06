@@ -20,9 +20,6 @@ class PoliceBackup
 
     public PoliceBackup()
     {
-        var copRelGroupHash = Function.Call<int>(Hash.GET_HASH_KEY, "COP");
-        var copRelGroup = new RelationshipGroup(copRelGroupHash);
-
         var ran = new Random();
         var backupSize = ran.Next(1, 3);
 
@@ -37,7 +34,7 @@ class PoliceBackup
             vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, new Model(VehicleHash.Policeb), vehiclePos);
             var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
             ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
-            ped.RelationshipGroup = copRelGroup;
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped.Handle, Game.GenerateHash("COP"));
             ped.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             police.Add(ped);
         } else
@@ -48,8 +45,8 @@ class PoliceBackup
             var pedCopilot = vehicle.CreatePedOnSeat(VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
             pedDriver = (Ped)MissionWorld.EntityLoadLoop(pedDriver, vehicle, VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
             pedCopilot = (Ped)MissionWorld.EntityLoadLoop(pedCopilot, vehicle, VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
-            pedDriver.RelationshipGroup = copRelGroup;
-            pedCopilot.RelationshipGroup = copRelGroup;
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, pedDriver.Handle, Game.GenerateHash("COP"));
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, pedCopilot.Handle, Game.GenerateHash("COP"));
             pedDriver.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             pedCopilot.Weapons.Give(WeaponHash.PumpShotgun, 100, true, true);
             police.Add(pedDriver);

@@ -6,8 +6,10 @@ using System.IO;
 
 public class VigilanteMissions: Script
 {
-    bool isPlayerInPoliceVehicle = false;
-    Vehicle currentPoliceVehicle;
+    bool isPlayerInStoppedPoliceVehicle = false;
+    bool isMenuOpenable = false;
+    bool isInStationComputer = false;
+    bool rewardEnabled = false;
     static Menu menu;
     public static Keys accessComputerKey;
     public static Keys interactMissionKey;
@@ -26,6 +28,7 @@ public class VigilanteMissions: Script
         accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
         cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
         interactKey = iniFile.GetValue("Controls", "Interact", "E");
+        rewardEnabled = iniFile.GetValue<bool>("Gameplay", "RewardEnabled", false);
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
         {
@@ -54,13 +57,33 @@ public class VigilanteMissions: Script
         Tick += (o, e) =>
         {
             menu.menuPool.Process();
-            CheckIfPlayerIsInPoliceCar();
-            CheckIfPlayerDied();
+            IsPlayerDead();
+            IsPlayerIsInPoliceCar();
+            IsPlayerInStationComputer();
+            SetIsMenuOpenable();
+            ShowOpenMenuMessage();
         };
+        
+        Tick += GamepadControls;
+        KeyUp += KeyboardControls;
+    }
 
-        Tick += (o, e) =>
+    void KeyboardControls(object o, KeyEventArgs e)
+    {
+        if (e.KeyCode == accessComputerKey && !menu.menuPool.AreAnyVisible && isMenuOpenable)
         {
-            if (Game.LastInputMethod == InputMethod.MouseAndKeyboard)
+            menu.mainMenu.Visible = true;
+        }
+        if (e.KeyCode == cancelMissionKey && MissionWorld.isMissionActive)
+        {
+            GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
+            MissionWorld.QuitMission();
+        }
+    }
+
+    void GamepadControls(object o, EventArgs e)
+    {
+        if (Game.LastInputMethod == InputMethod.MouseAndKeyboard)
             {
                 return;
             }
@@ -80,46 +103,31 @@ public class VigilanteMissions: Script
                 }
             }
 
-            if (Game.IsControlJustReleased(GTA.Control.ScriptPadRight) && !menu.menuPool.AreAnyVisible && isPlayerInPoliceVehicle && currentPoliceVehicle.IsStopped)
+            if (Game.IsControlJustReleased(GTA.Control.ScriptPadRight) && !menu.menuPool.AreAnyVisible && isMenuOpenable)
             {
                 menu.mainMenu.Visible = true;
             }
-        };
-
-        KeyUp += (o, e) =>
-        {
-            if (e.KeyCode == accessComputerKey && !menu.menuPool.AreAnyVisible && isPlayerInPoliceVehicle && currentPoliceVehicle.IsStopped)
-            {
-                menu.mainMenu.Visible = true;
-            }
-            if (e.KeyCode == cancelMissionKey && MissionWorld.isMissionActive)
-            {
-                GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
-                MissionWorld.QuitMission();
-            }
-        };
     }
 
-    void CheckIfPlayerIsInPoliceCar()
+    void ShowOpenMenuMessage()
     {
-        isPlayerInPoliceVehicle = Function.Call<bool>(Hash.IS_PED_IN_ANY_POLICE_VEHICLE, Game.Player.Character);
-        if (isPlayerInPoliceVehicle)
+        if (isMenuOpenable)
         {
-            currentPoliceVehicle = Function.Call<Vehicle>(Hash.GET_VEHICLE_PED_IS_USING, Game.Player.Character);
-            if (currentPoliceVehicle.IsStopped)
+            if (menu.menuPool.AreAnyVisible)
             {
-                switch(Game.LastInputMethod)
+                return;
+            }
+            switch(Game.LastInputMethod)
+            {
+                case InputMethod.MouseAndKeyboard:
                 {
-                    case InputMethod.MouseAndKeyboard:
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {accessKey.ToUpper()} to access the police computer");
-                            break;
-                        }
-                    case InputMethod.GamePad:
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press DPad Right to access the police computer");
-                            break;
-                        }
+                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press {accessKey.ToUpper()} to access the police computer");
+                    break;
+                }
+                case InputMethod.GamePad:
+                {
+                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press DPad Right to access the police computer");
+                    break;
                 }
             }
         } else
@@ -127,16 +135,33 @@ public class VigilanteMissions: Script
             if (menu.menuPool.AreAnyVisible)
             {
                 menu.menuPool.HideAll();
-                menu.mainMenu.Visible = false;
             }
         }
     }
 
-    void CheckIfPlayerDied()
+    void SetIsMenuOpenable()
+    {
+        isMenuOpenable = isPlayerInStoppedPoliceVehicle || isInStationComputer;
+    }
+
+    void IsPlayerInStationComputer()
+    {
+        isInStationComputer = StationComputers.IsNearPoliceComputer(Game.Player.Character);
+    }
+
+    void IsPlayerIsInPoliceCar()
+    {
+        bool isInVehicle = Progress.jokerKilled && rewardEnabled ? Game.Player.Character.IsInVehicle() : Game.Player.Character.IsInPoliceVehicle;
+        isPlayerInStoppedPoliceVehicle = isInVehicle ? Game.Player.Character.CurrentVehicle.IsStopped : false;
+    }
+
+    void IsPlayerDead()
     {
         if (Game.Player.IsDead && MissionWorld.isMissionActive)
         {
             MissionWorld.QuitMission();
+            Progress.missionsFailedCount += 1;
+            SaveProgress();
         }
     }
 
@@ -164,6 +189,10 @@ public class VigilanteMissions: Script
                 writer.Write(Progress.jokerUnlocked);
                 writer.Write(Progress.jokerUnlockedMessageSent);
                 writer.Write(Progress.completedMostWantedMissionsCount);
+                writer.Write(Progress.jokerKilled);
+                writer.Write(Progress.completedCurrentCrimesMissionsCount);
+                writer.Write(Progress.enemiesKilledCount);
+                writer.Write(Progress.missionsFailedCount);
             }
         } catch (Exception)
         {
@@ -186,6 +215,10 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlocked = false;
                 Progress.jokerUnlockedMessageSent = false;
                 Progress.completedMostWantedMissionsCount = 0;
+                Progress.jokerKilled = false;
+                Progress.completedCurrentCrimesMissionsCount = 0;
+                Progress.enemiesKilledCount = 0;
+                Progress.missionsFailedCount = 0;
                 return;
             }
             using (BinaryReader reader = new BinaryReader(File.OpenRead(fileDir)))
@@ -193,12 +226,20 @@ public class VigilanteMissions: Script
                 Progress.jokerUnlocked = reader.ReadBoolean();
                 Progress.jokerUnlockedMessageSent = reader.ReadBoolean();
                 Progress.completedMostWantedMissionsCount = reader.ReadInt32();
+                Progress.jokerKilled = reader.ReadBoolean();
+                Progress.completedCurrentCrimesMissionsCount = reader.ReadInt32();
+                Progress.enemiesKilledCount = reader.ReadInt32();
+                Progress.missionsFailedCount = reader.ReadInt32();
             }
         } catch(Exception)
         {
             Progress.jokerUnlocked = false;
             Progress.jokerUnlockedMessageSent = false;
             Progress.completedMostWantedMissionsCount = 0;
+            Progress.jokerKilled = false;
+            Progress.completedCurrentCrimesMissionsCount = 0;
+            Progress.enemiesKilledCount = 0;
+            Progress.missionsFailedCount = 0;
             //GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't read your vigilante missions progress file. Your progress for the last most wanted is lost!");
         }
     }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 class Assault : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -21,7 +22,7 @@ class Assault : Mission
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     Objectives currentObjective;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     int actionToTake;
     int shootRange;
     bool actionTaken = false;
@@ -36,7 +37,7 @@ class Assault : Mission
         neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch (currentObjective)
         {
@@ -46,7 +47,7 @@ class Assault : Mission
                     {
                         return;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     var enemy = RandomMissions.CreateCriminal(objectiveLocation);
                     var neutral = RandomMissions.CreateVictim(objectiveLocation);
                     enemy = (Ped)MissionWorld.EntityLoadLoop(enemy, RandomMissions.CreateCriminal, objectiveLocation);
@@ -148,20 +149,24 @@ class Assault : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -169,7 +174,7 @@ class Assault : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach(MissionPed neutral in neutralPeds)
         {
@@ -187,10 +192,11 @@ class Assault : Mission
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
-            objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
-            objectiveLocationBlip.Color = BlipColor.Yellow;
-            objectiveLocationBlip.ShowRoute = true;
-            objectiveLocationBlip.Name = "Crime scene";
+            ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+            ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+            ObjectiveLocationBlip.Color = BlipColor.Yellow;
+            ObjectiveLocationBlip.ShowRoute = true;
+            ObjectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
             MissionWorld.script.Tick += MissionTick;

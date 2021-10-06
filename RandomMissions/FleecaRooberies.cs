@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class FleecaRooberies : Mission
 {
     public override bool IsMostWanted => false;
+    public override bool IsJokerMission => false;
 
     enum Objectives
     {
@@ -16,7 +17,7 @@ class FleecaRooberies : Mission
     }
 
     Vector3 objectiveLocation;
-    Blip objectiveLocationBlip;
+    public override Blip ObjectiveLocationBlip { get; set; }
     int missionIndex;
     bool doorsUnlocked = false;
     Objectives currentObjective;
@@ -31,7 +32,7 @@ class FleecaRooberies : Mission
         hostagesRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
     }
 
-    public override void MissionTick(object o, EventArgs e)
+    protected override void MissionTick(object o, EventArgs e)
     {
         switch (currentObjective)
         {
@@ -50,7 +51,7 @@ class FleecaRooberies : Mission
                         enemies.Add(new MissionPed(enemyPeds[i], enemiesRelGroup));
                         enemies[i].GetPed().Accuracy = 80;
                         enemies[i].GetPed().Armor = 100;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed().Handle, 1);
                         enemies[i].ShowBlip();
                         enemies[i].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
                     }
@@ -60,7 +61,7 @@ class FleecaRooberies : Mission
                         hostages[i].GetTask().HandsUp(1800000);
                         hostages[i].GetPed().BlockPermanentEvents = true;
                     }
-                    objectiveLocationBlip.Delete();
+                    ObjectiveLocationBlip.Delete();
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~bank robbers~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -100,20 +101,24 @@ class FleecaRooberies : Mission
         {
             enemy.Delete();
         }
-        if (objectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip.Exists())
         {
-            objectiveLocationBlip.Delete();
+            ObjectiveLocationBlip.Delete();
         }
         RemoveVehiclesAndNeutrals();
     }
 
-    public override void RemoveDeadEnemies()
+    protected override void RemoveDeadEnemies()
     {
         var aliveEnemies = enemies;
         for (var i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].IsDead())
             {
+                if (enemies[i].GetPed().Killer == Game.Player.Character)
+                {
+                    Progress.enemiesKilledCount += 1;
+                }
                 enemies[i].Delete();
                 aliveEnemies.RemoveAt(i);
             }
@@ -121,7 +126,7 @@ class FleecaRooberies : Mission
         enemies = aliveEnemies;
     }
 
-    public override void RemoveVehiclesAndNeutrals()
+    protected override void RemoveVehiclesAndNeutrals()
     {
         foreach (MissionPed hostage in hostages)
         {
@@ -138,10 +143,11 @@ class FleecaRooberies : Mission
             FleecaRobberiesInit.SelectLocation(missionIndex, out objectiveLocation);
         } while (Game.Player.Character.IsInRange(objectiveLocation, 200));
 
-        objectiveLocationBlip = World.CreateBlip(objectiveLocation);
-        objectiveLocationBlip.Color = BlipColor.Yellow;
-        objectiveLocationBlip.Name = "Fleeca robbery";
-        objectiveLocationBlip.ShowRoute = true;
+        ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
+        ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
+        ObjectiveLocationBlip.Color = BlipColor.Yellow;
+        ObjectiveLocationBlip.Name = "Fleeca robbery";
+        ObjectiveLocationBlip.ShowRoute = true;
 
         currentObjective = Objectives.GoToLocation;
         MissionWorld.script.Tick += MissionTick;
