@@ -3,10 +3,11 @@ using GTA.Native;
 using GTA.Math;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 class MissionNine : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToMotelRoom,
@@ -39,20 +40,16 @@ class MissionNine : Mission
         Bike02
     }
 
-    Script script;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Objectives currentObjective;
-    Music music;
     Blip objectiveLocationBlip;
     Blip bombOneBlip;
     Blip bombTwoBlip;
     Blip bombThreeBlip;
-    MissionWorld missionWorld;
-    MostWantedMissions mostWantedMissions;
     RelationshipGroup neutralRelGroup;
     RelationshipGroup aggressiveRelGroup;
     RelationshipGroup pedRelGroup;
@@ -61,17 +58,13 @@ class MissionNine : Mission
     bool bombThreePlanted = false;
     bool reinforcementSpawned = false;
 
-    public MissionNine(Script script, MissionWorld missionWorld, RelationshipGroup neutralRelGroup, RelationshipGroup aggressiveRelGroup, RelationshipGroup pedRelGroup)
+    public MissionNine()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.neutralRelGroup = neutralRelGroup;
-        this.aggressiveRelGroup = aggressiveRelGroup;
-        this.pedRelGroup = pedRelGroup;
+        neutralRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
+        aggressiveRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
+        pedRelGroup = MissionWorld.RELATIONSHIP_MISSION_LIKE;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_NINE_JESSE_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -89,17 +82,17 @@ class MissionNine : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    objectiveLocation = mostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
-                    var peds = mostWantedMissions.InitializeMissionNineMotelRoomPeds();
-                    Script.Wait(500);
+                    objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
+                    var peds = MostWantedMissions.InitializeMissionNineMotelRoomPeds();
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineMotelRoomPeds);
                     foreach (Ped ped in peds)
                     {
-                        neutralPeds.Add(new MissionPed(ped, pedRelGroup, objectiveLocation, script, true));
+                        neutralPeds.Add(new MissionPed(ped, pedRelGroup,  true));
                     }
-                    neutralPeds[(int)MotelRoomPeds.Jesse].ped.Task.StartScenario("WORLD_HUMAN_DRUG_DEALER_HARD", 0);
-                    neutralPeds[(int)MotelRoomPeds.JesseGF].ped.Task.StartScenario("WORLD_HUMAN_YOGA", 0);
+                    neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().StartScenario("WORLD_HUMAN_DRUG_DEALER_HARD", 0);
+                    neutralPeds[(int)MotelRoomPeds.JesseGF].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
 
-                    GTA.UI.Screen.ShowSubtitle("Enter the motel room.", 8000);
+                    GTA.UI.Screen.ShowSubtitle("Enter the ~b~motel room~w~.", 8000);
 
                     currentObjective = Objectives.EnterMotelRoom;
                     break;
@@ -113,8 +106,8 @@ class MissionNine : Mission
                     var taskSequence = new TaskSequence();
                     taskSequence.AddTask.LookAt(Game.Player.Character);
                     taskSequence.AddTask.HandsUp(1800000);
-                    neutralPeds[(int)MotelRoomPeds.Jesse].ped.Task.PerformSequence(taskSequence);
-                    neutralPeds[(int)MotelRoomPeds.JesseGF].ped.Task.Cower(1800000);
+                    neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().PerformSequence(taskSequence);
+                    neutralPeds[(int)MotelRoomPeds.JesseGF].GetTask().Cower(1800000);
 
                     GTA.UI.Screen.ShowSubtitle("~b~Interrogate ~r~Jesse Pinkman", 8000);
 
@@ -126,10 +119,10 @@ class MissionNine : Mission
                     if (neutralPeds[(int)MotelRoomPeds.Jesse].IsDead())
                     {
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, Jesse Pinkman is dead.", 8000);
-                        missionWorld.QuitMission();
+                        MissionWorld.QuitMission();
                         return;
                     }
-                    if (Game.Player.Character.IsInRange(neutralPeds[(int)MotelRoomPeds.Jesse].ped.Position, 2))
+                    if (Game.Player.Character.IsInRange(neutralPeds[(int)MotelRoomPeds.Jesse].GetPosition(), 2))
                     {
                         if (Game.LastInputMethod == InputMethod.GamePad)
                         {
@@ -141,14 +134,14 @@ class MissionNine : Mission
                         }
                         if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                         {
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.PlayAmbientSpeech("GENERIC_FRIGHTENED_HIGH", SpeechModifier.ShoutedClear);
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.Task.ClearAllImmediately();
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.Task.PlayAnimation("busted", "idle_2_hands_up", 8f, -1, AnimationFlags.StayInEndFrame);
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.AddBlip();
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.AttachedBlip.Scale = 0.8f;
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.AttachedBlip.Color = BlipColor.Red;
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.AttachedBlip.Name = "Jesse Pinkman";
-                            neutralPeds[(int)MotelRoomPeds.Jesse].ped.AttachedBlip.IsFlashing = true;
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetPed().PlayAmbientSpeech("GENERIC_FRIGHTENED_HIGH", SpeechModifier.ShoutedClear);
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().ClearAllImmediately();
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().PlayAnimation("busted", "idle_2_hands_up", 8f, -1, AnimationFlags.StayInEndFrame);
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetPed().AddBlip();
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetBlip().Scale = 0.8f;
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetBlip().Color = BlipColor.Red;
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetBlip().Name = "Jesse Pinkman";
+                            neutralPeds[(int)MotelRoomPeds.Jesse].GetBlip().IsFlashing = true;
 
                             GTA.UI.Screen.ShowSubtitle("Kill ~r~Jesse Pinkman~w~.", 8000);
                             currentObjective = Objectives.KillJesse;
@@ -160,10 +153,10 @@ class MissionNine : Mission
                 {
                     if (neutralPeds[(int)MotelRoomPeds.Jesse].IsDead())
                     {
-                        neutralPeds[(int)MotelRoomPeds.Jesse].ped.AttachedBlip.Delete();
+                        neutralPeds[(int)MotelRoomPeds.Jesse].GetBlip().Delete();
                         RemoveVehiclesAndNeutrals();
                         GTA.UI.Screen.ShowSubtitle("Leave the motel room.", 8000);
-                        objectiveLocation = mostWantedMissions.MISSION_NINE_JESSE_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_LOCATION;
                         currentObjective = Objectives.ExitMotelRoom;
                     }
                     break;
@@ -173,7 +166,7 @@ class MissionNine : Mission
                     if (Game.Player.Character.IsInRange(objectiveLocation, 20))
                     {
                         GTA.UI.Screen.ShowSubtitle("Go to the ~y~meth lab~w~.", 8000);
-                        objectiveLocation = mostWantedMissions.MISSION_NINE_LAB_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_LOCATION;
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "Meth lab";
@@ -188,13 +181,13 @@ class MissionNine : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionNineLabEntranceGuards();
-                    Script.Wait(500);
+                    var peds = MostWantedMissions.InitializeMissionNineLabEntranceGuards();
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabEntranceGuards);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], neutralRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(peds[i], neutralRelGroup));
                         enemies[i].ShowBlip();
                         enemies[i].GiveRandomScenario();
                     }
@@ -209,15 +202,14 @@ class MissionNine : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_NINE_LAB_INSIDE_LOCATION;
-                        props = mostWantedMissions.InitializeMissionNineLabProps();
-                        var peds = mostWantedMissions.InitializeMissionNineLabPeds();
-                        Script.Wait(1000);
-                        foreach(Ped ped in peds)
+                        objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_INSIDE_LOCATION;
+                        var peds = MostWantedMissions.InitializeMissionNineLabPeds();
+                        peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabPeds);
+                        foreach (Ped ped in peds)
                         {
-                            enemies.Add(new MissionPed(ped, aggressiveRelGroup, objectiveLocation, script));
+                            enemies.Add(new MissionPed(ped, aggressiveRelGroup));
                         }
-                        GTA.UI.Screen.ShowSubtitle("Enter the meth lab.", 8000);
+                        GTA.UI.Screen.ShowSubtitle("Enter the ~b~meth lab~w~.", 8000);
                         currentObjective = Objectives.EnterLab;
                     }
                     break;
@@ -242,13 +234,13 @@ class MissionNine : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        bombOneBlip = World.CreateBlip(mostWantedMissions.MISSION_NINE_LAB_BOMB_ONE_POSITION);
+                        bombOneBlip = World.CreateBlip(MostWantedMissions.MISSION_NINE_LAB_BOMB_ONE_POSITION);
                         bombOneBlip.Color = BlipColor.Yellow;
                         bombOneBlip.Name = "Plant bomb";
-                        bombTwoBlip = World.CreateBlip(mostWantedMissions.MISSION_NINE_LAB_BOMB_TWO_POSITION);
+                        bombTwoBlip = World.CreateBlip(MostWantedMissions.MISSION_NINE_LAB_BOMB_TWO_POSITION);
                         bombTwoBlip.Color = BlipColor.Yellow;
                         bombTwoBlip.Name = "Plant bomb";
-                        bombThreeBlip = World.CreateBlip(mostWantedMissions.MISSION_NINE_LAB_BOMB_THREE_POSITION);
+                        bombThreeBlip = World.CreateBlip(MostWantedMissions.MISSION_NINE_LAB_BOMB_THREE_POSITION);
                         bombThreeBlip.Color = BlipColor.Yellow;
                         bombThreeBlip.Name = "Plant bomb";
 
@@ -262,7 +254,7 @@ class MissionNine : Mission
                 {
                     if (!bombOnePlanted)
                     {
-                        if (Game.Player.Character.IsInRange(mostWantedMissions.MISSION_NINE_LAB_BOMB_ONE_POSITION, 1.1f))
+                        if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_ONE_POSITION, 1.1f))
                         {
                             if (Game.LastInputMethod == InputMethod.GamePad)
                             {
@@ -276,38 +268,15 @@ class MissionNine : Mission
                             {
                                 PlayPlantBombAnim(Vector3.RelativeBack.ToHeading());
                                 Script.Wait(2000);
-                                props.Add(mostWantedMissions.InitializeMissionNineBombOne());
+                                props.Add(MostWantedMissions.InitializeMissionNineBombOne());
                                 bombOneBlip.Delete();
                                 bombOnePlanted = true;
-                                vehicles = mostWantedMissions.InitializeMissionNineVehicles();
                             }
                         }
                     }
                     if (!bombTwoPlanted)
                     {
-                        if (Game.Player.Character.IsInRange(mostWantedMissions.MISSION_NINE_LAB_BOMB_TWO_POSITION, 1.1f))
-                        {
-                            if (Game.LastInputMethod == InputMethod.GamePad)
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to plant the ~y~bomb");
-                            }
-                            else
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to plant the ~y~bomb");
-                            }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
-                            {
-                                PlayPlantBombAnim(Vector3.RelativeBack.ToHeading());
-                                Script.Wait(2000);
-                                props.Add(mostWantedMissions.InitializeMissionNineBombTwo());
-                                bombTwoBlip.Delete();
-                                bombTwoPlanted = true;
-                            }
-                        }
-                    }
-                    if (!bombThreePlanted)
-                    {
-                        if (Game.Player.Character.IsInRange(mostWantedMissions.MISSION_NINE_LAB_BOMB_THREE_POSITION, 1.1f))
+                        if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_TWO_POSITION, 1.1f))
                         {
                             if (Game.LastInputMethod == InputMethod.GamePad)
                             {
@@ -321,7 +290,29 @@ class MissionNine : Mission
                             {
                                 PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
                                 Script.Wait(2000);
-                                props.Add(mostWantedMissions.InitializeMissionNineBombThree());
+                                props.Add(MostWantedMissions.InitializeMissionNineBombTwo());
+                                bombTwoBlip.Delete();
+                                bombTwoPlanted = true;
+                            }
+                        }
+                    }
+                    if (!bombThreePlanted)
+                    {
+                        if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_THREE_POSITION, 1.1f))
+                        {
+                            if (Game.LastInputMethod == InputMethod.GamePad)
+                            {
+                                GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to plant the ~y~bomb");
+                            }
+                            else
+                            {
+                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to plant the ~y~bomb");
+                            }
+                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                            {
+                                PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
+                                Script.Wait(2000);
+                                props.Add(MostWantedMissions.InitializeMissionNineBombThree());
                                 bombThreeBlip.Delete();
                                 bombThreePlanted = true;
                             }
@@ -330,7 +321,7 @@ class MissionNine : Mission
                     if (bombOnePlanted && bombTwoPlanted && bombThreePlanted)
                     {
                         GTA.UI.Screen.ShowSubtitle("Leave the meth lab.", 8000);
-                        objectiveLocation = mostWantedMissions.MISSION_NINE_LAB_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_LOCATION;
                         currentObjective = Objectives.LeaveLab;
                     }
                     break;
@@ -339,7 +330,9 @@ class MissionNine : Mission
                 {
                     if (Game.Player.Character.IsInRange(objectiveLocation, 20))
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_NINE_REINFORCEMENT_LOCATION;
+                        vehicles = MostWantedMissions.InitializeMissionNineVehicles();
+                        vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionNineVehicles);
+                        objectiveLocation = MostWantedMissions.MISSION_NINE_REINFORCEMENT_LOCATION;
                         var peds = new List<Ped>
                         {
                             vehicles[(int)Vehicles.Car].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Chef)),
@@ -348,16 +341,20 @@ class MissionNine : Mission
                             vehicles[(int)Vehicles.Bike01].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                             vehicles[(int)Vehicles.Bike02].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                         };
-                        Script.Wait(1000);
+                        peds[0] = (Ped)MissionWorld.EntityLoadLoop(peds[0], vehicles[(int)Vehicles.Car], VehicleSeat.Driver, new Model(PedHash.Chef));
+                        peds[1] = (Ped)MissionWorld.EntityLoadLoop(peds[1], vehicles[(int)Vehicles.Bike01], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
+                        peds[2] = (Ped)MissionWorld.EntityLoadLoop(peds[2], vehicles[(int)Vehicles.Bike01], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
+                        peds[3] = (Ped)MissionWorld.EntityLoadLoop(peds[3], vehicles[(int)Vehicles.Bike02], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
+                        peds[4] = (Ped)MissionWorld.EntityLoadLoop(peds[4], vehicles[(int)Vehicles.Bike02], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
                         for (var i = 0; i < peds.Count; i++)
                         {
-                            enemies.Add(new MissionPed(peds[i], neutralRelGroup, objectiveLocation, script, false, true));
+                            enemies.Add(new MissionPed(peds[i], neutralRelGroup, false, true));
                             enemies[i].ShowBlip();
                         }
-                        enemies[(int)Vehicles.Car].ped.BlockPermanentEvents = true;
-                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Car].ped.Handle, vehicles[(int)Vehicles.Car].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 300f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
-                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Bike01].ped.Handle, vehicles[(int)Vehicles.Bike01].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 225f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
-                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Bike02].ped.Handle, vehicles[(int)Vehicles.Bike02].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 225f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
+                        enemies[(int)Vehicles.Car].GetPed().BlockPermanentEvents = true;
+                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Car].GetPed().Handle, vehicles[(int)Vehicles.Car].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 300f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
+                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Bike01].GetPed().Handle, vehicles[(int)Vehicles.Bike01].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 225f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
+                        Function.Call(Hash.TASK_VEHICLE_MISSION_COORS_TARGET, enemies[(int)Vehicles.Bike02].GetPed().Handle, vehicles[(int)Vehicles.Bike02].Handle, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 225f, (int)DrivingStyle.Rushed, 5f, 5f, 1);
                         GTA.UI.Screen.ShowSubtitle("Kill ~r~Heisenberg~w~.", 8000);
                         currentObjective = Objectives.KillTarget;
                     }
@@ -370,24 +367,24 @@ class MissionNine : Mission
                     {
                         if (!reinforcementSpawned)
                         {
-                            if (enemies[0].ped.IsInRange(objectiveLocation, 110))
+                            if (enemies[0].GetPed().IsInRange(objectiveLocation, 110))
                             {
-                                var peds = mostWantedMissions.InitializeMissionNineReinforcements();
-                                Script.Wait(1000);
+                                var peds = MostWantedMissions.InitializeMissionNineReinforcements();
+                                peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineReinforcements);
                                 for (var i = 0; i < peds.Count; i++)
                                 {
-                                    enemies.Add(new MissionPed(peds[i], aggressiveRelGroup, objectiveLocation, script));
-                                    if (enemies[i].ped.AttachedBlip == null)
+                                    enemies.Add(new MissionPed(peds[i], aggressiveRelGroup));
+                                    if (enemies[i].GetBlip() == null)
                                     {
                                         enemies[i].ShowBlip();
                                     }
                                 }
                                 reinforcementSpawned = true;
-                                enemies[0].ped.BlockPermanentEvents = false;
+                                enemies[0].GetPed().BlockPermanentEvents = false;
                                 var sequence = new TaskSequence();
                                 sequence.AddTask.LeaveVehicle();
                                 sequence.AddTask.FleeFrom(Game.Player.Character);
-                                enemies[0].ped.Task.PerformSequence(sequence);
+                                enemies[0].GetTask().PerformSequence(sequence);
                                 GTA.UI.Screen.ShowSubtitle("~r~Heisenberg~w~ arrived at his ~r~reinforcements~w~ arrived. Kill everyone.");
                             }
                         }
@@ -410,9 +407,9 @@ class MissionNine : Mission
                     }
                     if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                     {
-                        World.AddExplosion(mostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
-                        World.AddExplosion(mostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
-                        World.AddExplosion(mostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
+                        World.AddExplosion(MostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
+                        World.AddExplosion(MostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
+                        World.AddExplosion(MostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
                         currentObjective = Objectives.Complete;
                     }
                     break;
@@ -423,8 +420,8 @@ class MissionNine : Mission
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "Good job, your cut of the reward is already in your account.");
                     currentObjective = Objectives.None;
                     Game.Player.Money += 15000;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -432,9 +429,9 @@ class MissionNine : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         if (bombOneBlip != null)
         {
             bombOneBlip.Delete();
@@ -496,7 +493,7 @@ class MissionNine : Mission
             return false;
         }
 
-        music.StartCountry();
+        Music.StartCountry();
 
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "I couldn't find this ~r~Heisenberg~w~ guy, but i know where his associate ~r~Jesse Pinkman~w~ is. Head to ~y~The motor motel~w~.");
 
@@ -510,7 +507,7 @@ class MissionNine : Mission
 
         currentObjective = Objectives.GoToMotelRoom;
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
 
         return true;
     }

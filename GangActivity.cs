@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class GangActivity : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -14,22 +16,15 @@ class GangActivity : Mission
         None
     }
 
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    Script script;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
 
-    public GangActivity(Script script, MissionWorld missionWorld, RelationshipGroup relationshipGroup)
+    public GangActivity()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        enemiesRelGroup = relationshipGroup;
-
-        randomMissions = new RandomMissions();
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -43,17 +38,13 @@ class GangActivity : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-
-                    var peds = randomMissions.CreateGroupOfCriminals(objectiveLocation);
-                    Script.Wait(1000);
-                    foreach (Ped ped in peds)
+                    var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
+                    peds = MissionWorld.PedListLoadLoop(peds, RandomMissions.CreateGroupOfCriminals, objectiveLocation);
+                    for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
-                        enemy.GiveRandomScenario();
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
+                        enemies[i].GiveRandomScenario();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -76,8 +67,8 @@ class GangActivity : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -86,7 +77,7 @@ class GangActivity : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -122,7 +113,7 @@ class GangActivity : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
@@ -132,7 +123,7 @@ class GangActivity : Mission
             objectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
-            script.Tick += MissionTick;
+            MissionWorld.script.Tick += MissionTick;
             return true;
         } catch (Exception)
         {

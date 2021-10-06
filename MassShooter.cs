@@ -2,9 +2,12 @@
 using GTA.Native;
 using GTA.Math;
 using System;
+using System.Collections.Generic;
 
 class MassShooter : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -15,19 +18,12 @@ class MassShooter : Mission
     MissionPed enemy;
     Vector3 location;
     Objectives currentObjective;
-    Script script;
-    MissionWorld missionWorld;
-    RandomMissions randomMissions;
     Blip locationBlip;
     RelationshipGroup enemyRelGroup;
 
-    public MassShooter(Script script, MissionWorld missionWorld, RelationshipGroup enemyRelGroup)
+    public MassShooter()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemyRelGroup = enemyRelGroup;
-
-        randomMissions = new RandomMissions();
+        enemyRelGroup = MissionWorld.RELATIONSHIP_MISSION_MASS_SHOOTER;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -41,20 +37,20 @@ class MassShooter : Mission
                         return;
                     }
                     locationBlip.Delete();
-                    var ped = randomMissions.CreateCriminal(location);
-                    Script.Wait(500);
-                    enemy = new MissionPed(ped, enemyRelGroup, location, script);
-                    enemy.ped.FiringPattern = FiringPattern.FullAuto;
-                    enemy.ped.Accuracy = 80;
-                    enemy.ped.GiveHelmet(false, Helmet.RegularMotorcycleHelmet, 1);
-                    enemy.ped.CanSufferCriticalHits = false;
-                    enemy.ped.CanWrithe = false;
-                    enemy.ped.MaxHealth = 450;
-                    enemy.ped.Health = 450;
-                    enemy.ped.Armor = 300;
-                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.ped, 3);
+                    var ped = RandomMissions.CreateCriminal(location);
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, location);
+                    enemy = new MissionPed(ped, enemyRelGroup);
+                    enemy.GetPed().FiringPattern = FiringPattern.FullAuto;
+                    enemy.GetPed().Accuracy = 80;
+                    enemy.GetPed().GiveHelmet(false, Helmet.RegularMotorcycleHelmet, 1);
+                    enemy.GetPed().CanSufferCriticalHits = false;
+                    enemy.GetPed().CanWrithe = false;
+                    enemy.GetPed().MaxHealth = 450;
+                    enemy.GetPed().Health = 450;
+                    enemy.GetPed().Armor = 300;
+                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 3);
                     enemy.ShowBlip();
-                    enemy.ped.Task.FightAgainstHatedTargets(190);
+                    enemy.GetTask().FightAgainstHatedTargets(190);
 
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~shooter~w~.", 8000);
                     currentObjective = Objectives.KillEnemy;
@@ -67,9 +63,9 @@ class MassShooter : Mission
                         RemoveDeadEnemies();
                         GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                         Game.Player.Money += 1200;
-                        missionWorld.CompleteMission();
+                        MissionWorld.CompleteMission();
                         currentObjective = Objectives.None;
-                        script.Tick -= MissionTick;
+                        MissionWorld.script.Tick -= MissionTick;
                     }
                     break;
                 }
@@ -79,7 +75,7 @@ class MassShooter : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         if (locationBlip != null && locationBlip.Exists())
         {
             locationBlip.Delete();
@@ -104,7 +100,7 @@ class MassShooter : Mission
     {
         do
         {
-            location = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+            location = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
         } while (Game.Player.Character.IsInRange(location, 200));
 
         locationBlip = World.CreateBlip(location);
@@ -115,7 +111,7 @@ class MassShooter : Mission
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
         currentObjective = Objectives.GoToLocation;
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
 
         return true;
     }

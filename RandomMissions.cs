@@ -4,9 +4,9 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class RandomMissions
+static class RandomMissions
 {
-    readonly List<Vector3> LOCATIONS_FOOT = new List<Vector3>()
+    static readonly List<Vector3> LOCATIONS_FOOT = new List<Vector3>()
     {
        new Vector3(958.3557f, -141.5549f, 75.50748f),
        new Vector3(1164.845f, -334.2931f, 69.74226f),
@@ -85,7 +85,8 @@ class RandomMissions
        new Vector3(1050.356f, 2667.707f, 39.55112f),
        new Vector3(616.5576f, 2734.069f, 42.01853f)
     };
-    readonly List<Vector3> LOCATIONS_VEHICLE = new List<Vector3>()
+
+    static readonly List<Vector3> LOCATIONS_VEHICLE = new List<Vector3>()
     {
         new Vector3(-1326.338f, 5136.826f, 61.98092f), 
         new Vector3(-337.7497f, 6069.629f, 31.73389f), 
@@ -164,7 +165,8 @@ class RandomMissions
         new Vector3(748.8038f, 3595.673f, 32.978f),
         new Vector3(-2201.213f, 4261.719f, 47.933f)
     };
-    readonly List<VehicleHash> VEHICLES = new List<VehicleHash>()
+
+    static readonly List<VehicleHash> VEHICLES = new List<VehicleHash>()
     {
         VehicleHash.Zentorno,
         VehicleHash.SultanRS,
@@ -182,7 +184,8 @@ class RandomMissions
         VehicleHash.Banshee,
         VehicleHash.Bullet
     };
-    readonly List<PedHash> VICTIMS = new List<PedHash>()
+
+    static readonly List<PedHash> VICTIMS = new List<PedHash>()
     {
         PedHash.Vinewood01AFY,
         PedHash.Vinewood01AMY,
@@ -197,7 +200,8 @@ class RandomMissions
         PedHash.Runner01AMY,
         PedHash.FatWhite01AFM
     };
-    readonly List<PedHash> CRIMINALS = new List<PedHash>()
+
+    static readonly List<PedHash> CRIMINALS = new List<PedHash>()
     {
         PedHash.ArmGoon01GMM,
         PedHash.MexGang01GMY,
@@ -218,7 +222,7 @@ class RandomMissions
         Vehicle
     }
 
-    public Vector3 GetRandomLocation(LocationType type)
+    static public Vector3 GetRandomLocation(LocationType type)
     {
         var ran = new Random();
         if (type == LocationType.Foot)
@@ -230,25 +234,25 @@ class RandomMissions
         }
     }
 
-    public Ped CreateVictim(Vector3 location)
+    static public Ped CreateVictim(Vector3 location)
     {
         var ran = new Random();
         return World.CreatePed(new Model(VICTIMS[ran.Next(0, VICTIMS.Count)]), location.Around(2));
     }
 
-    public Ped CreateCriminal(Vector3 location)
+    static public Ped CreateCriminal(Vector3 location)
     {
         var ran = new Random();
         return World.CreatePed(new Model(CRIMINALS[ran.Next(0, CRIMINALS.Count)]), location.Around(2));
     }
 
-    public Vehicle CreateVehicle(Vector3 location)
+    static public Vehicle CreateVehicle(Vector3 location)
     {
         var ran = new Random();
         return World.CreateVehicle(new Model(VEHICLES[ran.Next(0, VEHICLES.Count)]), location.Around(2));
     }
 
-    public List<Ped> CreateGroupOfCriminals(Vector3 location)
+    static public List<Ped> CreateGroupOfCriminals(Vector3 location)
     {
         var ran = new Random();
         var groupSize = ran.Next(4, 13);

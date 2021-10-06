@@ -3,31 +3,41 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 
-class MostWantedMissions
+static class MostWantedMissions
 {
-    public readonly Vector3 MISSION_ONE_LOCATION = new Vector3(-356.5191f, -61.93171f, 54f);
-    public readonly Vector3 MISSION_TWO_LOCATION = new Vector3(-2075.674f, -1020.837f, 4.88413f);
-    public readonly Vector3 MISSION_THREE_LOCATION = new Vector3(1400.261f, 1147.438f, 118.3301f);
-    public readonly Vector3 MISSION_FOUR_LOCATION = new Vector3(-1262.259f, -3361.105f, 12.9450493f);
-    public readonly Vector3 MISSION_FOUR_FAIL_LOCATION = new Vector3(3557.105f, 3919.986f, 711.1465f);
-    public readonly Vector3 MISSION_FIVE_LOCATION = new Vector3(-206.912659f, 1548.97009f, 320.199738f);
-    public readonly Vector3 MISSION_SIX_LOCATION = new Vector3(3025.3f, 2071.449f, 3.107029f);
-    public readonly Vector3 MISSION_SEVEN_START_LOCATION = new Vector3(-54.003788f, -778.6506f, 43.257515f);
-    public readonly Vector3 MISSION_SEVEN_OFFICE_LOCATION = new Vector3(-75.8502655f, -824.573853f, 242.385849f);
-    public readonly Vector3 MISSION_SEVEN_ROOF_LOCATION = new Vector3(-65.0182f, -822.9397f, 320.289f);
-    public readonly Vector3 MISSION_SEVEN_EXPLOSION_LOCATION = new Vector3(-2057.91821f, -1749.02991f, -3.73062015f);
-    public readonly Vector3 MISSION_EIGHT_LOCATON = new Vector3(958.260742f, -143.733139f, 73.4963f);
-    public readonly Vector3 MISSION_NINE_JESSE_WALK_TO = new Vector3(152.14949f, -1003.44025f, -99.99998f);
-    public readonly Vector3 MISSION_NINE_JESSE_LOCATION = new Vector3(1121.41736f, 2643.13184f, 37.1487274f);
-    public readonly Vector3 MISSION_NINE_LAB_LOCATION = new Vector3(640.0001f, 2773.23047f, 41.0256233f);
-    public readonly Vector3 MISSION_NINE_LAB_INSIDE_LOCATION = new Vector3(1118.97827f, -3194.53955f, -41.3989334f);
-    public readonly Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION = new Vector3(1133.70923f, -3198.914f, -40.6607f);
-    public readonly Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION = new Vector3(1122.70459f, -3199.04419f, -41.3888321f);
-    public readonly Vector3 MISSION_NINE_LAB_BOMB_THREE_POSITION = new Vector3(1136.906f, -3193.216f, -41.3908653f);
-    public readonly Vector3 MISSION_NINE_REINFORCEMENT_LOCATION = new Vector3(181.875916f, 2242.46826f, 88.96377f);
-    public readonly Vector3 MISSION_TEN_LOCATION = new Vector3(-1388.65723f, -586.457153f, 29.2190189f);
+    public static readonly Vector3 MISSION_ONE_LOCATION = new Vector3(-356.5191f, -61.93171f, 54f);
+    public static readonly Vector3 MISSION_TWO_LOCATION = new Vector3(-2075.674f, -1020.837f, 4.88413f);
+    public static readonly Vector3 MISSION_THREE_LOCATION = new Vector3(1400.261f, 1147.438f, 118.3301f);
+    public static readonly Vector3 MISSION_FOUR_LOCATION = new Vector3(-1262.259f, -3361.105f, 12.9450493f);
+    public static readonly Vector3 MISSION_FOUR_FAIL_LOCATION = new Vector3(3557.105f, 3919.986f, 711.1465f);
+    public static readonly Vector3 MISSION_FIVE_LOCATION = new Vector3(-206.912659f, 1548.97009f, 320.199738f);
+    public static readonly Vector3 MISSION_SIX_LOCATION = new Vector3(3025.3f, 2071.449f, 3.107029f);
+    public static readonly Vector3 MISSION_SEVEN_START_LOCATION = new Vector3(-54.003788f, -778.6506f, 43.257515f);
+    public static readonly Vector3 MISSION_SEVEN_OFFICE_LOCATION = new Vector3(-75.8502655f, -824.573853f, 242.385849f);
+    public static readonly Vector3 MISSION_SEVEN_ROOF_LOCATION = new Vector3(-65.0182f, -822.9397f, 320.289f);
+    public static readonly Vector3 MISSION_SEVEN_EXPLOSION_LOCATION = new Vector3(-2057.91821f, -1749.02991f, -3.73062015f);
+    public static readonly Vector3 MISSION_EIGHT_LOCATON = new Vector3(958.260742f, -143.733139f, 73.4963f);
+    public static readonly Vector3 MISSION_NINE_JESSE_WALK_TO = new Vector3(152.14949f, -1003.44025f, -99.99998f);
+    public static readonly Vector3 MISSION_NINE_JESSE_LOCATION = new Vector3(1121.41736f, 2643.13184f, 37.1487274f);
+    public static readonly Vector3 MISSION_NINE_LAB_LOCATION = new Vector3(640.0001f, 2773.23047f, 41.0256233f);
+    public static readonly Vector3 MISSION_NINE_LAB_INSIDE_LOCATION = new Vector3(1118.97827f, -3194.53955f, -41.3989334f);
+    public static readonly Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION = new Vector3(1132.146f, -3197.032f, -40.6607f);
+    public static readonly Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION = new Vector3(1123.822f, -3194.421f, -41.39821f);
+    public static readonly Vector3 MISSION_NINE_LAB_BOMB_THREE_POSITION = new Vector3(1136.906f, -3193.216f, -41.3908653f);
+    public static readonly Vector3 MISSION_NINE_REINFORCEMENT_LOCATION = new Vector3(181.875916f, 2242.46826f, 88.96377f);
+    public static readonly Vector3 MISSION_TEN_LOCATION = new Vector3(-1388.65723f, -586.457153f, 29.2190189f);
+    public static readonly Vector3 MISSION_ELEVEN_MEETING_LOCATION = new Vector3(606.4816f, -406.6852f, 23.76576f);
+    public static readonly Vector3 MISSION_ELEVEN_FACILITY_LOCATION = new Vector3(2477.691f, -402.3267f, 93.81767f);
+    public static readonly Vector3 MISSION_ELEVEN_SERVER_LOCATION = new Vector3(2265.18f, 2912.432f, -85.71928f);
+    public static readonly Vector3 MISSION_ELEVEN_CHASE_START_LOCATION = new Vector3(1182.947f, -334.0395f, 68.17595f);
+    public static readonly Vector3 MISSION_ELEVEN_FACILITY_INSIDE_LOCATION = new Vector3(2157.207f, 2921.057f, -82.07529f);
+    public static readonly Vector3 MISSION_ELEVEN_CHASE_END_LOCATION = new Vector3(1771.892f, 3270.796f, 40.59085f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(-307.7658f, 2833.251f, 389.7252f);
+    public static readonly Vector3 MISSION_ELEVEN_MARINE_TRUCK_LOCATION = new Vector3(-94.85383f, 2835.197f, 51.03303f);
+    public static readonly Vector3 MISSION_ELEVEN_FORT_ZANCUDO_LOCATION = new Vector3(-1569.331f, 2776.975f, 16.18228f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_CRASH_LOCATION = new Vector3(-70.05057f, -803.7344f, 298.687f);
 
-    public List<Ped> IntializeMissionOnePeds()
+    public static List<Ped> IntializeMissionOnePeds()
     {
         return new List<Ped>
         {
@@ -44,16 +54,18 @@ class MostWantedMissions
             World.CreatePed(new Model(-9308122), new Vector3(-350.1284f, -46.48768f, 54.42538f), -8.606504f),
             World.CreatePed(new Model(-9308122), new Vector3(-313.5885f, -78.25857f, 54.42533f), -85.72867f),
             World.CreatePed(new Model(-9308122), new Vector3(-315.5716f, -84.64844f, 54.42538f), -54.99984f)
-    };
+        };
     }
-    public List<Vehicle> InitializeMissionOneVehicles()
+
+    public static List<Vehicle> InitializeMissionOneVehicles()
     {
         return new List<Vehicle>
         {
             World.CreateVehicle(new Model(65402552), new Vector3(-386.1818f, -92.67248f, 53.92717f), -171.5226f)
         };
     }
-    public List<Ped> InitializeMissionTwoPeds()
+
+    public static List<Ped> InitializeMissionTwoPeds()
     {
         return new List<Ped>
         {
@@ -83,7 +95,8 @@ class MostWantedMissions
             World.CreatePed(new Model(-984709238), new Vector3(-2081.561f, -1018.354f, 8.971145f), -127.0124f)
         };
     }
-    public List<Ped> InitializeMissionTwoCivilianPeds()
+
+    public static List<Ped> InitializeMissionTwoCivilianPeds()
     {
         return new List<Ped>
         {
@@ -99,14 +112,16 @@ class MostWantedMissions
             World.CreatePed(new Model(1544875514), new Vector3(-2078.302f, -1020.068f, 8.971491f), 73.27193f)
         };
     }
-    public List<Vehicle> InitializeMissionTwoVehicles()
+
+    public static List<Vehicle> InitializeMissionTwoVehicles()
     {
         return new List<Vehicle>
         {
             World.CreateVehicle(new Model(-1660661558), new Vector3(-2042.405f, -1031.714f, 12.08313f), 76.36571f)
         };
     }
-    public List<Ped> InitializeMissionThreePeds()
+
+    public static List<Ped> InitializeMissionThreePeds()
     {
         return new List<Ped>()
         {
@@ -129,9 +144,10 @@ class MostWantedMissions
             World.CreatePed(new Model(1329576454), new Vector3(1413.933f, 1116.52f, 114.838f), 137.7389f),
             World.CreatePed(new Model(1329576454), new Vector3(1401.467f, 1123.096f, 114.838f), 109.8054f),
             World.CreatePed(new Model(1329576454), new Vector3(1385.149f, 1138.731f, 114.3344f), 45.99967f)
-    };
+        };
     }
-    public List<Ped> InitializeMissionThreeCivilianPeds()
+
+    public static List<Ped> InitializeMissionThreeCivilianPeds()
     {
         return new List<Ped>()
         {
@@ -139,7 +155,8 @@ class MostWantedMissions
             World.CreatePed(new Model(261586155), new Vector3(1415.251f, 1165.195f, 114.3342f), 4.681286f)
         };
     }
-    public List<Ped> InitializeMissionFourPeds()
+
+    public static List<Ped> InitializeMissionFourPeds()
     {
         return new List<Ped>()
         {
@@ -153,7 +170,8 @@ class MostWantedMissions
             World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1280.314f, -3340.25f, 13.94505f), -84.28448f),
         };
     }
-    public List<Vehicle> InitializeMissionFourVehicles()
+
+    public static List<Vehicle> InitializeMissionFourVehicles()
     {
         return new List<Vehicle>()
         {
@@ -163,21 +181,24 @@ class MostWantedMissions
             World.CreateVehicle(new Model(-394074634), new Vector3(-1287.795f, -3360.949f, 13.527f), -15.63847f)
         };
     }
-    public List<Ped> InitializeMissionFivePeds()
+
+    public static List<Ped> InitializeMissionFivePeds()
     {
         return new List<Ped>()
         {
              World.CreatePed(new Model(216536661), new Vector3(-206.9127f, 1548.97f, 320.1997f), 67.99938f)
         };
     }
-    public List<Ped> InitializeMissionFiveCivilianPeds()
+
+    public static List<Ped> InitializeMissionFiveCivilianPeds()
     {
         return new List<Ped>()
         {
             World.CreatePed(new Model(1633872967), new Vector3(-211.8017f, 1551.514f, 320.8525f), 37.9999f)
         };
     }
-    public List<Ped> InitializeMissionSixPeds()
+
+    public static List<Ped> InitializeMissionSixPeds()
     {
         return new List<Ped>()
         {
@@ -193,7 +214,8 @@ class MostWantedMissions
             World.CreatePed(new Model(-9308122), new Vector3(3019.032f, 2062.385f, 5.543861f), 77.9996f)
         };
     }
-    public List<Ped> InitializeMissionSixCivilianPeds()
+
+    public static List<Ped> InitializeMissionSixCivilianPeds()
     {
         return new List<Ped>()
         {
@@ -204,7 +226,8 @@ class MostWantedMissions
             World.CreatePed(new Model(-1302522190), new Vector3(3024.213f, 2073.561f, 3.034813f), -71.07427f)
         };
     }
-    public List<Vehicle> InitializeMissionSixVehicles()
+
+    public static List<Vehicle> InitializeMissionSixVehicles()
     {
         return new List<Vehicle>()
         {
@@ -213,7 +236,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionSevenStreetPeds()
+    public static List<Ped> InitializeMissionSevenStreetPeds()
     {
         return new List<Ped>()
         {
@@ -225,7 +248,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionSevenPolice()
+    public static List<Ped> InitializeMissionSevenPolice()
     {
         return new List<Ped>()
         {
@@ -245,7 +268,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionSevenOfficePeds()
+    public static List<Ped> InitializeMissionSevenOfficePeds()
     {
         return new List<Ped>()
         {
@@ -264,7 +287,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionSevenRoofPeds()
+    public static List<Ped> InitializeMissionSevenRoofPeds()
     {
         return new List<Ped>()
         {
@@ -275,7 +298,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Vehicle> InitializeMissionSevenStreetVehicles()
+    public static List<Vehicle> InitializeMissionSevenStreetVehicles()
     {
         return new List<Vehicle>()
         {
@@ -286,15 +309,12 @@ class MostWantedMissions
         };
     }
 
-    public List<Vehicle> InitializeMissionSevenRoofVehicles()
+    public static Vehicle InitializeMissionSevenRoofVehicles()
     {
-        return new List<Vehicle>()
-        {
-            World.CreateVehicle(new Model(788747387), new Vector3(-74.93462f, -818.5611f, 326.0729f), -18.93448f)
-        };
+        return World.CreateVehicle(new Model(788747387), new Vector3(-74.93462f, -818.5611f, 326.0729f), -18.93448f);
     }
 
-    public List<Prop> InitializeMissionSevenBomb()
+    public static List<Prop> InitializeMissionSevenBomb()
     {
         return new List<Prop>()
         {
@@ -302,7 +322,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionEightPeds()
+    public static List<Ped> InitializeMissionEightPeds()
     {
         return new List<Ped>()
         {
@@ -336,12 +356,12 @@ class MostWantedMissions
         };
     }
 
-    public Ped InitializeMissionEightTarget()
+    public static Ped InitializeMissionEightTarget()
     {
         return World.CreatePed(new Model(850468060), new Vector3(984.1689f, -91.15002f, 74.84882f), -132.2569f);
     }
 
-    public List<Vehicle> InitializeMissionEightVehicles()
+    public static List<Vehicle> InitializeMissionEightVehicles()
     {
         return new List<Vehicle>()
         {
@@ -351,7 +371,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Prop> InitializeMissionEightProps()
+    public static List<Prop> InitializeMissionEightProps()
     {
         return new List<Prop>()
         {
@@ -360,7 +380,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionNineMotelRoomPeds()
+    public static List<Ped> InitializeMissionNineMotelRoomPeds()
     {
         return new List<Ped>()
         {
@@ -369,50 +389,22 @@ class MostWantedMissions
         };
     }
 
-    public List<Prop> InitializeMissionNineLabProps()
+    public static Prop InitializeMissionNineBombOne()
     {
-        return new List<Prop>()
-        {
-            World.CreateProp(new Model(558857511), new Vector3(1134.592f, -3193.113f, -40.59204f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(558857511), new Vector3(1130.37f, -3193.382f, -40.59204f), new Vector3(0f, 0f, 90.99965f), true, false),
-            World.CreateProp(new Model(558857511), new Vector3(1128.734f, -3193.384f, -40.59204f), new Vector3(0f, 0f, 41.99991f), true, false),
-            World.CreateProp(new Model(16180688), new Vector3(1134.359f, -3193.516f, -40.59204f), new Vector3(0f, 0f, -77.99979f), true, false),
-            World.CreateProp(new Model(1523490836), new Vector3(1134.018f, -3192.921f, -40.59204f), new Vector3(0f, 0f, -5.999955f), true, false),
-            World.CreateProp(new Model(538990259), new Vector3(1138.927f, -3197.324f, -40.6607f), new Vector3(0f, 0f, 93.99951f), true, false),
-            World.CreateProp(new Model(1957941287), new Vector3(1135.136f, -3193.604f, -40.59204f), new Vector3(0f, 0f, -89.99951f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.564f, -3199.103f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1128.849f, -3199.16f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.872f, -3198.412f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(410069066), new Vector3(1121.144f, -3198.377f, -40.59204f), new Vector3(0f, 0f, -39.99995f), true, false),
-            World.CreateProp(new Model(-742198632), new Vector3(1125.883f, -3192.895f, -41.3889f), new  Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(539422188), new Vector3(1121.25732f, -3194.31738f, -41.39758f), new Vector3(0f, 0f, -90.99963f), false, false),
-            World.CreateProp(new Model(936543891), new Vector3(1127.582f, -3198.729f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            World.CreateProp(new Model(1242409737), new Vector3(1126.847f, -3198.745f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            //World.CreateProp(new Model(-1397853612), new Vector3(1134.826f, -3198.674f, -40.6607f), new Vector3(0f, 0f, 0f), false, false),
-            //World.CreateProp(new Model(-1397853612), new Vector3(1132.534f, -3198.728f, -40.6607f), new Vector3(0f, 0f, 0f), false, false),
-            World.CreateProp(new Model(-122741248), new Vector3(1129.102f, -3198.424f, -40.6607f), new Vector3(0f, 0f, 0f), true, false),
-            //World.CreateProp(new Model(1541924614), new Vector3(1118.543f, -3197.803f, -40.59204f), new Vector3(0f, 0f, -113.9996f), true, false),
-            //World.CreateProp(new Model(1541924614), new Vector3(1118.36f, -3197.343f, -40.59204f), new Vector3(0f, 0f, -32.99996f),true, false),
-            World.CreateProp(new Model(-566369276), new Vector3(1131.478f, -3198.564f, -40.6607f), new Vector3(0f, 0f, 173.001f), true, false)
-        };
-    }
-
-    public Prop InitializeMissionNineBombOne()
-    {
-        return World.CreateProp(new Model(1929884544), new Vector3(1133.88879f, -3199.462f, -39.1957932f), new Vector3(0f, 0f, 174.0009f), true, false);
+        return World.CreateProp(new Model(1929884544), new Vector3(1132.07f, -3197.629f, -39.48698f), new Vector3(0f, 0f, 174.0009f), true, false);
     }
     
-    public Prop InitializeMissionNineBombTwo()
+    public static Prop InitializeMissionNineBombTwo()
     {
-        return World.CreateProp(new Model(1929884544), new Vector3(1122.752f, -3199.231f, -40.18187f), new Vector3(0f, 0f, 175.9989f), true, false);
+        return World.CreateProp(new Model(1929884544), new Vector3(1123.833f, -3193.982f, -39.61546f), new Vector3(0f, 0f, -2.000000f), true, false);
     }
     
-    public Prop InitializeMissionNineBombThree()
+    public static Prop InitializeMissionNineBombThree()
     {
         return World.CreateProp(new Model(1929884544), new Vector3(1136.957f, -3192.807f, -40.21716f), new Vector3(0f, 0f, -2.000008f), true, false);
     }
 
-    public List<Ped> InitializeMissionNineLabEntranceGuards()
+    public static List<Ped> InitializeMissionNineLabEntranceGuards()
     {
         return new List<Ped>()
         {
@@ -422,12 +414,12 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionNineLabPeds()
+    public static List<Ped> InitializeMissionNineLabPeds()
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(1329576454), new Vector3(1125.89f, -3193.608f, -40.39346f), 10.22112f),
-            World.CreatePed(new Model(1329576454), new Vector3(1126.63f, -3192.943f, -40.39281f), 162.8383f),
+            //World.CreatePed(new Model(1329576454), new Vector3(1125.89f, -3193.608f, -40.39346f), 10.22112f),
+            //World.CreatePed(new Model(1329576454), new Vector3(1126.63f, -3192.943f, -40.39281f), 162.8383f),
             World.CreatePed(new Model(-306958529), new Vector3(1129.715f, -3194.148f, -40.4f), -0.648681f),
             World.CreatePed(new Model(-306958529), new Vector3(1135.114f, -3194.221f, -40.39701f), 3.727203f),
             World.CreatePed(new Model(-306958529), new Vector3(1138.177f, -3197.398f, -39.66595f), -87.08331f),
@@ -436,7 +428,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionNineReinforcements()
+    public static List<Ped> InitializeMissionNineReinforcements()
     {
         return new List<Ped>()
         {
@@ -455,7 +447,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Vehicle> InitializeMissionNineVehicles()
+    public static List<Vehicle> InitializeMissionNineVehicles()
     {
         return new List<Vehicle>()
         {
@@ -465,7 +457,7 @@ class MostWantedMissions
         };
     }
 
-    public List<Ped> InitializeMissionTenEnemies()
+    public static List<Ped> InitializeMissionTenEnemies()
     {
         return new List<Ped>()
         {
@@ -492,9 +484,67 @@ class MostWantedMissions
         };
     }
 
-    public Ped InitializeMissionTenNeutralPed()
+    public static Ped InitializeMissionTenNeutralPed()
     {
         return World.CreatePed(new Model(348382215), new Vector3(-1375.466f, -624.2142f, 30.81957f), 152.4358f);
+    }
+
+    public static Ped InitializeMissionElevenMeetingPed()
+    {
+        return World.CreatePed(new Model(1650288984), new Vector3(608.0422f, -409.3448f, 24.75023f), 49.01941f);
+    }
+
+    public static List<Ped> InitializeMissionElevenServerGuards()
+    {
+        return new List<Ped>()
+        {
+            World.CreatePed(new Model(1650288984), new Vector3(2173.762f, 2924.812f, -81.07529f), -10.98035f),
+            World.CreatePed(new Model(1650288984), new Vector3(2181.333f, 2911.862f, -84.80009f), -24.98744f),
+            World.CreatePed(new Model(1650288984), new Vector3(2165.967f, 2927.221f, -84.80009f), -8.280022f),
+            World.CreatePed(new Model(1650288984), new Vector3(2209.103f, 2926.645f, -84.80009f), 3.01877f),
+            World.CreatePed(new Model(1650288984), new Vector3(2226.641f, 2914.899f, -84.80009f), 123.7797f),
+            World.CreatePed(new Model(1650288984), new Vector3(2234.562f, 2931.867f, -84.80009f), 15.02417f),
+            World.CreatePed(new Model(1650288984), new Vector3(2208.375f, 2944.901f, -84.79229f), 159.9442f),
+            World.CreatePed(new Model(1650288984), new Vector3(2259.722f, 2903.756f, -84.80009f), 20.0155f),
+            World.CreatePed(new Model(1650288984), new Vector3(2280.22f, 2901.112f, -84.80009f), 27.02009f),
+            World.CreatePed(new Model(1650288984), new Vector3(2279.505f, 2924.915f, -84.79246f), 156.0578f)
+        };
+    }
+
+    public static Vehicle InitializeMissionElevenChaseVehicle()
+    {
+        return World.CreateVehicle(new Model(1644055914), new Vector3(1180.15f, -334.5625f, 68.63106f), -78.9879f);
+    }
+
+    public static List<Ped> InitializeMissionElevenAirportPeds()
+    {
+        return new List<Ped>()
+        {
+            World.CreatePed(new Model(1822283721), new Vector3(1737.952f, 3255.82f, 41.34766f), -37.92241f),
+            World.CreatePed(new Model(1822283721), new Vector3(1736.273f, 3258.313f, 41.30162f), -86.99952f),
+            World.CreatePed(new Model(1822283721), new Vector3(1739.728f, 3256.795f, 41.35333f), -19.99984f),
+            World.CreatePed(new Model(1822283721), new Vector3(1733.921f, 3258.41f, 41.278f), -62.99935f),
+            World.CreatePed(new Model(1822283721), new Vector3(1732.081f, 3259.178f, 41.2506f), -59.99976f),
+            World.CreatePed(new Model(1822283721), new Vector3(1733.697f, 3263.778f, 41.21171f), -93.99946f),
+            World.CreatePed(new Model(1822283721), new Vector3(1728.467f, 3265.187f, 41.15613f), -41.0505f),
+            World.CreatePed(new Model(1822283721), new Vector3(1734.73f, 3261.11f, 41.25046f), -63.98955f),
+            //World.CreatePed(new Model(71929310), new Vector3(1707.917f, 3248.174f, 41.01706f), 67.99969f)
+        };
+    }
+
+    public static List<Vehicle> InitializeMissionElevenAirportVehicles()
+    {
+        return new List<Vehicle>()
+        {
+            World.CreateVehicle(new Model(1802742206), new Vector3(1731.273f, 3262.358f, 41.36772f), 42.46107f),
+            World.CreateVehicle(new Model(1802742206), new Vector3(1735.125f, 3255.746f, 41.48372f), 168.0585f),
+            World.CreateVehicle(new Model(621481054), new Vector3(1710.78f, 3252.948f, 41.65535f), 103.7908f)
+        };
+    }
+
+    public static Vehicle InitializeMissionElevenMarineTruck()
+    {
+        return World.CreateVehicle(new Model(-823509173), new Vector3(-99.77962f, 2837.321f, 51.35239f), 65.08549f);
     }
 }
 

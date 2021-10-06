@@ -3,10 +3,11 @@ using GTA.Native;
 using GTA.Math;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 class MissionSeven : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToBuilding,
@@ -81,8 +82,6 @@ class MissionSeven : Mission
     }
 
     Objectives currentObjective;
-    Script script;
-    MissionWorld missionWorld;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
@@ -91,27 +90,19 @@ class MissionSeven : Mission
     List<Prop> props = new List<Prop>();
     Vector3 objectiveLocation;
     Vector3 markerPosition;
-    MostWantedMissions mostWantedMissions;
     Blip objectiveLocationBlip;
-    Music music;
     bool timerStarted = false;
     bool countdownMusicStarted = false;
     int startTime;
     int currentTime;
 
-    public MissionSeven(Script script, MissionWorld missionWorld, RelationshipGroup enemiesRelGroup, RelationshipGroup neutralsRelGroup)
+    public MissionSeven()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemiesRelGroup = enemiesRelGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
+        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_COP;
 
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_SEVEN_START_LOCATION;
-        music = new Music();
+        objectiveLocation = MostWantedMissions.MISSION_SEVEN_START_LOCATION;
         markerPosition = new Vector3(-77.04752f, -830.2404f, 242.3859f);
-
-        var copRelGroupHash = Function.Call<int>(Hash.GET_HASH_KEY, "COP");
-        neutralsRelGroup = new RelationshipGroup(copRelGroupHash);
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -130,34 +121,33 @@ class MissionSeven : Mission
                     }
 
                     objectiveLocationBlip.Delete();
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
 
-                    var peds = mostWantedMissions.InitializeMissionSevenStreetPeds();
-                    vehicles = mostWantedMissions.InitializeMissionSevenStreetVehicles();
-                    var neutrals = mostWantedMissions.InitializeMissionSevenPolice();
-                    Script.Wait(1000);
-                    foreach(Ped ped in peds)
+                    var peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
+                    vehicles = MostWantedMissions.InitializeMissionSevenStreetVehicles();
+                    var neutrals = MostWantedMissions.InitializeMissionSevenPolice();
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenStreetPeds);
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSevenStreetVehicles);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSevenPolice);
+
+                    for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
+                        enemies[i].GetPed().Accuracy = 80;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemies[i].GetPed(), 1);
                     }
 
                     for(var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, objectiveLocation, script));
-                        neutralPeds[i].ped.Accuracy = 10;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].ped, 1);
+                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup));
+                        neutralPeds[i].GetPed().Accuracy = 10;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].GetPed(), 1);
                     }
 
                     foreach(Vehicle vehicle in vehicles)
                     {
                         vehicle.IsSirenActive = true;
-                    }
-
-                    foreach(MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
-                        enemy.ped.Accuracy = 80;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.ped, 1);
                     }
 
                     StartStreetScenarios();
@@ -174,7 +164,7 @@ class MissionSeven : Mission
                     }
                     else
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_SEVEN_OFFICE_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_SEVEN_OFFICE_LOCATION;
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "Office";
@@ -191,18 +181,19 @@ class MissionSeven : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    var peds = mostWantedMissions.InitializeMissionSevenOfficePeds();
-                    Script.Wait(1000);
+                    var peds = MostWantedMissions.InitializeMissionSevenOfficePeds();
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenOfficePeds);
+
                     foreach (Ped ped in peds)
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     }
 
                     foreach(MissionPed enemy in enemies)
                     {
                         enemy.ShowBlip();
-                        enemy.ped.Accuracy = 80;
-                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.ped, 3);
+                        enemy.GetPed().Accuracy = 80;
+                        Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, enemy.GetPed(), 3);
                     }
 
                     StartOfficeScenarios();
@@ -218,7 +209,8 @@ class MissionSeven : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        props = mostWantedMissions.InitializeMissionSevenBomb();
+                        props = MostWantedMissions.InitializeMissionSevenBomb();
+                        props = MissionWorld.PropListLoadLoop(props, MostWantedMissions.InitializeMissionSevenBomb);
 
                         objectiveLocation = props[0].Position;
                         props[0].AddBlip();
@@ -246,7 +238,7 @@ class MissionSeven : Mission
                         {
                             props[0].Delete();
                             props.Clear();
-                            objectiveLocation = mostWantedMissions.MISSION_SEVEN_ROOF_LOCATION;
+                            objectiveLocation = MostWantedMissions.MISSION_SEVEN_ROOF_LOCATION;
                             objectiveLocationBlip =  World.CreateBlip(objectiveLocation);
                             objectiveLocationBlip.Color = BlipColor.Yellow;
                             objectiveLocationBlip.Name = "Roof";
@@ -269,9 +261,9 @@ class MissionSeven : Mission
                             }
                             else
                             {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press E to go to the ~g~roof");
+                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to go to the ~g~roof");
                             }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(Keys.E)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
+                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
                             {
                                 Game.Player.Character.Position = objectiveLocation;
                             }
@@ -280,12 +272,14 @@ class MissionSeven : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    vehicles.Add(mostWantedMissions.InitializeMissionSevenRoofVehicles()[0]);
-                    var peds = mostWantedMissions.InitializeMissionSevenRoofPeds();
-                    Script.Wait(1000);
-                    foreach(Ped ped in peds)
+                    vehicles.Add(MostWantedMissions.InitializeMissionSevenRoofVehicles());
+                    var peds = MostWantedMissions.InitializeMissionSevenRoofPeds();
+                    vehicles[vehicles.Count - 1] = (Vehicle)MissionWorld.EntityLoadLoop(vehicles[vehicles.Count - 1], MostWantedMissions.InitializeMissionSevenRoofVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenRoofPeds);
+
+                    foreach (Ped ped in peds)
                     {
-                        enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     }
 
                     foreach(MissionPed enemy in enemies)
@@ -304,7 +298,7 @@ class MissionSeven : Mission
                         RemoveDeadEnemies();
                     } else
                     {
-                        objectiveLocation = mostWantedMissions.MISSION_SEVEN_EXPLOSION_LOCATION;
+                        objectiveLocation = MostWantedMissions.MISSION_SEVEN_EXPLOSION_LOCATION;
                         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 40);
                         objectiveLocationBlip.Color = BlipColor.Yellow;
                         objectiveLocationBlip.Name = "Safe bomb explosion location";
@@ -355,12 +349,12 @@ class MissionSeven : Mission
                 }
             case Objectives.Completed:
                 {
-                    missionWorld.CompleteMission();
+                    MissionWorld.CompleteMission();
                     RemoveVehiclesAndNeutrals();
                     currentObjective = Objectives.None;
                     Game.Player.Money += 20000;
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "Good job, you saved the day. As always, your cut of the reward is in your account.");
-                    script.Tick -= MissionTick;
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -368,7 +362,7 @@ class MissionSeven : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
         objectiveLocationBlip.Delete();
         foreach (MissionPed enemy in enemies)
@@ -380,7 +374,7 @@ class MissionSeven : Mission
             prop.Delete();
         }
         RemoveVehiclesAndNeutrals();
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
     }
 
     public override void RemoveDeadEnemies()
@@ -416,7 +410,7 @@ class MissionSeven : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartCityMusic();
+        Music.StartCityMusic();
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "They are at the Maze Bank Tower right now trying to blow up the place, hurry up!");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~Maze Bank Tower~w~.", 8000);
         currentObjective = Objectives.GoToBuilding;
@@ -425,55 +419,55 @@ class MissionSeven : Mission
         objectiveLocationBlip.Name = "Wanted suspect location";
         objectiveLocationBlip.ShowRoute = true;
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
     void StartStreetScenarios()
     {
-        neutralPeds[(int)Neutrals.Fbi04].ped.Task.StartScenario("WORLD_HUMAN_COP_IDLES", 0);
-        neutralPeds[(int)Neutrals.Fbi05].ped.Task.StartScenario("WORLD_HUMAN_COP_IDLES", 0);
-        neutralPeds[(int)Neutrals.Fbi06].ped.Task.StartScenario("WORLD_HUMAN_COP_IDLES", 0);
-        neutralPeds[(int)Neutrals.Fib01].ped.Task.StartScenario("WORLD_HUMAN_BINOCULARS", 0);
-        neutralPeds[(int)Neutrals.Fib02].ped.Task.StartScenario("WORLD_HUMAN_COP_IDLES", 0);
-        neutralPeds[(int)Neutrals.Fib03].ped.Task.StartScenario("WORLD_HUMAN_COP_IDLES", 0);
-        neutralPeds[(int)Neutrals.NooseClipboard].ped.Task.StartScenario("WORLD_HUMAN_CLIPBOARD", 0);
-        neutralPeds[(int)Neutrals.Noose01].ped.Task.ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].ped);
-        neutralPeds[(int)Neutrals.Noose02].ped.Task.ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].ped);
-        neutralPeds[(int)Neutrals.Noose03].ped.Task.ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].ped);
-        neutralPeds[(int)Neutrals.Talking01].ped.Task.UseMobilePhone();
-        neutralPeds[(int)Neutrals.Talking02].ped.Task.ChatTo(neutralPeds[(int)Neutrals.Talking01].ped);
-        neutralPeds[(int)Neutrals.Talking03].ped.Task.ChatTo(neutralPeds[(int)Neutrals.Talking01].ped);
+        neutralPeds[(int)Neutrals.Fbi04].GetTask().StartScenario("WORLD_HUMAN_COP_IDLES", 0);
+        neutralPeds[(int)Neutrals.Fbi05].GetTask().StartScenario("WORLD_HUMAN_COP_IDLES", 0);
+        neutralPeds[(int)Neutrals.Fbi06].GetTask().StartScenario("WORLD_HUMAN_COP_IDLES", 0);
+        neutralPeds[(int)Neutrals.Fib01].GetTask().StartScenario("WORLD_HUMAN_BINOCULARS", 0);
+        neutralPeds[(int)Neutrals.Fib02].GetTask().StartScenario("WORLD_HUMAN_COP_IDLES", 0);
+        neutralPeds[(int)Neutrals.Fib03].GetTask().StartScenario("WORLD_HUMAN_COP_IDLES", 0);
+        neutralPeds[(int)Neutrals.NooseClipboard].GetTask().StartScenario("WORLD_HUMAN_CLIPBOARD", 0);
+        neutralPeds[(int)Neutrals.Noose01].GetTask().ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].GetPed());
+        neutralPeds[(int)Neutrals.Noose02].GetTask().ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].GetPed());
+        neutralPeds[(int)Neutrals.Noose03].GetTask().ChatTo(neutralPeds[(int)Neutrals.NooseClipboard].GetPed());
+        neutralPeds[(int)Neutrals.Talking01].GetTask().UseMobilePhone();
+        neutralPeds[(int)Neutrals.Talking02].GetTask().ChatTo(neutralPeds[(int)Neutrals.Talking01].GetPed());
+        neutralPeds[(int)Neutrals.Talking03].GetTask().ChatTo(neutralPeds[(int)Neutrals.Talking01].GetPed());
 
-        enemies[(int)StreetEnemies.Entrance01].ped.Task.StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-        enemies[(int)StreetEnemies.Entrance02].ped.Task.StartScenario("WORLD_HUMAN_STAND_IMPATIENT_UPRIGHT", 0);
-        enemies[(int)StreetEnemies.Entrance03].ped.Task.StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-        enemies[(int)StreetEnemies.Entrance04].ped.Task.StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
-        enemies[(int)StreetEnemies.Entrance05].ped.Task.StartScenario("WORLD_HUMAN_STAND_IMPATIENT_UPRIGHT", 0);
+        enemies[(int)StreetEnemies.Entrance01].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
+        enemies[(int)StreetEnemies.Entrance02].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT_UPRIGHT", 0);
+        enemies[(int)StreetEnemies.Entrance03].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
+        enemies[(int)StreetEnemies.Entrance04].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT", 0);
+        enemies[(int)StreetEnemies.Entrance05].GetTask().StartScenario("WORLD_HUMAN_STAND_IMPATIENT_UPRIGHT", 0);
     }
 
     void StartOfficeScenarios()
     {
-        enemies[(int)OfficeEnemies.UsingComputerEntrance].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.WithComputerUser].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.Bathroom].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.Drinking01].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.Drinking02].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.LookingWindow].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.LookingMap01].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.LookingMap02].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.UsingComputerBomb].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.UsingLaptop].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.Talking01].ped.Task.FightAgainst(Game.Player.Character);
-        enemies[(int)OfficeEnemies.Talking02].ped.Task.FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.UsingComputerEntrance].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.WithComputerUser].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.Bathroom].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.Drinking01].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.Drinking02].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.LookingWindow].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.LookingMap01].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.LookingMap02].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.UsingComputerBomb].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.UsingLaptop].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.Talking01].GetTask().FightAgainst(Game.Player.Character);
+        enemies[(int)OfficeEnemies.Talking02].GetTask().FightAgainst(Game.Player.Character);
     }
 
     void StartRoofScenarios()
     {
-        enemies[(int)RoofEnemies.Helipad01].ped.Task.GuardCurrentPosition();
-        enemies[(int)RoofEnemies.Helipad02].ped.Task.StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
-        enemies[(int)RoofEnemies.Pilot].ped.Task.EnterVehicle(vehicles[(int)Vehicles.Helicopter], VehicleSeat.Driver);
+        enemies[(int)RoofEnemies.Helipad01].GetTask().GuardCurrentPosition();
+        enemies[(int)RoofEnemies.Helipad02].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)RoofEnemies.Pilot].GetTask().EnterVehicle(vehicles[(int)Vehicles.Helicopter], VehicleSeat.Driver);
         vehicles[(int)Vehicles.Helicopter].IsEngineRunning = true;
-        enemies[(int)RoofEnemies.Target].ped.Task.StandStill(1800000);
+        enemies[(int)RoofEnemies.Target].GetTask().StandStill(1800000);
     }
 }

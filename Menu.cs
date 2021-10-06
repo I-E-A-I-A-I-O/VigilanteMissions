@@ -11,8 +11,7 @@ class Menu
     public NativeMenu mostWantedMenu;
     public NativeMenu currentCrimesMenu;
     public NativeItem callBackupOption;
-    Script script;
-    MissionWorld mission;
+    public bool jokerAdded = false;
     bool timerStarted = false;
     int startTime;
     int currentTime;
@@ -23,14 +22,13 @@ class Menu
         "Assault",
         "Gang activity",
         "Suspect on the run",
-        "Mass shooter"
+        "Mass shooter",
+        "Pacific Standard bank robbery",
+        "Fleeca bank robbery"
     };
 
-    public Menu(MissionWorld mission, Script script)
+    public Menu()
     {
-        this.mission = mission;
-        this.script = script;
-
         menuPool = new ObjectPool();
         mainMenu = new NativeMenu("Police computer", "Los Santos county database");
         menuPool.Add(mainMenu);
@@ -48,7 +46,7 @@ class Menu
             new NativeItem("Catherine Kerkow - Terrorism"),
             new NativeItem("Harry \"Taco\" Bowman - Racketeering"),
             new NativeItem("Heisenberg - Drug trafficking"),
-            new NativeItem("Billy \"The Beaut\" Russo - Murder")
+            new NativeItem("Billy \"The Beaut\" Russo - Murder"),
         };
         for (var i = 0; i < listOfItems.Count; i++)
         {
@@ -56,7 +54,7 @@ class Menu
             var index = i;
             listOfItems[i].Activated += (o, e) =>
             {
-                if (mission.isMissionActive)
+                if (MissionWorld.isMissionActive)
                 {
                     GTA.UI.Notification.Show("A mission is already in progress!");
                     return;
@@ -66,7 +64,7 @@ class Menu
                     GTA.UI.Notification.Show("Mission not available.");
                     return;
                 }
-                mission.StartMission((MissionWorld.Missions)index);
+                MissionWorld.StartMission((MissionWorld.Missions)index);
             };
         }
         currentCrimesMenu = new NativeMenu("Current crimes", "Current crimes");
@@ -78,11 +76,32 @@ class Menu
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
     }
 
+    public void AddJoker()
+    {
+        var item = new NativeItem("The Joker");
+        mostWantedMenu.Add(item);
+        item.Activated += (o, e) =>
+        {
+            if (MissionWorld.isMissionActive)
+            {
+                GTA.UI.Notification.Show("A mission is already in progress!");
+                return;
+            }
+            if (!Game.Player.CanStartMission)
+            {
+                GTA.UI.Notification.Show("Mission not available.");
+                return;
+            }
+            MissionWorld.StartMission(MissionWorld.Missions.MostWanted111);
+        };
+        jokerAdded = true;
+    }
+
     void BackUpCalled(object o, EventArgs e)
     {
         if (!timerStarted)
         {
-            new PoliceBackup(script);
+            new PoliceBackup();
             timerStarted = true;
             startTime = Game.GameTime;
         } else
@@ -91,7 +110,7 @@ class Menu
             if (currentTime - startTime >= 60000)
             {
                 timerStarted = false;
-                new PoliceBackup(script);
+                new PoliceBackup();
             } else
             {
                 GTA.UI.Notification.Show($"Next police backup available in {60 - ((currentTime - startTime) / 1000)} seconds");
@@ -110,7 +129,7 @@ class Menu
             currentCrimesMenu.Add(item);
             item.Activated += (o, ev) =>
             {
-                if (mission.isMissionActive)
+                if (MissionWorld.isMissionActive)
                 {
                     GTA.UI.Notification.Show("A mission is already in progress!");
                     return;
@@ -124,27 +143,37 @@ class Menu
                 {
                     case "Suspect on the run":
                         {
-                            mission.StartMission(MissionWorld.Missions.SuspectOnTheRun);
+                            MissionWorld.StartMission(MissionWorld.Missions.SuspectOnTheRun);
                             break;
                         }
                     case "Assault":
                         {
-                            mission.StartMission(MissionWorld.Missions.Assault);
+                            MissionWorld.StartMission(MissionWorld.Missions.Assault);
                             break;
                         }
                     case "Gang activity":
                         {
-                            mission.StartMission(MissionWorld.Missions.GangActivity);
+                            MissionWorld.StartMission(MissionWorld.Missions.GangActivity);
                             break;
                         }
                     case "Stolen vehicle":
                         {
-                            mission.StartMission(MissionWorld.Missions.StolenVehicle);
+                            MissionWorld.StartMission(MissionWorld.Missions.StolenVehicle);
                             break;
                         }
                     case "Mass shooter":
                         {
-                            mission.StartMission(MissionWorld.Missions.MassShooter);
+                            MissionWorld.StartMission(MissionWorld.Missions.MassShooter);
+                            break;
+                        }
+                    case "Pacific Standard bank robbery":
+                        {
+                            MissionWorld.StartMission(MissionWorld.Missions.PacificStandard);
+                            break;
+                        }
+                    case "Fleeca bank robbery":
+                        {
+                            MissionWorld.StartMission(MissionWorld.Missions.FleecaBank);
                             break;
                         }
                 }

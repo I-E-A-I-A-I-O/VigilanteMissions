@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 class MissionFive : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -16,25 +18,17 @@ class MissionFive : Mission
     Vector3 objectiveLocation;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
-    MissionWorld missionWorld;
-    Script script;
-    Music music;
     Objectives currentObjective;
     Blip objectiveLocationBlip;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
-    MostWantedMissions mostWantedMissions;
 
-    public MissionFive(Script script, MissionWorld missionWorld, RelationshipGroup enemiesRelGroup, RelationshipGroup neutralsRelGroup)
+    public MissionFive()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemiesRelGroup = enemiesRelGroup;
-        this.neutralsRelGroup = neutralsRelGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_DISLIKE;
+        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_FIVE_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_FIVE_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -51,22 +45,20 @@ class MissionFive : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    var peds = mostWantedMissions.InitializeMissionFivePeds();
-                    var neutrals = mostWantedMissions.InitializeMissionFiveCivilianPeds();
-                    Script.Wait(1000);
+                    var peds = MostWantedMissions.InitializeMissionFivePeds();
+                    var neutrals = MostWantedMissions.InitializeMissionFiveCivilianPeds();
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFivePeds);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionFiveCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup, objectiveLocation, script));
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, objectiveLocation, script, true));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
+                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
                     }
                     GTA.UI.Screen.ShowSubtitle("Save the ~g~woman~w~, kill the ~r~target~w~ before it's too late!", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -91,8 +83,8 @@ class MissionFive : Mission
                     GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Suspect", "Good job, your cut of the reward is already in your account.");
                     Game.Player.Money += 15000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -100,9 +92,9 @@ class MissionFive : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -143,7 +135,7 @@ class MissionFive : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartTedBundyMusic();
+        Music.StartTedBundyMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;
@@ -153,46 +145,46 @@ class MissionFive : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
     void StartScenarios()
     {
-        enemies[0].ped.CanSufferCriticalHits = false;
-        enemies[0].ped.Armor = 600;
-        enemies[0].ped.MaxHealth = 600;
-        enemies[0].ped.Health = 600;
-        enemies[0].ped.CanRagdoll = true;
-        enemies[0].ped.CanWrithe = false;
+        enemies[0].GetPed().CanSufferCriticalHits = false;
+        enemies[0].GetPed().Armor = 600;
+        enemies[0].GetPed().MaxHealth = 600;
+        enemies[0].GetPed().Health = 600;
+        enemies[0].GetPed().CanRagdoll = true;
+        enemies[0].GetPed().CanWrithe = false;
 
         var bundySequence = new TaskSequence();
-        bundySequence.AddTask.FollowToOffsetFromEntity(neutralPeds[0].ped, new Vector3(), 25, 15000);
-        bundySequence.AddTask.ShootAt(neutralPeds[0].ped, -1, FiringPattern.FullAuto);
-        neutralPeds[0].ped.Task.FleeFrom(enemies[0].ped);
-        enemies[0].ped.Task.PerformSequence(bundySequence);
-        neutralPeds[0].ped.AddBlip();
-        neutralPeds[0].ped.AttachedBlip.Scale = 0.8f;
-        neutralPeds[0].ped.AttachedBlip.Color = BlipColor.Green;
-        neutralPeds[0].ped.AttachedBlip.Name = "Victim";
-        neutralPeds[0].ped.AttachedBlip.IsFlashing = true;
+        bundySequence.AddTask.FollowToOffsetFromEntity(neutralPeds[0].GetPed(), new Vector3(), 25, 15000);
+        bundySequence.AddTask.ShootAt(neutralPeds[0].GetPed(), -1, FiringPattern.FullAuto);
+        neutralPeds[0].GetTask().FleeFrom(enemies[0].GetPed());
+        enemies[0].GetTask().PerformSequence(bundySequence);
+        neutralPeds[0].GetPed().AddBlip();
+        neutralPeds[0].GetBlip().Scale = 0.8f;
+        neutralPeds[0].GetBlip().Color = BlipColor.Green;
+        neutralPeds[0].GetBlip().Name = "Victim";
+        neutralPeds[0].GetBlip().IsFlashing = true;
 
-        script.Tick += CheckWomanStatus;
+        MissionWorld.script.Tick += CheckWomanStatus;
     }
 
     private void CheckWomanStatus(object sender, EventArgs e)
     {
-        if (!missionWorld.isMissionActive || enemies.Count == 0)
+        if (!MissionWorld.isMissionActive || enemies.Count == 0)
         {
-            script.Tick -= CheckWomanStatus;
+            MissionWorld.script.Tick -= CheckWomanStatus;
             return;
         }
-        if (neutralPeds[0].ped.IsDead)
+        if (neutralPeds[0].IsDead())
         {
-            neutralPeds[0].ped.AttachedBlip.Delete();
-            missionWorld.QuitMission();
+            neutralPeds[0].GetBlip().Delete();
+            MissionWorld.QuitMission();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the woman was killed!", 8000);
-            script.Tick -= CheckWomanStatus;
+            MissionWorld.script.Tick -= CheckWomanStatus;
             return;
         }
     }

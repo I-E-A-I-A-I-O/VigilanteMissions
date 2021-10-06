@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class SuspectOnTheRun : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -14,22 +16,15 @@ class SuspectOnTheRun : Mission
         None
     }
 
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     Objectives currentObjective;
-    Script script;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
 
-    public SuspectOnTheRun(Script script, MissionWorld missionWorld, RelationshipGroup relationshipGroup)
+    public SuspectOnTheRun()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        enemiesRelGroup = relationshipGroup;
-
-        randomMissions = new RandomMissions();
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -44,11 +39,12 @@ class SuspectOnTheRun : Mission
                     }
                     objectiveLocationBlip.Delete();
 
-                    var ped = randomMissions.CreateCriminal(objectiveLocation);
-                    Script.Wait(1000);
-                    enemies.Add(new MissionPed(ped, enemiesRelGroup, objectiveLocation, script));
+                    var ped = RandomMissions.CreateCriminal(objectiveLocation);
+                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
+
+                    enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     enemies[0].ShowBlip();
-                    enemies[0].ped.Task.FleeFrom(Game.Player.Character);
+                    enemies[0].GetTask().FleeFrom(Game.Player.Character);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
@@ -70,8 +66,8 @@ class SuspectOnTheRun : Mission
                     GTA.UI.Screen.ShowSubtitle("Crime scene cleared.", 8000);
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -80,7 +76,7 @@ class SuspectOnTheRun : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -116,7 +112,7 @@ class SuspectOnTheRun : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
@@ -126,7 +122,7 @@ class SuspectOnTheRun : Mission
             objectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
-            script.Tick += MissionTick;
+            MissionWorld.script.Tick += MissionTick;
             return true;
         }
         catch (Exception)

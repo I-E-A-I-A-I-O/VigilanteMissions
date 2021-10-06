@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 class MissionFour : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -38,28 +40,20 @@ class MissionFour : Mission
         ChaseVehicle
     }
 
-    Script script;
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     Vector3 planeDestination;
     RelationshipGroup enemiesRelGroup;
     Objectives currentObjective;
-    Music music;
-    MostWantedMissions mostWantedMissions;
     List<MissionPed> enemies = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Blip objectiveLocationBlip;
 
-    public MissionFour(Script script, RelationshipGroup relationshipGroup, MissionWorld missionWorld)
+    public MissionFour()
     {
-        this.script = script;
-        enemiesRelGroup = relationshipGroup;
-        this.missionWorld = missionWorld;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
 
-        music = new Music();
-        mostWantedMissions = new MostWantedMissions();
-        objectiveLocation = mostWantedMissions.MISSION_FOUR_LOCATION;
-        planeDestination = mostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
+        objectiveLocation = MostWantedMissions.MISSION_FOUR_LOCATION;
+        planeDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -76,18 +70,16 @@ class MissionFour : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    vehicles = mostWantedMissions.InitializeMissionFourVehicles();
-                    var peds = mostWantedMissions.InitializeMissionFourPeds();
-                    Script.Wait(1000);
+                    vehicles = MostWantedMissions.InitializeMissionFourVehicles();
+                    var peds = MostWantedMissions.InitializeMissionFourPeds();
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionFourVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFourPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup, objectiveLocation, script));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -113,8 +105,8 @@ class MissionFour : Mission
                     Game.Player.Money += 15000;
                     Game.Player.WantedLevel = 3;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -122,9 +114,9 @@ class MissionFour : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -143,7 +135,7 @@ class MissionFour : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartHeistMusic();
+        Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(objectiveLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;
@@ -153,7 +145,7 @@ class MissionFour : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
@@ -193,37 +185,37 @@ class MissionFour : Mission
         vehicles[(int)Vehicles.ChaseVehicle].AttachedBlip.Color = BlipColor.Red;
         vehicles[(int)Vehicles.ChaseVehicle].AttachedBlip.Name = "Wanted target";
 
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Driver, PedHash.Pilot01SMM), enemies[0].ped.RelationshipGroup, enemies[0].ped.Position, script));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.Bankman), enemies[0].ped.RelationshipGroup, enemies[0].ped.Position, script));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.ExtraSeat1, PedHash.MerryWeatherCutscene), enemies[0].ped.RelationshipGroup, enemies[0].ped.Position, script));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Driver, PedHash.Pilot01SMM), enemies[0].GetPed().RelationshipGroup));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.Bankman), enemies[0].GetPed().RelationshipGroup));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.ExtraSeat1, PedHash.MerryWeatherCutscene), enemies[0].GetPed().RelationshipGroup));
 
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, PedHash.PoloGoon01GMY), enemies[0].ped.RelationshipGroup, enemies[0].ped.Position, script));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].ped.RelationshipGroup, enemies[0].ped.Position, script));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
 
-        Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].ped, vehicles[(int)Vehicles.Plane], 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
-        this.enemies[(int)Enemies.ChaseGuard01].ped.Task.VehicleChase(Game.Player.Character);
+        Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed(), vehicles[(int)Vehicles.Plane], 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
+        enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);
 
-        script.Tick += CheckPlaneLocation;
+        MissionWorld.script.Tick += CheckPlaneLocation;
     }
 
-    void CheckPlaneLocation(Object o, EventArgs e)
+    void CheckPlaneLocation(object o, EventArgs e)
     {
-        if (!missionWorld.isMissionActive || enemies.Count == 0)
+        if (!MissionWorld.isMissionActive || enemies.Count == 0)
         {
-            script.Tick -= CheckPlaneLocation;
+            MissionWorld.script.Tick -= CheckPlaneLocation;
             return;
         }
         if (vehicles[(int)Vehicles.Plane].IsDead)
         {
             vehicles[(int)Vehicles.Plane].AttachedBlip.Delete();
-            script.Tick -= CheckPlaneLocation;
+            MissionWorld.script.Tick -= CheckPlaneLocation;
             return;
         }
         if (vehicles[(int)Vehicles.Plane].IsInRange(planeDestination, 100))
         {
-            missionWorld.QuitMission();
+            MissionWorld.QuitMission();
             GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the target escaped!");
-            script.Tick -= CheckPlaneLocation;
+            MissionWorld.script.Tick -= CheckPlaneLocation;
         }
     }
 }

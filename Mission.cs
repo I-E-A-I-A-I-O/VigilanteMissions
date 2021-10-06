@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public abstract class Mission
 {
+    public abstract bool IsMostWanted
+    {
+        get;
+    }
     public abstract void MissionTick(object o, EventArgs e);
     public abstract bool StartMission();
     public abstract void QuitMission();

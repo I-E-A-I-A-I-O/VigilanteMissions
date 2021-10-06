@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 class Assault : Mission
 {
+    public override bool IsMostWanted => false;
+
     enum Objectives
     {
         GoToLocation,
@@ -13,15 +15,12 @@ class Assault : Mission
         None
     }
 
-    MissionWorld missionWorld;
     Vector3 objectiveLocation;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralsRelGroup;
     List<MissionPed> enemies = new List<MissionPed>();
     List<MissionPed> neutralPeds = new List<MissionPed>();
     Objectives currentObjective;
-    Script script;
-    RandomMissions randomMissions;
     Blip objectiveLocationBlip;
     int actionToTake;
     int shootRange;
@@ -31,14 +30,10 @@ class Assault : Mission
     bool timerStarted = false;
     bool actionStarted = false;
 
-    public Assault(Script script, MissionWorld missionWorld, RelationshipGroup enemiesRelGroup, RelationshipGroup neutralsRelGroup)
+    public Assault()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemiesRelGroup = enemiesRelGroup;
-        this.neutralsRelGroup = neutralsRelGroup;
-
-        randomMissions = new RandomMissions();
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_AGGRESSIVE;
+        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -52,33 +47,34 @@ class Assault : Mission
                         return;
                     }
                     objectiveLocationBlip.Delete();
-                    var enemy = randomMissions.CreateCriminal(objectiveLocation);
-                    var neutral = randomMissions.CreateVictim(objectiveLocation);
-                    Script.Wait(1000);
-                    enemies.Add(new MissionPed(enemy, enemiesRelGroup, objectiveLocation, script));
-                    neutralPeds.Add(new MissionPed(neutral, neutralsRelGroup, objectiveLocation, script, true));
+                    var enemy = RandomMissions.CreateCriminal(objectiveLocation);
+                    var neutral = RandomMissions.CreateVictim(objectiveLocation);
+                    enemy = (Ped)MissionWorld.EntityLoadLoop(enemy, RandomMissions.CreateCriminal, objectiveLocation);
+                    neutral = (Ped)MissionWorld.EntityLoadLoop(neutral, RandomMissions.CreateVictim, objectiveLocation);
+                    enemies.Add(new MissionPed(enemy, enemiesRelGroup));
+                    neutralPeds.Add(new MissionPed(neutral, neutralsRelGroup, true));
                     enemies[0].ShowBlip();
-                    neutralPeds[0].ped.AddBlip();
-                    neutralPeds[0].ped.AttachedBlip.Scale = 0.8f;
-                    neutralPeds[0].ped.AttachedBlip.Color = BlipColor.Green;
-                    neutralPeds[0].ped.AttachedBlip.IsFlashing = true;
-                    neutralPeds[0].ped.AttachedBlip.Name = "Victim";
-                    enemies[0].ped.Task.AimAt(neutralPeds[0].ped, 1800000);
-                    neutralPeds[0].ped.Task.HandsUp(1800000);
+                    neutralPeds[0].GetPed().AddBlip();
+                    neutralPeds[0].GetBlip().Scale = 0.8f;
+                    neutralPeds[0].GetBlip().Color = BlipColor.Green;
+                    neutralPeds[0].GetBlip().IsFlashing = true;
+                    neutralPeds[0].GetBlip().Name = "Victim";
+                    enemies[0].GetTask().AimAt(neutralPeds[0].GetPed(), 1800000);
+                    neutralPeds[0].GetTask().HandsUp(1800000);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~, don't let the ~g~victim~w~ get killed!", 8000);
                     currentObjective = Objectives.KillTargets;
                     break;
                 }
             case Objectives.KillTargets:
                 {
-                    if (neutralPeds[0].ped.IsDead)
+                    if (neutralPeds[0].IsDead())
                     {
-                        neutralPeds[0].ped.AttachedBlip.Delete();
+                        neutralPeds[0].GetBlip().Delete();
                         GTA.UI.Screen.ShowSubtitle("~r~Mission failed, the victim died.", 8000);
-                        missionWorld.QuitMission();
+                        MissionWorld.QuitMission();
                         return;
                     }
-                    if (enemies[0].ped.IsDead)
+                    if (enemies[0].IsDead())
                     {
                         RemoveDeadEnemies();
                         currentObjective = Objectives.Completed;
@@ -89,12 +85,12 @@ class Assault : Mission
                         {
                             return;
                         }
-                        if (enemies[0].ped.IsInCombatAgainst(Game.Player.Character))
+                        if (enemies[0].GetPed().IsInCombatAgainst(Game.Player.Character))
                         {
                             actionStarted = true;
                             return;
                         }
-                        if (Game.Player.Character.IsInRange(enemies[0].ped.Position, 55))
+                        if (Game.Player.Character.IsInRange(enemies[0].GetPosition(), 55))
                         {
                             if (!actionTaken)
                             {
@@ -103,12 +99,12 @@ class Assault : Mission
                                 shootRange = ran.Next(15, 41);
                                 actionTaken = true;
                             }
-                            bool isPlayerInRange = Game.Player.Character.IsInRange(enemies[0].ped.Position, shootRange);
+                            bool isPlayerInRange = Game.Player.Character.IsInRange(enemies[0].GetPosition(), shootRange);
                             if (isPlayerInRange && !timerStarted)
                             {
                                 startTime = Game.GameTime;
                                 timerStarted = true;
-                                enemies[0].ped.PlayAmbientSpeech("GENERIC_INSULT_HIGH", SpeechModifier.ShoutedClear);
+                                enemies[0].GetPed().PlayAmbientSpeech("GENERIC_INSULT_HIGH", SpeechModifier.ShoutedClear);
                             } else if (!isPlayerInRange && timerStarted)
                             {
                                 timerStarted = false;
@@ -116,13 +112,13 @@ class Assault : Mission
                                 currentTime = Game.GameTime;
                                 if (currentTime - startTime >= 1500)
                                 {
-                                    enemies[0].ped.Task.ClearAllImmediately();
+                                    enemies[0].GetTask().ClearAllImmediately();
                                     if (actionToTake <= 3)
                                     {
-                                        enemies[0].ped.Task.ShootAt(neutralPeds[0].ped, -1, FiringPattern.FullAuto);
+                                        enemies[0].GetTask().ShootAt(neutralPeds[0].GetPed(), -1, FiringPattern.FullAuto);
                                     } else
                                     {
-                                        enemies[0].ped.Task.FightAgainst(Game.Player.Character);
+                                        enemies[0].GetTask().FightAgainst(Game.Player.Character);
                                     }
                                     actionStarted = true;
                                 }
@@ -137,8 +133,8 @@ class Assault : Mission
                     Game.Player.Money += 1000;
                     currentObjective = Objectives.None;
                     RemoveVehiclesAndNeutrals();
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -147,7 +143,7 @@ class Assault : Mission
     public override void QuitMission()
     {
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -156,6 +152,7 @@ class Assault : Mission
         {
             objectiveLocationBlip.Delete();
         }
+        RemoveVehiclesAndNeutrals();
     }
 
     public override void RemoveDeadEnemies()
@@ -186,7 +183,7 @@ class Assault : Mission
         {
             do
             {
-                objectiveLocation = randomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
+                objectiveLocation = RandomMissions.GetRandomLocation(RandomMissions.LocationType.Foot);
             } while (Game.Player.Character.IsInRange(objectiveLocation, 200f));
 
             currentObjective = Objectives.GoToLocation;
@@ -196,11 +193,12 @@ class Assault : Mission
             objectiveLocationBlip.Name = "Crime scene";
             GTA.UI.Screen.ShowSubtitle("Go to the ~y~crime scene~w~.", 8000);
 
-            script.Tick += MissionTick;
+            MissionWorld.script.Tick += MissionTick;
             return true;
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            GTA.UI.Notification.Show("Error starting the mission, try again...");
             return false;
         }
     }

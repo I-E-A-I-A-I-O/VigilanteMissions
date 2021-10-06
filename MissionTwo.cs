@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 class MissionTwo : Mission
 {
+    public override bool IsMostWanted => true;
+
     enum Objectives
     {
         GoToLocation,
@@ -66,27 +68,18 @@ class MissionTwo : Mission
     List<MissionPed> neutralPeds = new List<MissionPed>();
     List<Vehicle> vehicles = new List<Vehicle>();
     Vector3 targetLocation;
-    MissionWorld missionWorld;
-    MostWantedMissions mostWantedMissions;
-    Script script;
-    Music music;
     Blip objectiveLocationBlip;
-    RelationshipGroup enemiesRelGroup;
-    RelationshipGroup neutralsRelGroup;
     Vector3 helicopterDestination;
+    RelationshipGroup neutralsRelGroup;
+    RelationshipGroup enemiesRelGroup;
     bool messageShown = false;
 
-    public MissionTwo(Script script, MissionWorld missionWorld, RelationshipGroup enemiesRelGroup, RelationshipGroup neutralsRelGroup)
+    public MissionTwo()
     {
-        this.script = script;
-        this.missionWorld = missionWorld;
-        this.enemiesRelGroup = enemiesRelGroup;
-        this.neutralsRelGroup = neutralsRelGroup;
+        enemiesRelGroup = MissionWorld.RELATIONSHIP_MISSION_NEUTRAL;
+        neutralsRelGroup = MissionWorld.RELATIONSHIP_MISSION_PEDESTRIAN;
 
-        mostWantedMissions = new MostWantedMissions();
-        targetLocation = mostWantedMissions.MISSION_TWO_LOCATION;
-
-        music = new Music();
+        targetLocation = MostWantedMissions.MISSION_TWO_LOCATION;
     }
 
     public override void MissionTick(object o, EventArgs e)
@@ -103,23 +96,27 @@ class MissionTwo : Mission
                     {
                         return;
                     }
-                    music.IncreaseIntensity();
+                    Music.IncreaseIntensity();
                     objectiveLocationBlip.Delete();
-                    vehicles = mostWantedMissions.InitializeMissionTwoVehicles();
-                    var peds = mostWantedMissions.InitializeMissionTwoPeds();
-                    var neutrals = mostWantedMissions.InitializeMissionTwoCivilianPeds();
-                    Script.Wait(1000);
+                    vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
+                    var peds = MostWantedMissions.InitializeMissionTwoPeds();
+                    var neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
+                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionTwoVehicles);
+                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionTwoPeds);
+                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionTwoCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
-                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup, targetLocation, script));
+                        if (i == (int)Enemies.CaptainGuard)
+                        {
+                            enemies.Add(new MissionPed(peds[i], enemiesRelGroup, false, true));
+                            continue;
+                        }
+                        enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
+                        enemies[i].ShowBlip();
                     }
                     for (var i = 0; i < neutrals.Count; i++)
                     {
-                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, targetLocation, script, true));
-                    }
-                    foreach (MissionPed enemy in enemies)
-                    {
-                        enemy.ShowBlip();
+                        neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -145,8 +142,8 @@ class MissionTwo : Mission
                     Game.Player.Money += 15000;
                     Game.Player.WantedLevel = 3;
                     currentObjective = Objectives.None;
-                    missionWorld.CompleteMission();
-                    script.Tick -= MissionTick;
+                    MissionWorld.CompleteMission();
+                    MissionWorld.script.Tick -= MissionTick;
                     break;
                 }
         }
@@ -154,9 +151,9 @@ class MissionTwo : Mission
 
     public override void QuitMission()
     {
-        music.StopMusic();
+        Music.StopMusic();
         currentObjective = Objectives.None;
-        script.Tick -= MissionTick;
+        MissionWorld.script.Tick -= MissionTick;
         foreach (MissionPed enemy in enemies)
         {
             enemy.Delete();
@@ -201,7 +198,7 @@ class MissionTwo : Mission
             GTA.UI.Notification.Show("Mission not available.");
             return false;
         }
-        music.StartHeistMusic();
+        Music.StartHeistMusic();
         currentObjective = Objectives.GoToLocation;
         objectiveLocationBlip = World.CreateBlip(targetLocation, 150f);
         objectiveLocationBlip.Color = BlipColor.Yellow;
@@ -211,67 +208,70 @@ class MissionTwo : Mission
         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
         GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
 
-        script.Tick += MissionTick;
+        MissionWorld.script.Tick += MissionTick;
         return true;
     }
 
     void StartScenarios()
     {
-        helicopterDestination = mostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
+        helicopterDestination = MostWantedMissions.MISSION_FOUR_FAIL_LOCATION;
 
-        enemies[(int)Enemies.BossDrinkingTopDeck].ped.Task.EnterVehicle(vehicles[(int)Vehicles.Helicopter], VehicleSeat.Passenger);
-        enemies[(int)Enemies.BossWife].ped.Task.EnterVehicle(vehicles[(int)Vehicles.Helicopter], VehicleSeat.ExtraSeat1);
+        enemies[(int)Enemies.LietWatchingBoss].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)Enemies.BossWife].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
+        enemies[(int)Enemies.BossDrinkingTopDeck].GetTask().StartScenario("WORLD_HUMAN_DRINKING", 0);
 
-        Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.LietWatchingBoss].ped, vehicles[(int)Vehicles.Helicopter], 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
+        var taskSequence = new TaskSequence();
+        taskSequence.AddTask.Wait(5000);
+        taskSequence.AddTask.EnterVehicle(vehicles[(int)Vehicles.Helicopter], VehicleSeat.Driver, -1, 5);
+        enemies[(int)Enemies.CaptainGuard].GetTask().PerformSequence(taskSequence);
 
-        script.Tick += CheckHelicopter;
+        MissionWorld.script.Tick += CheckHelicopter;
 
-        enemies[(int)Enemies.LietWithTheTwoHookers].ped.Task.ChatTo(neutralPeds[(int)Neutrals.HookerTalkingToLiet01].ped);
-        neutralPeds[(int)Neutrals.HookerTalkingToLiet01].ped.Task.ChatTo(enemies[(int)Enemies.LietWithTheTwoHookers].ped);
-        neutralPeds[(int)Neutrals.HookerTalkingToLiet02].ped.Task.ChatTo(enemies[(int)Enemies.LietWithTheTwoHookers].ped);
+        enemies[(int)Enemies.LietWithTheTwoHookers].GetTask().ChatTo(neutralPeds[(int)Neutrals.HookerTalkingToLiet01].GetPed());
+        neutralPeds[(int)Neutrals.HookerTalkingToLiet01].GetTask().ChatTo(enemies[(int)Enemies.LietWithTheTwoHookers].GetPed());
+        neutralPeds[(int)Neutrals.HookerTalkingToLiet02].GetTask().ChatTo(enemies[(int)Enemies.LietWithTheTwoHookers].GetPed());
 
-        enemies[(int)Enemies.LietWithOneHooker].ped.Task.ChatTo(neutralPeds[(int)Neutrals.HookerLookingAtPhone].ped);
-        neutralPeds[(int)Neutrals.HookerLookingAtPhone].ped.Task.UseMobilePhone();
+        enemies[(int)Enemies.LietWithOneHooker].GetTask().ChatTo(neutralPeds[(int)Neutrals.HookerLookingAtPhone].GetPed());
+        neutralPeds[(int)Neutrals.HookerLookingAtPhone].GetTask().UseMobilePhone();
 
-        enemies[(int)Enemies.TvRoomGuard01].ped.Task.StartScenario("WORLD_HUMAN_CHEERING", 0);
-        enemies[(int)Enemies.TvRoomGuard02].ped.Task.StartScenario("WORLD_HUMAN_CHEERING", 0);
-        enemies[(int)Enemies.TvRoomGuard03].ped.Task.StartScenario("WORLD_HUMAN_CHEERING", 0);
-        enemies[(int)Enemies.TvRoomGuard04].ped.Task.StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
-        neutralPeds[(int)Neutrals.StripperTvRoom].ped.Task.StartScenario("WORLD_HUMAN_YOGA", 0);
+        enemies[(int)Enemies.TvRoomGuard01].GetTask().StartScenario("WORLD_HUMAN_CHEERING", 0);
+        enemies[(int)Enemies.TvRoomGuard02].GetTask().StartScenario("WORLD_HUMAN_CHEERING", 0);
+        enemies[(int)Enemies.TvRoomGuard03].GetTask().StartScenario("WORLD_HUMAN_CHEERING", 0);
+        enemies[(int)Enemies.TvRoomGuard04].GetTask().StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
+        neutralPeds[(int)Neutrals.StripperTvRoom].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
 
-        enemies[(int)Enemies.ShipCaptain].ped.Task.StartScenario("WOLRD_HUMAN_BINOCULARS", 0);
-        enemies[(int)Enemies.CaptainGuard].ped.Task.StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)Enemies.ShipCaptain].GetTask().StartScenario("WOLRD_HUMAN_BINOCULARS", 0);
 
-        enemies[(int)Enemies.StairsGuard].ped.Task.StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
+        enemies[(int)Enemies.StairsGuard].GetTask().StartScenario("WORLD_HUMAN_GUARD_STAND", 0);
 
-        enemies[(int)Enemies.BossRecordingStripper].ped.Task.StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
-        neutralPeds[(int)Neutrals.StripperBeingRecorded].ped.Task.StartScenario("WORLD_HUMAN_YOGA", 0);
+        enemies[(int)Enemies.BossRecordingStripper].GetTask().StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
+        neutralPeds[(int)Neutrals.StripperBeingRecorded].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
 
-        neutralPeds[(int)Neutrals.StripperDancing01].ped.Task.StartScenario("WORLD_HUMAN_YOGA", 0);
-        neutralPeds[(int)Neutrals.StripperDancing02].ped.Task.StartScenario("WORLD_HUMAN_YOGA", 0);
-        enemies[(int)Enemies.GuardRecordingStrippers].ped.Task.StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
+        neutralPeds[(int)Neutrals.StripperDancing01].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
+        neutralPeds[(int)Neutrals.StripperDancing02].GetTask().StartScenario("WORLD_HUMAN_YOGA", 0);
+        enemies[(int)Enemies.GuardRecordingStrippers].GetTask().StartScenario("WORLD_HUMAN_MOBILE_FILM_SHOCKING", 0);
 
-        enemies[(int)Enemies.GuardDrinking].ped.Task.StartScenario("WORLD_HUMAN_DRINKING", 0);
-        neutralPeds[(int)Neutrals.HookerWithGuard01].ped.Task.StartScenario("WOLRD_HUMAN_PARTYING", 0);
-        neutralPeds[(int)Neutrals.HookerWithGuard02].ped.Task.ChatTo(enemies[(int)Enemies.GuardDrinking].ped);
+        enemies[(int)Enemies.GuardDrinking].GetTask().StartScenario("WORLD_HUMAN_DRINKING", 0);
+        neutralPeds[(int)Neutrals.HookerWithGuard01].GetTask().StartScenario("WOLRD_HUMAN_PARTYING", 0);
+        neutralPeds[(int)Neutrals.HookerWithGuard02].GetTask().ChatTo(enemies[(int)Enemies.GuardDrinking].GetPed());
 
-        enemies[(int)Enemies.BossDrinkingBossRoom].ped.Task.StartScenario("WOLRD_HUMAN_DRINKING", 0);
-        enemies[(int)Enemies.BossTalking01].ped.Task.ChatTo(enemies[(int)Enemies.BossTalking02].ped);
-        enemies[(int)Enemies.BossTalking02].ped.Task.ChatTo(enemies[(int)Enemies.BossTalking01].ped);
+        enemies[(int)Enemies.BossDrinkingBossRoom].GetTask().StartScenario("WOLRD_HUMAN_DRINKING", 0);
+        enemies[(int)Enemies.BossTalking01].GetTask().ChatTo(enemies[(int)Enemies.BossTalking02].GetPed());
+        enemies[(int)Enemies.BossTalking02].GetTask().ChatTo(enemies[(int)Enemies.BossTalking01].GetPed());
 
-        enemies[(int)Enemies.LedgeGuard].ped.Task.StartScenario("WORLD_HUMAN_BINOCULARS", 0);
+        enemies[(int)Enemies.LedgeGuard].GetTask().StartScenario("WORLD_HUMAN_BINOCULARS", 0);
 
-        enemies[(int)Enemies.LowerLedgeGuard01].ped.Task.StartScenario("WOLRD_HUMAN_SMOKING", 0);
-        enemies[(int)Enemies.LowerLedgeGuard02].ped.Task.ChatTo(enemies[(int)Enemies.LowerLedgeGuard01].ped);
+        enemies[(int)Enemies.LowerLedgeGuard01].GetTask().StartScenario("WOLRD_HUMAN_SMOKING", 0);
+        enemies[(int)Enemies.LowerLedgeGuard02].GetTask().ChatTo(enemies[(int)Enemies.LowerLedgeGuard01].GetPed());
 
-        enemies[(int)Enemies.BayGuard].ped.Task.StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
+        enemies[(int)Enemies.BayGuard].GetTask().StartScenario("WORLD_HUMAN_AA_SMOKE", 0);
     }
 
     void CheckHelicopter(Object o, EventArgs e)
     {
-        if (!missionWorld.isMissionActive || enemies.Count == 0)
+        if (!MissionWorld.isMissionActive || enemies.Count == 0)
         {
-            script.Tick -= CheckHelicopter;
+            MissionWorld.script.Tick -= CheckHelicopter;
             return;
         }
         if (vehicles[(int)Vehicles.Helicopter].IsDead)
@@ -280,20 +280,21 @@ class MissionTwo : Mission
             {
                 vehicles[(int)Vehicles.Helicopter].AttachedBlip.Delete();
             }
-            script.Tick -= CheckHelicopter;
+            MissionWorld.script.Tick -= CheckHelicopter;
             return;
         }
         if (messageShown)
         {
             if (vehicles[(int)Vehicles.Helicopter].IsInRange(helicopterDestination, 100))
             {
-                missionWorld.QuitMission();
+                MissionWorld.QuitMission();
                 GTA.UI.Screen.ShowSubtitle("~r~Mission failed, a target escaped!");
-                script.Tick -= CheckHelicopter;
+                MissionWorld.script.Tick -= CheckHelicopter;
             }
         }
-        else if (!vehicles[(int)Vehicles.Helicopter].IsStopped && vehicles[(int)Vehicles.Helicopter].Driver != null)
+        else if (vehicles[(int)Vehicles.Helicopter].Driver != null && vehicles[(int)Vehicles.Helicopter].Driver != Game.Player.Character)
         {
+            Function.Call(Hash.TASK_HELI_MISSION, enemies[(int)Enemies.CaptainGuard].GetPed(), vehicles[(int)Vehicles.Helicopter], 0, 0, helicopterDestination.X, helicopterDestination.Y, helicopterDestination.Z, 4, 50.0, 10.0, (helicopterDestination - vehicles[(int)Vehicles.Helicopter].Position).ToHeading(), -1, -1, -1, 32);
             vehicles[(int)Vehicles.Helicopter].AddBlip();
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
             vehicles[(int)Vehicles.Helicopter].AttachedBlip.Color = BlipColor.Red;
