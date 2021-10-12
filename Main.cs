@@ -20,7 +20,7 @@ public class VigilanteMissions: Script
     ScriptSettings iniFile;
     int startTime;
     int currentTime;
-    public static int jokerMissionCount = 1;
+    public static int jokerMissionCount = 15;
 
     public VigilanteMissions()
     {
