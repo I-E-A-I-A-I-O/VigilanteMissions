@@ -32,10 +32,10 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_ELEVEN_CHASE_START_LOCATION = new Vector3(1182.947f, -334.0395f, 68.17595f);
     public static readonly Vector3 MISSION_ELEVEN_FACILITY_INSIDE_LOCATION = new Vector3(2157.207f, 2921.057f, -82.07529f);
     public static readonly Vector3 MISSION_ELEVEN_CHASE_END_LOCATION = new Vector3(1771.892f, 3270.796f, 40.59085f);
-    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(-307.7658f, 2833.251f, 389.7252f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_GETAWAY_LOCATION = new Vector3(-307.7658f, 2833.251f, 560.7252f);
     public static readonly Vector3 MISSION_ELEVEN_MARINE_TRUCK_LOCATION = new Vector3(-94.85383f, 2835.197f, 51.03303f);
     public static readonly Vector3 MISSION_ELEVEN_FORT_ZANCUDO_LOCATION = new Vector3(-1569.331f, 2776.975f, 16.18228f);
-    public static readonly Vector3 MISSION_ELEVEN_PLANE_CRASH_LOCATION = new Vector3(-70.05057f, -803.7344f, 298.687f);
+    public static readonly Vector3 MISSION_ELEVEN_PLANE_CRASH_LOCATION = new Vector3(-70.05057f, -803.7344f, 315.687f);
 
     public static List<Ped> IntializeMissionOnePeds()
     {

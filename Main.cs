@@ -20,7 +20,7 @@ public class VigilanteMissions: Script
     ScriptSettings iniFile;
     int startTime;
     int currentTime;
-    public static int jokerMissionCount = 15;
+    public static int jokerMissionCount = 1;
 
     public VigilanteMissions()
     {
@@ -28,7 +28,7 @@ public class VigilanteMissions: Script
         accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
         cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
         interactKey = iniFile.GetValue("Controls", "Interact", "E");
-        rewardEnabled = iniFile.GetValue<bool>("Gameplay", "RewardEnabled", false);
+        rewardEnabled = iniFile.GetValue("Gameplay", "RewardEnabled", false);
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
         {
@@ -63,9 +63,18 @@ public class VigilanteMissions: Script
             SetIsMenuOpenable();
             ShowOpenMenuMessage();
         };
-        
+
         Tick += GamepadControls;
         KeyUp += KeyboardControls;
+        Aborted += ScriptAborted;
+    }
+
+    void ScriptAborted(object o, EventArgs e)
+    {
+        if (MissionWorld.isMissionActive)
+        {
+            MissionWorld.QuitMission();
+        }
     }
 
     void KeyboardControls(object o, KeyEventArgs e)

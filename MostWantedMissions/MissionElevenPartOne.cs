@@ -535,7 +535,7 @@ class MissionElevenPartOne : Mission
                         var joker = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker = (Ped)MissionWorld.EntityLoadLoop(joker, plane, VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
                         joker.BlockPermanentEvents = true;
-                        Function.Call(Hash.TASK_PLANE_MISSION, joker.Handle, plane.Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
+                        Function.Call(Hash.TASK_PLANE_MISSION, joker.Handle, plane.Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 2700f, 1000f);
                         enemies.Add(new MissionPed(joker, enemiesRelGroup));
                         vehicles.Add(plane);
                         GTA.UI.Screen.ShowSubtitle("Kill ~r~The Joker~w~.", 8000);
@@ -554,14 +554,6 @@ class MissionElevenPartOne : Mission
                         {
                             Game.Player.WantedLevel = 0;
                         }
-                    }
-                    if (vehicles[0].IsInRange(objectiveLocation, 100))
-                    {
-                        GTA.UI.Screen.ShowSubtitle("~r~Mission failed.", 8000);
-                        MissionWorld.QuitMission();
-                        Progress.missionsFailedCount += 1;
-                        VigilanteMissions.SaveProgress();
-                        return;
                     }
                     if (Game.Player.LastVehicle != null && Game.Player.LastVehicle.IsInAir && !flyingMusicPlayed)
                     {
@@ -602,7 +594,7 @@ class MissionElevenPartOne : Mission
         {
             enemy.Delete();
         }
-        if (ObjectiveLocationBlip.Exists())
+        if (ObjectiveLocationBlip != null && ObjectiveLocationBlip.Exists())
         {
             ObjectiveLocationBlip.Delete();
         }
