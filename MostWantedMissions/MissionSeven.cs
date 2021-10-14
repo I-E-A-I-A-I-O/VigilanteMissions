@@ -197,7 +197,7 @@ class MissionSeven : Mission
 
                     StartOfficeScenarios();
 
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~terrorist~w~.", 8000);
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~terrorists~w~.", 8000);
                     currentObjective = Objectives.KillOfficeTargets;
                     break;
                 }
@@ -420,7 +420,7 @@ class MissionSeven : Mission
         ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Catherine Kerkow's location";
         ObjectiveLocationBlip.ShowRoute = true;
 
         MissionWorld.script.Tick += MissionTick;

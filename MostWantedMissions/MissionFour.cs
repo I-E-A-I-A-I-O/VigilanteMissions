@@ -142,10 +142,10 @@ class MissionFour : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Frank Abagnale's location";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "Found him, he's at the ~y~airport~w~ with a fake identity trying to board a private jet. I'm sending you the location.");
+        GTA.UI.Screen.ShowSubtitle("Go to the ~y~Airport~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;

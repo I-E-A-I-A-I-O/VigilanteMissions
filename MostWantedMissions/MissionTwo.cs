@@ -209,10 +209,10 @@ class MissionTwo : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Tony Mussolini's yacht";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "He's having a party at his ~y~yacht~w~ right now and he is moving it to international waters. I'm sending you the location.");
+        GTA.UI.Screen.ShowSubtitle("Go to the ~y~yacht~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;

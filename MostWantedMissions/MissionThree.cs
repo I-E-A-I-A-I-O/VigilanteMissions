@@ -179,8 +179,8 @@ class MissionThree : Mission
         ObjectiveLocationBlip.ShowRoute = true;
         ObjectiveLocationBlip.Name = "Wanted suspect location";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "He's been hiding in his own ranch, ~y~La Fuente Blanca~w~.");
+        GTA.UI.Screen.ShowSubtitle("Go to ~y~La Fuente Blanca~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;

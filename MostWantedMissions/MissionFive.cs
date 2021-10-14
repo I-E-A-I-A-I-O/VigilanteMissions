@@ -61,7 +61,7 @@ class MissionFive : Mission
                     {
                         neutralPeds.Add(new MissionPed(neutrals[i], neutralsRelGroup, true));
                     }
-                    GTA.UI.Screen.ShowSubtitle("Save the ~g~woman~w~, kill the ~r~target~w~ before it's too late!", 8000);
+                    GTA.UI.Screen.ShowSubtitle("Save the ~g~woman~w~, kill the ~r~Ted Bundy~w~ before it's too late!", 8000);
                     currentObjective = Objectives.KillTargets;
                     StartScenarios();
                     break;
@@ -146,10 +146,10 @@ class MissionFive : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Ted Buny's location";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "Apparently, he is meeting with a woman ~y~near the observatory~w~, i'm sending you the location. You beter get there fast!");
+        GTA.UI.Screen.ShowSubtitle("Find ~y~Ted and the woman~ww~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;
