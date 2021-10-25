@@ -48,9 +48,6 @@ class MissionElevenPartOne : Mission
     int chaseCurrentTime;
     RelationshipGroup enemiesRelGroup;
     RelationshipGroup neutralGroup;
-    bool loadingTimerStarted = false;
-    int loadingStartTime;
-    int loadingCurrentTime;
 
     public MissionElevenPartOne()
     {

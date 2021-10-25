@@ -30,21 +30,23 @@ class PoliceBackup
 
         if (backupSize == 1)
         {
-            vehicle = World.CreateVehicle(new Model(VehicleHash.Policeb), vehiclePos);
-            vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, new Model(VehicleHash.Policeb), vehiclePos);
-            var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
-            ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.Hwaycop01SMY));
+            var models = new List<Model>() { new Model(VehicleHash.Policeb), new Model(PedHash.Hwaycop01SMY) };
+            Loading.LoadModels(models);
+            vehicle = World.CreateVehicle(models[0], vehiclePos);
+            var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, models[1]);
+            Loading.LoadModels(models);
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped.Handle, Game.GenerateHash("COP"));
             ped.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             police.Add(ped);
         } else
         {
-            vehicle = World.CreateVehicle(new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]), vehiclePos);
-            vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]), vehiclePos);
-            var pedDriver = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
-            var pedCopilot = vehicle.CreatePedOnSeat(VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
-            pedDriver = (Ped)MissionWorld.EntityLoadLoop(pedDriver, vehicle, VehicleSeat.Driver, new Model(PedHash.Cop01SMY));
-            pedCopilot = (Ped)MissionWorld.EntityLoadLoop(pedCopilot, vehicle, VehicleSeat.RightFront, new Model(PedHash.Cop01SFY));
+            var vehicleModel = new Model(vehicleHashList[ran.Next(0, vehicleHashList.Count)]);
+            var models = new List<Model>() { vehicleModel, new Model(PedHash.Cop01SMY), new Model(PedHash.Cop01SFY) };
+            Loading.LoadModels(models);
+            vehicle = World.CreateVehicle(models[0], vehiclePos);
+            var pedDriver = vehicle.CreatePedOnSeat(VehicleSeat.Driver, models[1]);
+            var pedCopilot = vehicle.CreatePedOnSeat(VehicleSeat.RightFront, models[2]);
+            Loading.UnloadModels(models);
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, pedDriver.Handle, Game.GenerateHash("COP"));
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, pedCopilot.Handle, Game.GenerateHash("COP"));
             pedDriver.Weapons.Give(WeaponHash.Pistol, 100, true, true);
