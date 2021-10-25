@@ -41,7 +41,6 @@ class SuspectOnTheRun : Mission
                     ObjectiveLocationBlip.Delete();
 
                     var ped = RandomMissions.CreateCriminal(objectiveLocation);
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, objectiveLocation);
 
                     enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     enemies[0].ShowBlip();

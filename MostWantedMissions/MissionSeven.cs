@@ -122,12 +122,11 @@ class MissionSeven : Mission
                     ObjectiveLocationBlip.Delete();
                     Music.IncreaseIntensity();
 
+                    Loading.LoadModels(MostWantedMissions.MissionSevenModels_1);
                     var peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
                     vehicles = MostWantedMissions.InitializeMissionSevenStreetVehicles();
                     var neutrals = MostWantedMissions.InitializeMissionSevenPolice();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenStreetPeds);
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSevenStreetVehicles);
-                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSevenPolice);
+                    Loading.UnloadModels(MostWantedMissions.MissionSevenModels_1);
 
                     for(var i = 0; i < neutrals.Count; i++)
                     {
@@ -180,8 +179,9 @@ class MissionSeven : Mission
                     }
                     ObjectiveLocationBlip.Delete();
 
+                    Loading.LoadModel(MostWantedMissions.MissionSevenOfficeModel);
                     var peds = MostWantedMissions.InitializeMissionSevenOfficePeds();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenOfficePeds);
+                    Loading.LoadModel(MostWantedMissions.MissionSevenOfficeModel);
 
                     foreach (Ped ped in peds)
                     {
@@ -197,7 +197,7 @@ class MissionSeven : Mission
 
                     StartOfficeScenarios();
 
-                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~terrorist~w~.", 8000);
+                    GTA.UI.Screen.ShowSubtitle("Kill the ~r~terrorists~w~.", 8000);
                     currentObjective = Objectives.KillOfficeTargets;
                     break;
                 }
@@ -208,8 +208,9 @@ class MissionSeven : Mission
                         RemoveDeadEnemies();
                     } else
                     {
+                        Loading.LoadModel(MostWantedMissions.MissionSevenBombModel);
                         props = MostWantedMissions.InitializeMissionSevenBomb();
-                        props = MissionWorld.PropListLoadLoop(props, MostWantedMissions.InitializeMissionSevenBomb);
+                        Loading.UnloadModel(MostWantedMissions.MissionSevenBombModel);
 
                         objectiveLocation = props[0].Position;
                         props[0].AddBlip();
@@ -271,10 +272,10 @@ class MissionSeven : Mission
                     }
                     ObjectiveLocationBlip.Delete();
 
+                    Loading.LoadModels(MostWantedMissions.MissionSevenModels_2);
                     vehicles.Add(MostWantedMissions.InitializeMissionSevenRoofVehicles());
                     var peds = MostWantedMissions.InitializeMissionSevenRoofPeds();
-                    vehicles[vehicles.Count - 1] = (Vehicle)MissionWorld.EntityLoadLoop(vehicles[vehicles.Count - 1], MostWantedMissions.InitializeMissionSevenRoofVehicles);
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSevenRoofPeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionSevenModels_2);
 
                     foreach (Ped ped in peds)
                     {
@@ -420,7 +421,7 @@ class MissionSeven : Mission
         ObjectiveLocationBlip = World.CreateBlip(objectiveLocation);
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Catherine Kerkow's location";
         ObjectiveLocationBlip.ShowRoute = true;
 
         MissionWorld.script.Tick += MissionTick;

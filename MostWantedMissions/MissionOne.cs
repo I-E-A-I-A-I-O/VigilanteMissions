@@ -62,10 +62,10 @@ class MissionOne : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionOneModels);
                     vehicles = MostWantedMissions.InitializeMissionOneVehicles();
                     var peds = MostWantedMissions.IntializeMissionOnePeds();
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionOneVehicles);
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.IntializeMissionOnePeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionOneModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
 
@@ -132,9 +132,9 @@ class MissionOne : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        ObjectiveLocationBlip.Name = "Wang Fang's location";
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "He's in a ~y~parking lot at Burton~w~ trying to score a meth deal. I'm sending you the location.");
+        GTA.UI.Screen.ShowSubtitle("Go to the ~y~parking lot~w~.");
         MissionWorld.script.Tick += MissionTick;
         return true;
     }

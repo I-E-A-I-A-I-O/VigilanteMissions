@@ -89,13 +89,12 @@ class MissionEight : Mission
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
 
+                    Loading.LoadModels(MostWantedMissions.MissionEightModels);
                     var peds = MostWantedMissions.InitializeMissionEightPeds();
                     props = MostWantedMissions.InitializeMissionEightProps();
                     vehicles = MostWantedMissions.InitializeMissionEightVehicles();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionEightPeds);
-                    props = MissionWorld.PropListLoadLoop(props, MostWantedMissions.InitializeMissionEightProps);
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionEightVehicles);
-                    
+                    Loading.UnloadModels(MostWantedMissions.MissionEightModels);
+
                     for (var i = 0; i < peds.Count; i++) 
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -139,8 +138,9 @@ class MissionEight : Mission
                             props[(int)Props.Fireaxe].Delete();
                             props.RemoveAt((int)Props.Fireaxe);
                             Game.Player.Character.Weapons.Give(WeaponHash.BattleAxe, 1, true, true);
+                            Loading.LoadModel(MostWantedMissions.MissionEightTargetModel);
                             var ped = MostWantedMissions.InitializeMissionEightTarget();
-                            ped = (Ped)MissionWorld.EntityLoadLoop(ped, MostWantedMissions.InitializeMissionEightTarget);
+                            Loading.UnloadModel(MostWantedMissions.MissionEightTargetModel);
                             enemies.Add(new MissionPed(ped, targetRelGroup));
                             enemies[0].ShowBlip();
                             enemies[0].GetBlip().IsFlashing = true;
@@ -237,10 +237,10 @@ class MissionEight : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Biker club";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "He's been hiding in the ~y~biker club~w~ near the casino, i'm sending you the location.");
+        GTA.UI.Screen.ShowSubtitle("Go to the ~y~biker club~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;

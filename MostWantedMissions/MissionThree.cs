@@ -78,10 +78,10 @@ class MissionThree : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionThreeModels);
                     var peds = MostWantedMissions.InitializeMissionThreePeds();
                     var neutrals = MostWantedMissions.InitializeMissionThreeCivilianPeds();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionThreePeds);
-                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionTwoCivilianPeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionThreeModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -179,8 +179,8 @@ class MissionThree : Mission
         ObjectiveLocationBlip.ShowRoute = true;
         ObjectiveLocationBlip.Name = "Wanted suspect location";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "He's been hiding in his own ranch, ~y~La Fuente Blanca~w~.");
+        GTA.UI.Screen.ShowSubtitle("Go to ~y~La Fuente Blanca~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;

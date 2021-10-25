@@ -38,7 +38,6 @@ class MassShooter : Mission
                     }
                     ObjectiveLocationBlip.Delete();
                     var ped = RandomMissions.CreateCriminal(location);
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, RandomMissions.CreateCriminal, location);
                     enemy = new MissionPed(ped, enemyRelGroup);
                     enemy.GetPed().FiringPattern = FiringPattern.FullAuto;
                     enemy.GetPed().Accuracy = 80;

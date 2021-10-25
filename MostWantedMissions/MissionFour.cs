@@ -73,10 +73,9 @@ class MissionFour : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionFourModels);
                     vehicles = MostWantedMissions.InitializeMissionFourVehicles();
                     var peds = MostWantedMissions.InitializeMissionFourPeds();
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionFourVehicles);
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionFourPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -142,10 +141,10 @@ class MissionFour : Mission
         ObjectiveLocationBlip.DisplayType = BlipDisplayType.BothMapSelectable;
         ObjectiveLocationBlip.Color = BlipColor.Yellow;
         ObjectiveLocationBlip.ShowRoute = true;
-        ObjectiveLocationBlip.Name = "Wanted suspect location";
+        ObjectiveLocationBlip.Name = "Frank Abagnale's location";
 
-        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanated suspect", "Ok, i tracked them down, i'm sending you the location.");
-        GTA.UI.Screen.ShowSubtitle("Go to the ~y~wanted suspect~w~.");
+        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted suspect", "Found him, he's at the ~y~airport~w~ with a fake identity trying to board a private jet. I'm sending you the location.");
+        GTA.UI.Screen.ShowSubtitle("Go to the ~y~Airport~w~.");
 
         MissionWorld.script.Tick += MissionTick;
         return true;
@@ -197,6 +196,8 @@ class MissionFour : Mission
 
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
+
+        Loading.UnloadModels(MostWantedMissions.MissionFourModels);
 
         Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed().Handle, vehicles[(int)Vehicles.Plane].Handle, 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
         enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);

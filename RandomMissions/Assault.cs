@@ -50,8 +50,6 @@ class Assault : Mission
                     ObjectiveLocationBlip.Delete();
                     var enemy = RandomMissions.CreateCriminal(objectiveLocation);
                     var neutral = RandomMissions.CreateVictim(objectiveLocation);
-                    enemy = (Ped)MissionWorld.EntityLoadLoop(enemy, RandomMissions.CreateCriminal, objectiveLocation);
-                    neutral = (Ped)MissionWorld.EntityLoadLoop(neutral, RandomMissions.CreateVictim, objectiveLocation);
                     enemies.Add(new MissionPed(enemy, enemiesRelGroup));
                     neutralPeds.Add(new MissionPed(neutral, neutralsRelGroup, true));
                     enemies[0].ShowBlip();

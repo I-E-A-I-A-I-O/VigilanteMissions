@@ -84,8 +84,9 @@ class MissionNine : Mission
                     }
                     ObjectiveLocationBlip.Delete();
                     objectiveLocation = MostWantedMissions.MISSION_NINE_JESSE_WALK_TO;
+                    Loading.LoadModels(MostWantedMissions.MissionNineModels_1);
                     var peds = MostWantedMissions.InitializeMissionNineMotelRoomPeds();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineMotelRoomPeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionNineModels_1);
                     foreach (Ped ped in peds)
                     {
                         neutralPeds.Add(new MissionPed(ped, pedRelGroup,  true));
@@ -184,8 +185,9 @@ class MissionNine : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModel(MostWantedMissions.MissionNineLabEntranceModel);
                     var peds = MostWantedMissions.InitializeMissionNineLabEntranceGuards();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabEntranceGuards);
+                    Loading.UnloadModel(MostWantedMissions.MissionNineLabEntranceModel);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], neutralRelGroup));
@@ -204,8 +206,9 @@ class MissionNine : Mission
                     } else
                     {
                         objectiveLocation = MostWantedMissions.MISSION_NINE_LAB_INSIDE_LOCATION;
+                        Loading.LoadModels(MostWantedMissions.MissionNineModels_2);
                         var peds = MostWantedMissions.InitializeMissionNineLabPeds();
-                        peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineLabPeds);
+                        Loading.UnloadModels(MostWantedMissions.MissionNineModels_2);
                         foreach (Ped ped in peds)
                         {
                             enemies.Add(new MissionPed(ped, aggressiveRelGroup));
@@ -268,8 +271,10 @@ class MissionNine : Mission
                             if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                             {
                                 PlayPlantBombAnim(Vector3.RelativeBack.ToHeading());
+                                Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
                                 Script.Wait(2000);
                                 props.Add(MostWantedMissions.InitializeMissionNineBombOne());
+                                Loading.UnloadModel(MostWantedMissions.MissionNineBombModel);
                                 bombOneBlip.Delete();
                                 bombOnePlanted = true;
                             }
@@ -290,8 +295,10 @@ class MissionNine : Mission
                             if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                             {
                                 PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
+                                Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
                                 Script.Wait(2000);
                                 props.Add(MostWantedMissions.InitializeMissionNineBombTwo());
+                                Loading.UnloadModel(MostWantedMissions.MissionNineBombModel);
                                 bombTwoBlip.Delete();
                                 bombTwoPlanted = true;
                             }
@@ -312,8 +319,10 @@ class MissionNine : Mission
                             if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                             {
                                 PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
+                                Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
                                 Script.Wait(2000);
                                 props.Add(MostWantedMissions.InitializeMissionNineBombThree());
+                                Loading.UnloadModel(MostWantedMissions.MissionNineBombModel);
                                 bombThreeBlip.Delete();
                                 bombThreePlanted = true;
                             }
@@ -331,8 +340,8 @@ class MissionNine : Mission
                 {
                     if (Game.Player.Character.IsInRange(objectiveLocation, 20))
                     {
+                        Loading.LoadModels(MostWantedMissions.MissionNineModels_3);
                         vehicles = MostWantedMissions.InitializeMissionNineVehicles();
-                        vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionNineVehicles);
                         objectiveLocation = MostWantedMissions.MISSION_NINE_REINFORCEMENT_LOCATION;
                         var peds = new List<Ped>
                         {
@@ -342,11 +351,7 @@ class MissionNine : Mission
                             vehicles[(int)Vehicles.Bike01].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                             vehicles[(int)Vehicles.Bike02].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY)),
                         };
-                        peds[0] = (Ped)MissionWorld.EntityLoadLoop(peds[0], vehicles[(int)Vehicles.Car], VehicleSeat.Driver, new Model(PedHash.Chef));
-                        peds[1] = (Ped)MissionWorld.EntityLoadLoop(peds[1], vehicles[(int)Vehicles.Bike01], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
-                        peds[2] = (Ped)MissionWorld.EntityLoadLoop(peds[2], vehicles[(int)Vehicles.Bike01], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
-                        peds[3] = (Ped)MissionWorld.EntityLoadLoop(peds[3], vehicles[(int)Vehicles.Bike02], VehicleSeat.Driver, new Model(PedHash.PoloGoon01GMY));
-                        peds[4] = (Ped)MissionWorld.EntityLoadLoop(peds[4], vehicles[(int)Vehicles.Bike02], VehicleSeat.Passenger, new Model(PedHash.PoloGoon01GMY));
+                        Loading.UnloadModels(MostWantedMissions.MissionNineModels_3);
                         for (var i = 0; i < peds.Count; i++)
                         {
                             enemies.Add(new MissionPed(peds[i], neutralRelGroup, false, true));
@@ -370,8 +375,9 @@ class MissionNine : Mission
                         {
                             if (enemies[0].GetPed().IsInRange(objectiveLocation, 110))
                             {
+                                Loading.LoadModel(MostWantedMissions.MissionNineReinforcementModel);
                                 var peds = MostWantedMissions.InitializeMissionNineReinforcements();
-                                peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionNineReinforcements);
+                                Loading.UnloadModel(MostWantedMissions.MissionNineReinforcementModel);
                                 for (var i = 0; i < peds.Count; i++)
                                 {
                                     enemies.Add(new MissionPed(peds[i], aggressiveRelGroup));

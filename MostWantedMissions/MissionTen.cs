@@ -73,10 +73,10 @@ class MissionTen : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionTenModels);
                     var peds = MostWantedMissions.InitializeMissionTenEnemies();
                     hooker = MostWantedMissions.InitializeMissionTenNeutralPed();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionTenEnemies);
-                    hooker = (Ped)MissionWorld.EntityLoadLoop(hooker, MostWantedMissions.InitializeMissionTenNeutralPed);
+                    Loading.UnloadModels(MostWantedMissions.MissionTenModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

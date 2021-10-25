@@ -3,6 +3,7 @@ using GTA.Native;
 using System.Windows.Forms;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 public class VigilanteMissions: Script
 {
@@ -10,6 +11,7 @@ public class VigilanteMissions: Script
     bool isMenuOpenable = false;
     bool isInStationComputer = false;
     bool rewardEnabled = false;
+    bool filterEnabled = false;
     static Menu menu;
     public static Keys accessComputerKey;
     public static Keys interactMissionKey;
@@ -21,6 +23,8 @@ public class VigilanteMissions: Script
     int startTime;
     int currentTime;
     public static int jokerMissionCount = 15;
+    string[] vehicleModels = new string[200];
+    List<VehicleHash> vehicleHashes = new List<VehicleHash>();
 
     public VigilanteMissions()
     {
@@ -28,7 +32,10 @@ public class VigilanteMissions: Script
         accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
         cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
         interactKey = iniFile.GetValue("Controls", "Interact", "E");
-        rewardEnabled = iniFile.GetValue<bool>("Gameplay", "RewardEnabled", false);
+        rewardEnabled = iniFile.GetValue("Gameplay", "RewardEnabled", false);
+        filterEnabled = iniFile.GetValue("Gameplay", "FilterOn", false);
+        vehicleModels = iniFile.GetAllValues<string>("Gameplay", "VehicleModels");
+        vehicleModels = vehicleModels[0].Split(',');
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
         {
@@ -49,6 +56,17 @@ public class VigilanteMissions: Script
             GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for interacting so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
         }
 
+        for (var i = 0; i < vehicleModels.Length; i++)
+        {
+            if (!Enum.TryParse<VehicleHash>(vehicleModels[i], out var parsedHash))
+            {
+                continue;
+            } else
+            {
+                vehicleHashes.Add(parsedHash);
+            }
+        }
+
         new MissionWorld(this);
         menu = new Menu();
         ReadProgress();
@@ -63,9 +81,18 @@ public class VigilanteMissions: Script
             SetIsMenuOpenable();
             ShowOpenMenuMessage();
         };
-        
+
         Tick += GamepadControls;
         KeyUp += KeyboardControls;
+        Aborted += ScriptAborted;
+    }
+
+    void ScriptAborted(object o, EventArgs e)
+    {
+        if (MissionWorld.isMissionActive)
+        {
+            MissionWorld.QuitMission();
+        }
     }
 
     void KeyboardControls(object o, KeyEventArgs e)
@@ -151,8 +178,39 @@ public class VigilanteMissions: Script
 
     void IsPlayerIsInPoliceCar()
     {
-        bool isInVehicle = Progress.jokerKilled && rewardEnabled ? Game.Player.Character.IsInVehicle() : Game.Player.Character.IsInPoliceVehicle;
-        isPlayerInStoppedPoliceVehicle = isInVehicle ? Game.Player.Character.CurrentVehicle.IsStopped : false;
+        bool isInVehicle = false;
+        if (Progress.jokerKilled && rewardEnabled)
+        {
+            if (filterEnabled)
+            {
+                var currentVehicle = Game.Player.Character.CurrentVehicle;
+                if (currentVehicle != null)
+                {
+                    foreach (VehicleHash model in vehicleHashes)
+                    {
+                        if (currentVehicle.Model == new Model(model))
+                        {
+                            isInVehicle = true;
+                        }
+                    }
+                } else
+                {
+                    isInVehicle = false;
+                }
+            } else
+            {
+                isInVehicle = Game.Player.Character.IsInVehicle();
+            }
+        } else
+        {
+            isInVehicle = Game.Player.Character.IsInPoliceVehicle;
+        }
+        if (isInVehicle)
+        {
+            var currentVehicle = Game.Player.Character.CurrentVehicle;
+            isInVehicle = currentVehicle.Driver == Game.Player.Character;
+        }
+        isPlayerInStoppedPoliceVehicle = isInVehicle && Game.Player.Character.CurrentVehicle.IsStopped;
     }
 
     void IsPlayerDead()

@@ -40,7 +40,6 @@ class GangActivity : Mission
                     }
                     ObjectiveLocationBlip.Delete();
                     var peds = RandomMissions.CreateGroupOfCriminals(objectiveLocation);
-                    peds = MissionWorld.PedListLoadLoop(peds, RandomMissions.CreateGroupOfCriminals, objectiveLocation);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

@@ -41,9 +41,10 @@ class StolenVehicle : Mission
                     }
                     ObjectiveLocationBlip.Delete();
                     var vehicle = RandomMissions.CreateVehicle(objectiveLocation);
-                    vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, RandomMissions.CreateVehicle, objectiveLocation);
-                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.MexGoon01GMY));
+                    var model = new Model(PedHash.MexGoon01GMY);
+                    Loading.LoadModel(model);
+                    var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, model);
+                    Loading.UnloadModel(model);
                     enemies.Add(new MissionPed(ped, enemiesRelGroup, false, true));
                     vehicles.Add(vehicle);
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~target~w~.", 8000);

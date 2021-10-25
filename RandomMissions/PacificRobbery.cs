@@ -44,14 +44,12 @@ class PacificRobbery : Mission
                     {
                         return;
                     }
+                    Loading.LoadModels(BankMissions.Models);
                     var enemyPeds = BankMissions.InitializePacificRobbers();
                     var policePeds = BankMissions.InitializePacificPolice();
                     var hostagePeds = BankMissions.InitializePacificHostages();
                     vehicles = BankMissions.InitializePacificVehicles();
-                    enemyPeds = MissionWorld.PedListLoadLoop(enemyPeds, BankMissions.InitializePacificRobbers);
-                    policePeds = MissionWorld.PedListLoadLoop(policePeds, BankMissions.InitializePacificPolice);
-                    hostagePeds = MissionWorld.PedListLoadLoop(hostagePeds, BankMissions.InitializePacificHostages);
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, BankMissions.InitializePacificVehicles);
+                    Loading.UnloadModels(BankMissions.Models);
                     for (var i = 0; i < enemyPeds.Count; i++)
                     {
                         enemies.Add(new MissionPed(enemyPeds[i], robberRelGroup));
