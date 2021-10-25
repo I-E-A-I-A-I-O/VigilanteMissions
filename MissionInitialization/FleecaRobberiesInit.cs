@@ -12,6 +12,12 @@ static class FleecaRobberiesInit
     static Vector3 LOCATION_FIVE = new Vector3(151.6956f, -1035.145f, 28.33931f);
     static Vector3 LOCATION_SIX = new Vector3(1175.124f, 2701.105f, 37.17781f);
 
+    public static List<Model> Models => new List<Model>()
+    {
+        new Model(1822283721),
+        new Model(-625565461)
+    };
+
     public static void SelectLocation(int missionIndex, out Vector3 location)
     {
         switch(missionIndex)
@@ -179,8 +185,8 @@ static class FleecaRobberiesInit
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(435429221), new Vector3(-350.4429f, -51.97402f, 49.03652f), -3.043174f),
-            World.CreatePed(new Model(933092024), new Vector3(-352.5433f, -51.1286f, 49.03647f), 1.822526f)
+            World.CreatePed(new Model(-625565461), new Vector3(-350.4429f, -51.97402f, 49.03652f), -3.043174f),
+            World.CreatePed(new Model(-625565461), new Vector3(-352.5433f, -51.1286f, 49.03647f), 1.822526f)
         };
     }
 
@@ -200,8 +206,8 @@ static class FleecaRobberiesInit
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(933092024), new Vector3(314.4158f, -281.3477f, 54.16473f), 21.91808f),
-            World.CreatePed(new Model(933092024), new Vector3(312.0094f, -280.3156f, 54.16463f), -7.192459f)
+            World.CreatePed(new Model(-625565461), new Vector3(314.4158f, -281.3477f, 54.16473f), 21.91808f),
+            World.CreatePed(new Model(-625565461), new Vector3(312.0094f, -280.3156f, 54.16463f), -7.192459f)
         };
     }
 
@@ -221,8 +227,8 @@ static class FleecaRobberiesInit
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(435429221), new Vector3(-1210.526f, -331.9603f, 37.78099f), 36.9999f),
-            World.CreatePed(new Model(1561705728), new Vector3(-1212.919f, -333.1217f, 37.78091f), 17.99998f)
+            World.CreatePed(new Model(-625565461), new Vector3(-1210.526f, -331.9603f, 37.78099f), 36.9999f),
+            World.CreatePed(new Model(-625565461), new Vector3(-1212.919f, -333.1217f, 37.78091f), 17.99998f)
         };
     }
 
@@ -242,7 +248,7 @@ static class FleecaRobberiesInit
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(435429221), new Vector3(147.9353f, -1042.076f, 29.36794f), 0.0002265055f),
+            World.CreatePed(new Model(-625565461), new Vector3(147.9353f, -1042.076f, 29.36794f), 0.0002265055f),
             World.CreatePed(new Model(-625565461), new Vector3(149.421f, -1042.728f, 29.36801f), 1.072878f)
         };
     }
@@ -263,8 +269,8 @@ static class FleecaRobberiesInit
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(1561705728), new Vector3(1175.03f, 2708.574f, 38.08796f), 170.949f),
-            World.CreatePed(new Model(933092024), new Vector3(1176.591f, 2708.643f, 38.08788f), -166.713f)
+            World.CreatePed(new Model(-625565461), new Vector3(1175.03f, 2708.574f, 38.08796f), 170.949f),
+            World.CreatePed(new Model(-625565461), new Vector3(1176.591f, 2708.643f, 38.08788f), -166.713f)
         };
     }
 }

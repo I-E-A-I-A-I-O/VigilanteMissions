@@ -205,6 +205,11 @@ public class VigilanteMissions: Script
         {
             isInVehicle = Game.Player.Character.IsInPoliceVehicle;
         }
+        if (isInVehicle)
+        {
+            var currentVehicle = Game.Player.Character.CurrentVehicle;
+            isInVehicle = currentVehicle.Driver == Game.Player.Character;
+        }
         isPlayerInStoppedPoliceVehicle = isInVehicle && Game.Player.Character.CurrentVehicle.IsStopped;
     }
 

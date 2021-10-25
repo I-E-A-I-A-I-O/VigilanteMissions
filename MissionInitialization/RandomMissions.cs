@@ -1,8 +1,8 @@
 ﻿using GTA;
-using GTA.Native;
 using GTA.Math;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 static class RandomMissions
 {
@@ -237,19 +237,31 @@ static class RandomMissions
     static public Ped CreateVictim(Vector3 location)
     {
         var ran = new Random();
-        return World.CreatePed(new Model(VICTIMS[ran.Next(0, VICTIMS.Count)]), location.Around(2));
+        var model = new Model(VICTIMS[ran.Next(0, VICTIMS.Count)]);
+        Loading.LoadModel(model);
+        var ped = World.CreatePed(new Model(VICTIMS[ran.Next(0, VICTIMS.Count)]), location.Around(2));
+        Loading.UnloadModel(model);
+        return ped;
     }
 
     static public Ped CreateCriminal(Vector3 location)
     {
         var ran = new Random();
-        return World.CreatePed(new Model(CRIMINALS[ran.Next(0, CRIMINALS.Count)]), location.Around(2));
+        var model = new Model(CRIMINALS[ran.Next(0, CRIMINALS.Count)]);
+        Loading.LoadModel(model);
+        var ped = World.CreatePed(model, location.Around(2));
+        Loading.UnloadModel(model);
+        return ped;
     }
 
     static public Vehicle CreateVehicle(Vector3 location)
     {
         var ran = new Random();
-        return World.CreateVehicle(new Model(VEHICLES[ran.Next(0, VEHICLES.Count)]), location.Around(2));
+        var model = new Model(VEHICLES[ran.Next(0, VEHICLES.Count)]);
+        Loading.LoadModel(model);
+        var vehicle = World.CreateVehicle(model, location.Around(2));
+        Loading.UnloadModel(model);
+        return vehicle;
     }
 
     static public List<Ped> CreateGroupOfCriminals(Vector3 location)
@@ -257,10 +269,17 @@ static class RandomMissions
         var ran = new Random();
         var groupSize = ran.Next(4, 13);
         var peds = new List<Ped>();
+        var models = new List<Model>();
         for (var i = 0; i < groupSize; i++)
         {
-            peds.Add(World.CreatePed(new Model(CRIMINALS[ran.Next(0, CRIMINALS.Count)]), location.Around(5), ran.Next(0, 351)));
+            models.Add(new Model(CRIMINALS[ran.Next(0, CRIMINALS.Count)]));
         }
+        Loading.LoadModels(models.Distinct().ToList());
+        foreach (Model model in models)
+        {
+            peds.Add(World.CreatePed(model, location.Around(5), ran.Next(0, 351)));
+        }
+        Loading.UnloadModels(models.Distinct().ToList());
         return peds;
     }
 }

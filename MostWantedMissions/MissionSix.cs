@@ -73,12 +73,10 @@ class MissionSix : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionSixModels);
                     vehicles = MostWantedMissions.InitializeMissionSixVehicles();
                     var peds = MostWantedMissions.InitializeMissionSixPeds();
                     var neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionSixVehicles);
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionSixPeds);
-                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionSixCivilianPeds);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -192,6 +190,8 @@ class MissionSix : Mission
 
         enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
         enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+
+        Loading.UnloadModels(MostWantedMissions.MissionSixModels);
 
         foreach (MissionPed ped in enemies)
         {

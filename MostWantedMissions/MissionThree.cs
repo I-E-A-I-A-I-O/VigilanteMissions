@@ -78,10 +78,10 @@ class MissionThree : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionThreeModels);
                     var peds = MostWantedMissions.InitializeMissionThreePeds();
                     var neutrals = MostWantedMissions.InitializeMissionThreeCivilianPeds();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionThreePeds);
-                    neutrals = MissionWorld.PedListLoadLoop(neutrals, MostWantedMissions.InitializeMissionTwoCivilianPeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionThreeModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));

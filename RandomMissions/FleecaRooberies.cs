@@ -42,10 +42,10 @@ class FleecaRooberies : Mission
                     {
                         return;
                     }
+                    Loading.LoadModels(FleecaRobberiesInit.Models);
                     var enemyPeds = FleecaRobberiesInit.SelectLocationRobbers(missionIndex);
                     var hostagePeds = FleecaRobberiesInit.SelectLocationHostages(missionIndex);
-                    enemyPeds = MissionWorld.PedListLoadLoop(enemyPeds, FleecaRobberiesInit.SelectLocationRobbers, missionIndex);
-                    hostagePeds = MissionWorld.PedListLoadLoop(hostagePeds, FleecaRobberiesInit.SelectLocationHostages, missionIndex);
+                    Loading.UnloadModels(FleecaRobberiesInit.Models);
                     for (var i = 0; i < enemyPeds.Count; i++)
                     {
                         enemies.Add(new MissionPed(enemyPeds[i], enemiesRelGroup));

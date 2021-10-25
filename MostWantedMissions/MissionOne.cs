@@ -62,10 +62,10 @@ class MissionOne : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionOneModels);
                     vehicles = MostWantedMissions.InitializeMissionOneVehicles();
                     var peds = MostWantedMissions.IntializeMissionOnePeds();
-                    vehicles = MissionWorld.VehicleListLoadLoop(vehicles, MostWantedMissions.InitializeMissionOneVehicles);
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.IntializeMissionOnePeds);
+                    Loading.UnloadModels(MostWantedMissions.MissionOneModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
 

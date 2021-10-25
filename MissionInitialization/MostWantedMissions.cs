@@ -37,6 +37,170 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_ELEVEN_FORT_ZANCUDO_LOCATION = new Vector3(-1569.331f, 2776.975f, 16.18228f);
     public static readonly Vector3 MISSION_ELEVEN_PLANE_CRASH_LOCATION = new Vector3(-70.05057f, -803.7344f, 315.687f);
 
+    public static List<Model> MissionThreeModels => new List<Model>()
+    {
+        new Model(1129928304),
+        new Model(1329576454),
+        new Model(-1561829034),
+        new Model(-982642292),
+        new Model(261586155),
+    };
+
+    public static List<Model> MissionOneModels => new List<Model>()
+    {
+        new Model(-1176698112),
+        new Model(-9308122),
+        new Model(65402552)
+    };
+
+    public static List<Model> MissionTwoModels => new List<Model>()
+    {
+        new Model(-412008429),
+        new Model(-39239064),
+        new Model(-236444766),
+        new Model(1535236204),
+        new Model(-984709238),
+        new Model(-413447396),
+        new Model(-236444766),
+        new Model(42647445),
+        new Model(695248020),
+        new Model(1381498905),
+        new Model(2014052797),
+        new Model(348382215),
+        new Model(1544875514),
+        new Model(-1660661558)
+    };
+
+    public static List<Model> MissionFourModels => new List<Model>()
+    {
+        new Model(PedHash.PoloGoon01GMY),
+        new Model(-1214293858),
+        new Model(-394074634),
+        new Model(PedHash.Pilot01SMM),
+        new Model(PedHash.Bankman),
+        new Model(PedHash.MerryWeatherCutscene)
+    };
+
+    public static List<Model> MissionFiveModels => new List<Model>()
+    {
+        new Model(216536661),
+        new Model(1633872967)
+    };
+
+    public static List<Model> MissionSixModels => new List<Model>()
+    {
+        new Model(-1176698112),
+        new Model(2119136831),
+        new Model(-9308122),
+        new Model(1064866854),
+        new Model(-1302522190),
+        new Model(231083307),
+    };
+
+    public static List<Model> MissionSevenModels_1 => new List<Model>()
+    {
+        new Model(1822283721),
+        new Model(1558115333),
+        new Model(-1920001264),
+        new Model(-1205689942),
+        new Model(1127131465)
+    };
+
+    public static Model MissionSevenOfficeModel => new Model(1822283721);
+    public static Model MissionSevenBombModel => new Model(929047740);
+
+    public static List<Model> MissionSevenModels_2 => new List<Model>()
+    {
+        new Model(1822283721),
+        new Model(-1514497514),
+        new Model(788747387)
+    };
+
+    public static List<Model> MissionEightModels => new List<Model>()
+    {
+        new Model(-44746786),
+        new Model(1330042375),
+        new Model(1032073858),
+        new Model(850468060),
+        new Model(-570033273),
+        new Model(-1009268949),
+        new Model(2133533553),
+        new Model(-956123246),
+    };
+
+    public static Model MissionEightTargetModel => new Model(850468060);
+
+    public static List<Model> MissionNineModels_1 => new List<Model>()
+    {
+        new Model(1768677545),
+        new Model(-2109222095)
+    };
+
+    public static Model MissionNineLabEntranceModel => new Model(1329576454);
+
+    public static List<Model> MissionNineModels_2 => new List<Model>()
+    {
+        new Model(-306958529),
+        new Model(-760054079)
+    };
+
+    public static Model MissionNineBombModel => new Model(1929884544);
+
+    public static List<Model> MissionNineModels_3 => new List<Model>()
+    {
+        new Model(VehicleHash.SultanRS),
+        new Model(VehicleHash.Baller),
+        new Model(PedHash.Chef),
+        new Model(PedHash.PoloGoon01GMY)
+    };
+
+    public static Model MissionNineReinforcementModel => new Model(1329576454);
+
+    public static List<Model> MissionTenModels => new List<Model>()
+    {
+        new Model(-39239064),
+        new Model(-236444766),
+        new Model(-412008429),
+        new Model(348382215)
+    };
+
+    public static Model MissionElevenMeetingModel => new Model(1650288984);
+    public static Model MissionElevenFarmModel => new Model(1650288984);
+
+    public static List<Model> MissionElevenChaseModels => new List<Model>()
+    {
+        new Model(1644055914),
+        new Model(PedHash.MPros01)
+    };
+
+    public static List<Model> MissionElevenHeliModels => new List<Model>()
+    {
+        new Model(VehicleHash.Buzzard),
+        new Model(PedHash.MPros01)
+    };
+
+    public static List<Model> MissionElevenAirportModels => new List<Model>()
+    {
+        new Model(1822283721),
+        new Model(1802742206),
+        new Model(621481054),
+        new Model(PedHash.Clown01SMY)
+    };
+
+    public static List<Model> MissionElevenTruckModels => new List<Model>()
+    {
+        new Model(-823509173),
+        new Model(PedHash.Marine01SMY)
+    };
+
+    public static Model MissionElevenLazerModel => new Model(-1281684762);
+
+    public static List<Model> MissionElevenAirChaseModels => new List<Model>()
+    {
+        new Model(PedHash.Clown01SMY),
+        new Model(VehicleHash.Luxor)
+    };
+
     public static List<Ped> IntializeMissionOnePeds()
     {
         return new List<Ped>

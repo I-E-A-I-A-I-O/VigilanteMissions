@@ -87,8 +87,9 @@ class MissionElevenPartOne : Mission
                         return;
                     }
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModel(MostWantedMissions.MissionElevenMeetingModel);
                     var ped = MostWantedMissions.InitializeMissionElevenMeetingPed();
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, MostWantedMissions.InitializeMissionElevenMeetingPed);
+                    Loading.UnloadModel(MostWantedMissions.MissionElevenMeetingModel);
                     enemies.Add(new MissionPed(ped, neutralGroup));
                     enemies[0].GetTask().StartScenario("WORLD_HUMAN_SMOKING", 0);
                     enemies[0].ShowBlip();
@@ -103,8 +104,10 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    prop = World.CreateProp(new Model(-1685461222), enemies[0].GetPosition(), true, true);
-                    prop = (Prop)MissionWorld.EntityLoadLoop(prop, new Model(-1685461222), enemies[0].GetPosition(), true, true);
+                    var propModel = new Model(-1685461222);
+                    Loading.LoadModel(propModel);
+                    prop = World.CreateProp(propModel, enemies[0].GetPosition(), true, true);
+                    Loading.UnloadModel(propModel);
                     prop.AddBlip();
                     prop.AttachedBlip.Scale = 0.7f;
                     prop.AttachedBlip.Color = BlipColor.Green;
@@ -147,8 +150,9 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
+                    Loading.LoadModel(MostWantedMissions.MissionElevenFarmModel);
                     var peds = MostWantedMissions.InitializeMissionElevenServerGuards();
-                    peds = MissionWorld.PedListLoadLoop(peds, MostWantedMissions.InitializeMissionElevenServerGuards);
+                    Loading.UnloadModel(MostWantedMissions.MissionElevenFarmModel);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
@@ -269,11 +273,11 @@ class MissionElevenPartOne : Mission
                     ObjectiveLocationBlip.Delete();
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_CHASE_END_LOCATION;
                     Music.IncreaseIntensity();
+                    Loading.LoadModels(MostWantedMissions.MissionElevenChaseModels);
                     var vehicle = MostWantedMissions.InitializeMissionElevenChaseVehicle();
-                    vehicle = (Vehicle)MissionWorld.EntityLoadLoop(vehicle, MostWantedMissions.InitializeMissionElevenChaseVehicle);
                     vehicles.Add(vehicle);
                     var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01));
-                    ped = (Ped)MissionWorld.EntityLoadLoop(ped, vehicle, VehicleSeat.Driver, new Model(PedHash.MPros01));
+                    Loading.UnloadModels(MostWantedMissions.MissionElevenChaseModels);
                     enemies.Add(new MissionPed(ped, enemiesRelGroup));
                     ped.Task.DriveTo(vehicle, objectiveLocation, 15, 350, DrivingStyle.AvoidTraffic);
                     ped.BlockPermanentEvents = true;
@@ -324,10 +328,9 @@ class MissionElevenPartOne : Mission
                     }
                     enemies[0].GetPed().BlockPermanentEvents = false;
                     objectiveLocation = MostWantedMissions.MISSION_ELEVEN_PLANE_GETAWAY_LOCATION;
+                    Loading.LoadModels(MostWantedMissions.MissionElevenAirportModels);
                     var airportVehicles = MostWantedMissions.InitializeMissionElevenAirportVehicles();
                     var airportPeds = MostWantedMissions.InitializeMissionElevenAirportPeds();
-                    airportVehicles = MissionWorld.VehicleListLoadLoop(airportVehicles, MostWantedMissions.InitializeMissionElevenAirportVehicles);
-                    airportPeds = MissionWorld.PedListLoadLoop(airportPeds, MostWantedMissions.InitializeMissionElevenAirportPeds);
                     vehicles.AddRange(airportVehicles);
                     foreach (Ped ped in airportPeds)
                     {
@@ -339,7 +342,7 @@ class MissionElevenPartOne : Mission
                         ped.AttachedBlip.Name = "Joker's goon";
                     }
                     var jokerPed = vehicles[vehicles.Count - 1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
-                    jokerPed = (Ped)MissionWorld.EntityLoadLoop(jokerPed, vehicles[vehicles.Count - 1], VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
+                    Loading.UnloadModels(MostWantedMissions.MissionElevenAirportModels);
                     enemies.Add(new MissionPed(jokerPed, enemiesRelGroup));
                     jokerPed.BlockPermanentEvents = true;
                     Function.Call(Hash.TASK_PLANE_MISSION, jokerPed.Handle, vehicles[vehicles.Count - 1].Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 0, -5000f);
@@ -396,12 +399,11 @@ class MissionElevenPartOne : Mission
                         return;
                     }
                     ObjectiveLocationBlip.Delete();
+                    Loading.LoadModels(MostWantedMissions.MissionElevenTruckModels);
                     var truck = MostWantedMissions.InitializeMissionElevenMarineTruck();
-                    truck = (Vehicle)MissionWorld.EntityLoadLoop(truck, MostWantedMissions.InitializeMissionElevenMarineTruck);
                     var truckDriver = truck.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Marine01SMM));
                     var truckPassenger = truck.CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.Marine01SMY));
-                    truckDriver = (Ped)MissionWorld.EntityLoadLoop(truckDriver, truck, VehicleSeat.Driver, new Model(PedHash.Marine01SMM));
-                    truckPassenger = (Ped)MissionWorld.EntityLoadLoop(truckPassenger, truck, VehicleSeat.Passenger, new Model(PedHash.Marine01SMY));
+                    Loading.UnloadModels(MostWantedMissions.MissionElevenTruckModels);
                     enemies.Add(new MissionPed(truckDriver, MissionWorld.RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY, false, true));
                     enemies.Add(new MissionPed(truckPassenger, MissionWorld.RELATIONSHIP_MISSION_NEUTRAL_COP_FRIENDLY, false, true));
                     vehicles.Add(truck);
@@ -476,8 +478,14 @@ class MissionElevenPartOne : Mission
                         GTA.UI.Screen.ShowSubtitle("Enter the base and steal a lazer.", 8000);
                         RemoveVehiclesAndNeutrals();
                         vehicles.Clear();
+                        Loading.LoadModel(MostWantedMissions.MissionElevenLazerModel);
                         var lazer = MostWantedMissions.InitializeMissionElevenLazer();
-                        lazer = (Vehicle)MissionWorld.EntityLoadLoop(lazer, MostWantedMissions.InitializeMissionElevenLazer);
+                        Loading.UnloadModel(MostWantedMissions.MissionElevenLazerModel);
+                        lazer.AddBlip();
+                        lazer.AttachedBlip.Sprite = BlipSprite.Plane;
+                        lazer.AttachedBlip.Color = BlipColor.Yellow;
+                        lazer.AttachedBlip.Name = "Lazer";
+                        lazer.AttachedBlip.IsShortRange = true;
                         vehicles.Add(lazer);
                         currentObjective = Objectives.StealJet;
                         return;
@@ -524,8 +532,8 @@ class MissionElevenPartOne : Mission
                         RemoveVehiclesAndNeutrals();
                         vehicles.Clear();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_PLANE_GETAWAY_LOCATION;
+                        Loading.LoadModels(MostWantedMissions.MissionElevenAirChaseModels);
                         var plane = World.CreateVehicle(new Model(VehicleHash.Luxor), objectiveLocation);
-                        plane = (Vehicle)MissionWorld.EntityLoadLoop(plane, new Model(VehicleHash.Luxor), objectiveLocation);
                         plane.IsEngineRunning = true;
                         plane.AddBlip();
                         plane.AttachedBlip.Sprite = BlipSprite.Plane;
@@ -533,7 +541,7 @@ class MissionElevenPartOne : Mission
                         plane.AttachedBlip.Name = "The Joker";
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_PLANE_CRASH_LOCATION;
                         var joker = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
-                        joker = (Ped)MissionWorld.EntityLoadLoop(joker, plane, VehicleSeat.Driver, new Model(PedHash.Clown01SMY));
+                        Loading.UnloadModels(MostWantedMissions.MissionElevenAirChaseModels);
                         joker.BlockPermanentEvents = true;
                         Function.Call(Hash.TASK_PLANE_MISSION, joker.Handle, plane.Handle, 0, 0, objectiveLocation.X, objectiveLocation.Y, objectiveLocation.Z, 4, 100f, 0f, 90f, 2700f, 1000f);
                         enemies.Add(new MissionPed(joker, enemiesRelGroup));
@@ -661,8 +669,8 @@ class MissionElevenPartOne : Mission
     void SpawnChaseHelicopter()
     {
         var position = Game.Player.Character.Position;
+        Loading.LoadModels(MostWantedMissions.MissionElevenHeliModels);
         var heli = World.CreateVehicle(new Model(VehicleHash.Buzzard), new Vector3(position.X, position.Y, position.Z + 50));
-        heli = (Vehicle)MissionWorld.EntityLoadLoop(heli, new Model(VehicleHash.Buzzard), new Vector3(position.X, position.Y, position.Z + 30));
         heli.IsEngineRunning = true;
         heli.AddBlip();
         heli.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
@@ -675,34 +683,7 @@ class MissionElevenPartOne : Mission
             heli.CreatePedOnSeat(VehicleSeat.LeftRear, new Model(PedHash.MPros01)),
             heli.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.MPros01))
         };
-        while (!MissionWorld.IsPedListLoaded(peds))
-        {
-            Script.Wait(1);
-            if (!loadingTimerStarted)
-            {
-                loadingStartTime = Game.GameTime;
-                loadingTimerStarted = true;
-            }
-            else
-            {
-                loadingCurrentTime = Game.GameTime;
-                if (loadingCurrentTime - loadingStartTime >= 3000)
-                {
-                    foreach (Ped ped in peds)
-                    {
-                        if (ped != null)
-                        {
-                            ped.Delete();
-                        }
-                    }
-                    peds.Clear();
-                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.MPros01)));
-                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.LeftRear, new Model(PedHash.MPros01)));
-                    peds.Add(heli.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.MPros01)));
-                    loadingTimerStarted = false;
-                }
-            }
-        }
+        Loading.UnloadModels(MostWantedMissions.MissionElevenHeliModels);
         foreach (Ped ped in peds)
         {
             enemies.Add(new MissionPed(ped, enemiesRelGroup));

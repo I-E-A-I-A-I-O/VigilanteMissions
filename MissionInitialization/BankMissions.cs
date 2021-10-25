@@ -7,6 +7,26 @@ static class BankMissions
 {
     public static Vector3 PACIFIC_LOCATION = new Vector3(224.4161f, 208.0313f, 104.5419f);
 
+    public static List<Model> Models => new List<Model>()
+    {
+        new Model(1822283721),
+        new Model(-85696186),
+        new Model(835315305),
+        new Model(373000027),
+        new Model(-283816889),
+        new Model(-1022961931),
+        new Model(435429221),
+        new Model(-625565461),
+        new Model(1264851357),
+        new Model(835315305),
+        new Model(-681004504),
+        new Model(-1920001264),
+        new Model(1558115333),
+        new Model(-1205689942),
+        new Model(1127131465),
+        new Model(-1647941228),
+    };
+
     public static List<Ped> InitializePacificRobbers()
     {
         return new List<Ped>()
