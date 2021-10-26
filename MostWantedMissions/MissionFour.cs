@@ -80,6 +80,7 @@ class MissionFour : Mission
                     {
                         enemies.Add(new MissionPed(peds[i], enemiesRelGroup));
                         enemies[i].ShowBlip();
+                        enemies[i].GetTask().FightAgainstHatedTargets(150);
                     }
                     GTA.UI.Screen.ShowSubtitle("Kill the ~r~targets~w~.", 8000);
                     currentObjective = Objectives.KillTargets;
@@ -198,6 +199,8 @@ class MissionFour : Mission
         enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
 
         Loading.UnloadModels(MostWantedMissions.MissionFourModels);
+
+        Script.Wait(0);
 
         Function.Call(Hash.TASK_PLANE_MISSION, enemies[(int)Enemies.Pilot].GetPed().Handle, vehicles[(int)Vehicles.Plane].Handle, 0, 0, planeDestination.X, planeDestination.Y, planeDestination.Z, 4, 100f, 0f, 90f, 0, -5000f);
         enemies[(int)Enemies.ChaseGuard01].GetPed().Task.VehicleChase(Game.Player.Character);
