@@ -21,8 +21,33 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_NINE_JESSE_LOCATION = new Vector3(1121.41736f, 2643.13184f, 37.1487274f);
     public static readonly Vector3 MISSION_NINE_LAB_LOCATION = new Vector3(640.0001f, 2773.23047f, 41.0256233f);
     public static readonly Vector3 MISSION_NINE_LAB_INSIDE_LOCATION = new Vector3(1118.97827f, -3194.53955f, -41.3989334f);
-    public static readonly Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION = new Vector3(1132.146f, -3197.032f, -40.6607f);
-    public static readonly Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION = new Vector3(1123.822f, -3194.421f, -41.39821f);
+    public static Vector3 MISSION_NINE_LAB_BOMB_ONE_POSITION
+    {
+        get
+        {
+            if (VigilanteMissions.WOVCompatibility)
+            {
+                return new Vector3(1132.146f, -3197.032f, -40.6607f);
+            }
+            else
+            {
+                return new Vector3(1137.198f, -3198.916f, -40.6607f);
+            }
+        }
+    }
+    public static Vector3 MISSION_NINE_LAB_BOMB_TWO_POSITION
+    {
+        get
+        {
+            if (VigilanteMissions.WOVCompatibility)
+            {
+                return new Vector3(1123.822f, -3194.421f, -41.39821f);
+            } else
+            {
+                return new Vector3(1124.591f, -3198.628f, -40.93f);
+            }
+        }
+    }
     public static readonly Vector3 MISSION_NINE_LAB_BOMB_THREE_POSITION = new Vector3(1136.906f, -3193.216f, -41.3908653f);
     public static readonly Vector3 MISSION_NINE_REINFORCEMENT_LOCATION = new Vector3(181.875916f, 2242.46826f, 88.96377f);
     public static readonly Vector3 MISSION_TEN_LOCATION = new Vector3(-1388.65723f, -586.457153f, 29.2190189f);

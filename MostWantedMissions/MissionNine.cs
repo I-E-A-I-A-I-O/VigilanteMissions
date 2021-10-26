@@ -294,7 +294,7 @@ class MissionNine : Mission
                             }
                             if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
                             {
-                                PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
+                                PlayPlantBombAnim(VigilanteMissions.WOVCompatibility ? Vector3.RelativeFront.ToHeading() : Vector3.RelativeBack.ToHeading());
                                 Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
                                 Script.Wait(2000);
                                 props.Add(MostWantedMissions.InitializeMissionNineBombTwo());
