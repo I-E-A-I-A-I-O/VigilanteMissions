@@ -40,16 +40,22 @@ class PacificRobbery : Mission
         {
             case Objectives.GoToLocation:
                 {
-                    if (!Game.Player.Character.IsInRange(objectiveLocation, 500))
+                    if (!Game.Player.Character.IsInRange(objectiveLocation, 300))
                     {
                         return;
                     }
-                    Loading.LoadModels(BankMissions.Models);
+                    Loading.LoadModel(BankMissions.RobberModel);
                     var enemyPeds = BankMissions.InitializePacificRobbers();
+                    Loading.UnloadModel(BankMissions.RobberModel);
+                    Loading.LoadModels(BankMissions.PoliceModels);
                     var policePeds = BankMissions.InitializePacificPolice();
+                    Loading.UnloadModels(BankMissions.PoliceModels);
+                    Loading.LoadModels(BankMissions.HostageModels);
                     var hostagePeds = BankMissions.InitializePacificHostages();
+                    Loading.UnloadModels(BankMissions.HostageModels);
+                    Loading.LoadModels(BankMissions.VehicleModels);
                     vehicles = BankMissions.InitializePacificVehicles();
-                    Loading.UnloadModels(BankMissions.Models);
+                    Loading.UnloadModels(BankMissions.VehicleModels);
                     for (var i = 0; i < enemyPeds.Count; i++)
                     {
                         enemies.Add(new MissionPed(enemyPeds[i], robberRelGroup));
