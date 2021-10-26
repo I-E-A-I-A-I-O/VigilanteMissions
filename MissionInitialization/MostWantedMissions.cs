@@ -8,7 +8,7 @@ static class MostWantedMissions
     public static readonly Vector3 MISSION_ONE_LOCATION = new Vector3(-356.5191f, -61.93171f, 54f);
     public static readonly Vector3 MISSION_TWO_LOCATION = new Vector3(-2075.674f, -1020.837f, 4.88413f);
     public static readonly Vector3 MISSION_THREE_LOCATION = new Vector3(1400.261f, 1147.438f, 118.3301f);
-    public static readonly Vector3 MISSION_FOUR_LOCATION = new Vector3(-1262.259f, -3361.105f, 12.9450493f);
+    public static readonly Vector3 MISSION_FOUR_LOCATION = new Vector3(-1746.519f, -2917.897f, 14.54712f);
     public static readonly Vector3 MISSION_FOUR_FAIL_LOCATION = new Vector3(3557.105f, 3919.986f, 711.1465f);
     public static readonly Vector3 MISSION_FIVE_LOCATION = new Vector3(-206.912659f, 1548.97009f, 320.199738f);
     public static readonly Vector3 MISSION_SIX_LOCATION = new Vector3(3025.3f, 2071.449f, 3.107029f);
@@ -324,14 +324,14 @@ static class MostWantedMissions
     {
         return new List<Ped>()
         {
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1279.253f, -3367.219f, 13.94115f), 10.22806f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1280.593f, -3365.94f, 13.94114f), -54.99979f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1278.305f, -3365.272f, 13.94115f), 90.99963f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1279.451f, -3364.126f, 13.94115f), 173.998f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1247.366f, -3373.423f, 13.94021f), -21.99963f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1235.972f, -3387.076f, 24.32666f), 42.00459f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1230.903f, -3377.111f, 13.94505f), -18.19806f),
-            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1280.314f, -3340.25f, 13.94505f), -84.28448f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1737.546f, -2946.328f, 13.94427f), -54.10867f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1736.854f, -2945.111f, 13.94427f), 169.1651f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1737.705f, -2950.187f, 13.94427f), -63.99947f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1736.348f, -2948.39f, 13.94427f), 159.9264f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1736.166f, -2950.661f, 13.94427f), 51.99992f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1732.466f, -2948.936f, 13.94427f), 54.14244f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1744.3f, -2935.337f, 13.94427f), -0.0004383597f),
+            World.CreatePed(new Model(PedHash.PoloGoon01GMY), new Vector3(-1746.397f, -2934.237f, 13.94427f), -22.99949f)
         };
     }
 
@@ -339,10 +339,9 @@ static class MostWantedMissions
     {
         return new List<Vehicle>()
         {
-            World.CreateVehicle(new Model(-1214293858), new Vector3(-1275.54f, -3388.459f, 14.54273f), -23.81056f),
-            World.CreateVehicle(new Model(-394074634), new Vector3(-1290.425f, -3353.373f, 13.52801f), -95.03088f),
-            World.CreateVehicle(new Model(-394074634), new Vector3(-1291.051f, -3359.197f, 13.52484f), -56.78358f),
-            World.CreateVehicle(new Model(-394074634), new Vector3(-1287.795f, -3360.949f, 13.527f), -15.63847f)
+            World.CreateVehicle(new Model(-1214293858), new Vector3(-1746.519f, -2917.897f, 14.54712f), -32.09798f),
+            World.CreateVehicle(new Model(-394074634), new Vector3(-1730.479f, -2949.204f, 13.45126f), -24.5732f),
+            World.CreateVehicle(new Model(-394074634), new Vector3(-1735.177f, -2946.144f, 13.45156f), -40.72732f)
         };
     }
 
@@ -555,12 +554,24 @@ static class MostWantedMissions
 
     public static Prop InitializeMissionNineBombOne()
     {
-        return World.CreateProp(new Model(1929884544), new Vector3(1132.07f, -3197.629f, -39.48698f), new Vector3(0f, 0f, 174.0009f), true, false);
+        if (VigilanteMissions.WOVCompatibility)
+        {
+            return World.CreateProp(new Model(1929884544), new Vector3(1132.07f, -3197.629f, -39.48698f), new Vector3(0f, 0f, 174.0009f), true, false);
+        } else
+        {
+            return World.CreateProp(new Model(1929884544), new Vector3(1137.112f, -3199.312f, -39.15072f), new Vector3(0f, 0f, 165.0006f), true, false);
+        }
     }
     
     public static Prop InitializeMissionNineBombTwo()
     {
-        return World.CreateProp(new Model(1929884544), new Vector3(1123.833f, -3193.982f, -39.61546f), new Vector3(0f, 0f, -2.000000f), true, false);
+        if (VigilanteMissions.WOVCompatibility)
+        {
+            return World.CreateProp(new Model(1929884544), new Vector3(1123.833f, -3193.982f, -39.61546f), new Vector3(0f, 0f, -2.000000f), true, false);
+        } else
+        {
+            return World.CreateProp(new Model(1929884544), new Vector3(1124.455f, -3199.312f, -39.79835f), new Vector3(0f, 0f, -175.9994f), true, false);
+        }
     }
     
     public static Prop InitializeMissionNineBombThree()

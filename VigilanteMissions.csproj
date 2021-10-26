@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
-    <FileVersion>5.0.3.4</FileVersion>
+    <FileVersion>5.0.3.9</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

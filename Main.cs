@@ -25,6 +25,7 @@ public class VigilanteMissions: Script
     public static int jokerMissionCount = 15;
     string[] vehicleModels = new string[200];
     List<VehicleHash> vehicleHashes = new List<VehicleHash>();
+    public static bool WOVCompatibility { get; private set; }
 
     public VigilanteMissions()
     {
@@ -35,6 +36,7 @@ public class VigilanteMissions: Script
         rewardEnabled = iniFile.GetValue("Gameplay", "RewardEnabled", false);
         filterEnabled = iniFile.GetValue("Gameplay", "FilterOn", false);
         vehicleModels = iniFile.GetAllValues<string>("Gameplay", "VehicleModels");
+        WOVCompatibility = iniFile.GetValue("Settings", "WorldOfVarietyCompatibility", true);
         vehicleModels = vehicleModels[0].Split(',');
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))

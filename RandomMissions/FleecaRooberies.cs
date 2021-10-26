@@ -68,13 +68,13 @@ class FleecaRooberies : Mission
                 }
             case Objectives.KillTargets:
                 {
-                    if (Game.Player.Character.IsInRange(objectiveLocation, 20) && !doorsUnlocked)
+                    if (Game.Player.Character.IsInRange(objectiveLocation, 20) /*&& !doorsUnlocked*/)
                     {
-                        var door1 = World.GetClosestProp(objectiveLocation, 100, new Model("v_ilev_genbankdoor1"));
-                        var door2 = World.GetClosestProp(objectiveLocation, 100, new Model("v_ilev_genbankdoor2"));
+                        var door1 = World.GetClosestProp(objectiveLocation, 30, new Model("v_ilev_genbankdoor1"));
+                        var door2 = World.GetClosestProp(objectiveLocation, 30, new Model("v_ilev_genbankdoor2"));
                         Function.Call(Hash._DOOR_CONTROL, Game.GenerateHash("v_ilev_genbankdoor1"), door1.Position.X, door1.Position.Y, door1.Position.Z, false, 0, 50, 0);
                         Function.Call(Hash._DOOR_CONTROL, Game.GenerateHash("v_ilev_genbankdoor2"), door2.Position.X, door2.Position.Y, door2.Position.Z, false, 0, 50, 0);
-                        doorsUnlocked = true;
+                        /*doorsUnlocked = true;*/
                     }
                     if (enemies.Count > 0)
                     {
