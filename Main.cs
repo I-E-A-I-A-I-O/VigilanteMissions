@@ -36,7 +36,7 @@ public class VigilanteMissions: Script
         rewardEnabled = iniFile.GetValue("Gameplay", "RewardEnabled", false);
         filterEnabled = iniFile.GetValue("Gameplay", "FilterOn", false);
         vehicleModels = iniFile.GetAllValues<string>("Gameplay", "VehicleModels");
-        WOVCompatibility = iniFile.GetValue("Settings", "WorldOfVarietyCompatibility", true);
+        WOVCompatibility = iniFile.GetValue("Settings", "WorldOfVarietyCompatibility", false);
         vehicleModels = vehicleModels[0].Split(',');
 
         if (!Enum.TryParse(accessKey, out accessComputerKey))
