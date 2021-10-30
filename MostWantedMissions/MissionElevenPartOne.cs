@@ -120,15 +120,9 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    if (Game.LastInputMethod == InputMethod.GamePad)
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to grab the ~g~keycard");
-                    }
-                    else
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to grab the ~g~keycard");
-                    }
-                    if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+
+                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to grab the ~g~keycard");
+                    if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                     {
                         prop.Delete();
                         objectiveLocation = MostWantedMissions.MISSION_ELEVEN_FACILITY_LOCATION;
@@ -196,15 +190,9 @@ class MissionElevenPartOne : Mission
                     {
                         return;
                     }
-                    if (Game.LastInputMethod == InputMethod.GamePad)
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to insert the device");
-                    }
-                    else
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to insert the device");
-                    }
-                    if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+
+                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to insert the device");
+                    if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                     {
                         var sequence = new TaskSequence();
                         sequence.AddTask.AchieveHeading(Vector3.RelativeBack.ToHeading());

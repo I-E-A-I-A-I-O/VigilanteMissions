@@ -122,11 +122,9 @@ class MissionSeven : Mission
                     ObjectiveLocationBlip.Delete();
                     Music.IncreaseIntensity();
 
-                    Loading.LoadModels(MostWantedMissions.MissionSevenModels_1);
                     var peds = MostWantedMissions.InitializeMissionSevenStreetPeds();
                     vehicles = MostWantedMissions.InitializeMissionSevenStreetVehicles();
                     var neutrals = MostWantedMissions.InitializeMissionSevenPolice();
-                    Loading.UnloadModels(MostWantedMissions.MissionSevenModels_1);
 
                     for(var i = 0; i < neutrals.Count; i++)
                     {
@@ -227,14 +225,8 @@ class MissionSeven : Mission
                 {
                     if (Game.Player.Character.IsInRange(objectiveLocation, 1))
                     {
-                        if (Game.LastInputMethod == InputMethod.GamePad)
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to grab the ~g~bomb");
-                        } else
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to grab the ~g~bomb");
-                        }
-                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight))) 
+                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to grab the ~g~bomb");
+                        if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl)) 
                         {
                             props[0].Delete();
                             props.Clear();
@@ -255,15 +247,8 @@ class MissionSeven : Mission
                         Function.Call(Hash.DRAW_MARKER, 1, markerPosition.X, markerPosition.Y, markerPosition.Z, 0f, 0f, 0f, 0f, 0f, 0f, 0.75f, 0.75f, 0.75f, 255, 255, 0, 255, false, false, 2, false, false, false);
                         if (Game.Player.Character.IsInRange(markerPosition, 2))
                         {
-                            if (Game.LastInputMethod == InputMethod.GamePad)
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press RB to go to the ~y~roof");
-                            }
-                            else
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to go to the ~g~roof");
-                            }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptRB)))
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to go to the ~g~roof");
+                            if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                             {
                                 Game.Player.Character.Position = objectiveLocation;
                             }

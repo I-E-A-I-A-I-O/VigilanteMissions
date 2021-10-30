@@ -12,10 +12,22 @@ class Menu
     NativeMenu currentCrimesMenu;
     NativeItem callBackupOption;
     NativeMenu statsMenu;
+    NativeItem loseCopsOption;
     public bool jokerAdded = false;
     bool timerStarted = false;
     int startTime;
     int currentTime;
+    bool firstTime = true;
+    int lastTime;
+
+    readonly Dictionary<int, int> wantedLevelPrices = new Dictionary<int, int>()
+    {
+        { 1, 0 },
+        { 2, 1000 },
+        { 3, 10000 },
+        { 4, 25000 },
+        { 5, 50000 }
+    };
 
     readonly List<string> randomEvents = new List<string>()
     {
@@ -71,14 +83,85 @@ class Menu
         currentCrimesMenu = new NativeMenu("Current crimes", "Current crimes");
         menuPool.Add(currentCrimesMenu);
         mainMenu.AddSubMenu(currentCrimesMenu);
-        callBackupOption = new NativeItem("Call police backup");
+        callBackupOption = new NativeItem("Call backup", "Dispatch a police unit to your location");
         mainMenu.Add(callBackupOption);
+        if (Progress.jokerKilled)
+        {
+            loseCopsOption = new NativeItem("Lose cops", "Pay Lester to remove your wanted level");
+            mainMenu.Add(loseCopsOption);
+            loseCopsOption.Activated += LoseCopsOption_Activated;
+        }
         statsMenu = new NativeMenu("Stats", "Stats");
         menuPool.Add(statsMenu);
         mainMenu.AddSubMenu(statsMenu);
         statsMenu.Shown += StatsMenuShown;
         callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
+    }
+
+    public void UpdateLoseCopsTitle()
+    {
+        if (loseCopsOption.Enabled && Game.Player.WantedLevel == 0)
+        {
+            loseCopsOption.Title = "Lose cops";
+            loseCopsOption.Description = "Not available";
+            loseCopsOption.Enabled = false;
+        } else if (!loseCopsOption.Enabled && Game.Player.WantedLevel > 0)
+        {
+            if (firstTime)
+            {
+                goto Activate;
+            } else if (Game.GameTime - lastTime >= 600000)
+            {
+                goto Activate;
+            }
+
+            Activate:
+            {
+                loseCopsOption.Enabled = true;
+                loseCopsOption.Description = "Pay Lester to remove your wanted level";
+            }
+        } else if (loseCopsOption.Enabled && Game.Player.WantedLevel > 0)
+        {
+            loseCopsOption.Title = $"Lose cops - ${wantedLevelPrices[Game.Player.WantedLevel]}";
+        }
+    }
+
+    private void LoseCopsOption_Activated(object sender, EventArgs e)
+    {
+        if (Game.Player.WantedLevel == 0)
+        {
+            return;
+        }
+
+        if (firstTime)
+        {
+            lastTime = Game.GameTime;
+            firstTime = false;
+            goto Process;
+        } else if (Game.GameTime - lastTime >= 600000)
+        {
+            lastTime = Game.GameTime;
+            goto Process;
+        } else
+        {
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Level", "I can't do that again so soon! you are on your own for now");
+            return;
+        }
+
+        Process:
+        {
+            var price = wantedLevelPrices[Game.Player.WantedLevel];
+            if (Game.Player.Money < price)
+            {
+                GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Level", "Can't work for free, you know? Call me back when you got the money");
+                return;
+            }
+            Game.Player.Money -= price;
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Wanted Level", "Alright, i'll take care of it");
+            Game.Player.WantedLevel = 0;
+            menuPool.HideAll();
+        }
     }
 
     public void AddJoker()

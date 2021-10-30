@@ -8,11 +8,7 @@ internal static class Loading
     {
         foreach(Model model in models)
         {
-            model.Request();
-            if (!model.IsLoaded)
-            {
-                Script.Wait(0);
-            }
+            LoadModel(model);
         }
     }
 
@@ -29,7 +25,12 @@ internal static class Loading
         model.Request();
         while (!model.IsLoaded)
         {
-            Script.Wait(0);
+            Script.Wait(10);
+        }
+
+        if (!model.IsLoaded)
+        {
+            LoadModel(model);
         }
     }
 

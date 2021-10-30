@@ -2,6 +2,7 @@
 using GTA.Math;
 using System;
 using System.Collections.Generic;
+using GTA.Native;
 
 class MissionEight : Mission
 {
@@ -89,11 +90,9 @@ class MissionEight : Mission
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
 
-                    Loading.LoadModels(MostWantedMissions.MissionEightModels);
                     var peds = MostWantedMissions.InitializeMissionEightPeds();
                     props = MostWantedMissions.InitializeMissionEightProps();
                     vehicles = MostWantedMissions.InitializeMissionEightVehicles();
-                    Loading.UnloadModels(MostWantedMissions.MissionEightModels);
 
                     for (var i = 0; i < peds.Count; i++) 
                     {
@@ -125,15 +124,8 @@ class MissionEight : Mission
                 {
                     if (Game.Player.Character.IsInRange(objectiveLocation, 1))
                     {
-                        if (Game.LastInputMethod == InputMethod.GamePad)
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to grab the ~g~axe");
-                        }
-                        else
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to grab the ~g~axe");
-                        }
-                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to grab the ~g~axe");
+                        if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                         {
                             props[(int)Props.Fireaxe].Delete();
                             props.RemoveAt((int)Props.Fireaxe);

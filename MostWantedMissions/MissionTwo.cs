@@ -99,11 +99,9 @@ class MissionTwo : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
-                    Loading.LoadModels(MostWantedMissions.MissionTwoModels);
                     vehicles = MostWantedMissions.InitializeMissionTwoVehicles();
                     var peds = MostWantedMissions.InitializeMissionTwoPeds();
                     var neutrals = MostWantedMissions.InitializeMissionTwoCivilianPeds();
-                    Loading.UnloadModels(MostWantedMissions.MissionTwoModels);
                     for (var i = 0; i < peds.Count; i++)
                     {
                         if (i == (int)Enemies.CaptainGuard)

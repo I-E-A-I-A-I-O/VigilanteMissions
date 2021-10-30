@@ -73,7 +73,6 @@ class MissionFour : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
-                    Loading.LoadModels(MostWantedMissions.MissionFourModels);
                     vehicles = MostWantedMissions.InitializeMissionFourVehicles();
                     var peds = MostWantedMissions.InitializeMissionFourPeds();
                     for (var i = 0; i < peds.Count; i++)
@@ -191,14 +190,22 @@ class MissionFour : Mission
         vehicles[(int)Vehicles.ChaseVehicle].AttachedBlip.Color = BlipColor.Red;
         vehicles[(int)Vehicles.ChaseVehicle].AttachedBlip.Name = "Wanted target";
 
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Driver, PedHash.Pilot01SMM), enemies[0].GetPed().RelationshipGroup));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.Bankman), enemies[0].GetPed().RelationshipGroup));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.ExtraSeat1, PedHash.MerryWeatherCutscene), enemies[0].GetPed().RelationshipGroup));
+        var models = new List<Model>()
+        {
+            new Model(PedHash.Pilot01SMM),
+            new Model(PedHash.Bankman),
+            new Model(PedHash.PoloGoon01GMY)
+        };
 
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
-        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, PedHash.PoloGoon01GMY), enemies[0].GetPed().RelationshipGroup));
+        Loading.LoadModels(models);
 
-        Loading.UnloadModels(MostWantedMissions.MissionFourModels);
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Driver, models[0]), enemies[0].GetPed().RelationshipGroup));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.Plane].CreatePedOnSeat(VehicleSeat.Passenger, models[1]), enemies[0].GetPed().RelationshipGroup));
+
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Driver, models[2]), enemies[0].GetPed().RelationshipGroup));
+        enemies.Add(new MissionPed(vehicles[(int)Vehicles.ChaseVehicle].CreatePedOnSeat(VehicleSeat.Passenger, models[2]), enemies[0].GetPed().RelationshipGroup));
+
+        Loading.UnloadModels(models);
 
         Script.Wait(0);
 
@@ -221,7 +228,7 @@ class MissionFour : Mission
             MissionWorld.script.Tick -= CheckPlaneLocation;
             return;
         }
-        if (vehicles[(int)Vehicles.Plane].IsInRange(planeDestination, 100))
+        if (vehicles[(int)Vehicles.Plane].IsInRange(planeDestination, 250))
         {
             MissionWorld.QuitMission();
             Progress.missionsFailedCount += 1;
