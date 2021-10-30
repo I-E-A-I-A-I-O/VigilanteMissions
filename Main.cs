@@ -13,12 +13,9 @@ public class VigilanteMissions: Script
     bool rewardEnabled = false;
     bool filterEnabled = false;
     static Menu menu;
-    public static Keys accessComputerKey;
-    public static Keys interactMissionKey;
-    public static Keys cancelMissionKey;
-    string accessKey;
-    string cancelKey;
-    public static string interactKey;
+    public static Controls AccessComputerControl { get; private set; }
+    public static Controls InteractionControl { get; private set; }
+    public static Controls CancelMissionControl { get; private set; }
     ScriptSettings iniFile;
     int startTime;
     int currentTime;
@@ -30,33 +27,14 @@ public class VigilanteMissions: Script
     public VigilanteMissions()
     {
         iniFile = ScriptSettings.Load("scripts\\VigilanteMissionsConfig.ini");
-        accessKey = iniFile.GetValue("Controls", "AccessComputer", "E");
-        cancelKey = iniFile.GetValue("Controls", "CancelMission", "F1");
-        interactKey = iniFile.GetValue("Controls", "Interact", "E");
+        AccessComputerControl = iniFile.GetValue("Controls", "AccessComputer", Controls.INPUT_CONTEXT);
+        CancelMissionControl = iniFile.GetValue("Controls", "CancelMission", Controls.INPUT_SWITCH_VISOR);
+        InteractionControl = iniFile.GetValue("Controls", "Interact", Controls.INPUT_CONTEXT);
         rewardEnabled = iniFile.GetValue("Gameplay", "RewardEnabled", false);
         filterEnabled = iniFile.GetValue("Gameplay", "FilterOn", false);
         vehicleModels = iniFile.GetAllValues<string>("Gameplay", "VehicleModels");
         WOVCompatibility = iniFile.GetValue("Settings", "WorldOfVarietyCompatibility", false);
-        vehicleModels = vehicleModels[0].Split(','); ;
-
-        if (!Enum.TryParse(accessKey, out accessComputerKey))
-        {
-            accessKey = "E";
-            accessComputerKey = Keys.E;
-            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for accessing the police computer so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
-        }
-        if (!Enum.TryParse(cancelKey, out cancelMissionKey))
-        {
-            cancelKey = "F1";
-            cancelMissionKey = Keys.F1;
-            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for cancelling the mission so the default key ~g~F1~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
-        }
-        if (!Enum.TryParse(interactKey, out interactMissionKey))
-        {
-            interactKey = "E";
-            interactMissionKey = Keys.E;
-            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.Lester, "Lester", "Vigilante missions", "I couldn't set up the key for interacting so the default key ~g~E~w~ is being used. Make sure you didn't fuck up something in the ~y~ini file~w~.");
-        }
+        vehicleModels = vehicleModels[0].Split(',');
 
         for (var i = 0; i < vehicleModels.Length; i++)
         {
@@ -69,9 +47,9 @@ public class VigilanteMissions: Script
             }
         }
 
+        ReadProgress();
         new MissionWorld(this);
         menu = new Menu();
-        ReadProgress();
         AddJoker();
 
         Tick += (o, e) =>
@@ -84,8 +62,9 @@ public class VigilanteMissions: Script
             ShowOpenMenuMessage();
         };
 
-        Tick += GamepadControls;
-        KeyUp += KeyboardControls;
+        Tick += UpdateMenuItemTitle;
+        Tick += ControlWatch;
+        Tick += UpdateMenuItemTitle;
         Aborted += ScriptAborted;
     }
 
@@ -97,45 +76,32 @@ public class VigilanteMissions: Script
         }
     }
 
-    void KeyboardControls(object o, KeyEventArgs e)
+    void UpdateMenuItemTitle(object o, EventArgs e)
     {
-        if (e.KeyCode == accessComputerKey && !menu.menuPool.AreAnyVisible && isMenuOpenable)
+        menu.UpdateLoseCopsTitle();
+    }
+
+    void ControlWatch(object o, EventArgs e)
+    {
+        if (Function.Call<bool>(Hash.IS_CONTROL_JUST_PRESSED, 0, CancelMissionControl) && MissionWorld.isMissionActive)
+        {
+            startTime = Game.GameTime;
+        }
+
+        if (Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, CancelMissionControl) && MissionWorld.isMissionActive)
+        {
+            currentTime = Game.GameTime - startTime;
+            if (currentTime >= 3000)
+            {
+                GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
+                MissionWorld.QuitMission();
+            }
+        }
+
+        if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, AccessComputerControl) && !menu.menuPool.AreAnyVisible && isMenuOpenable)
         {
             menu.mainMenu.Visible = true;
         }
-        if (e.KeyCode == cancelMissionKey && MissionWorld.isMissionActive)
-        {
-            GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
-            MissionWorld.QuitMission();
-        }
-    }
-
-    void GamepadControls(object o, EventArgs e)
-    {
-        if (Game.LastInputMethod == InputMethod.MouseAndKeyboard)
-            {
-                return;
-            }
-
-            if (Game.IsControlJustPressed(GTA.Control.ScriptPadLeft) && MissionWorld.isMissionActive)
-            {
-                startTime = Game.GameTime;
-            }
-
-            if (Game.IsControlPressed(GTA.Control.ScriptPadLeft) && MissionWorld.isMissionActive)
-            {
-                currentTime = Game.GameTime - startTime;
-                if (currentTime >= 3000)
-                {
-                    GTA.UI.Screen.ShowSubtitle("~r~Vigilante mission canceled.");
-                    MissionWorld.QuitMission();
-                }
-            }
-
-            if (Game.IsControlJustReleased(GTA.Control.ScriptPadRight) && !menu.menuPool.AreAnyVisible && isMenuOpenable)
-            {
-                menu.mainMenu.Visible = true;
-            }
     }
 
     void ShowOpenMenuMessage()
@@ -146,19 +112,7 @@ public class VigilanteMissions: Script
             {
                 return;
             }
-            switch(Game.LastInputMethod)
-            {
-                case InputMethod.MouseAndKeyboard:
-                {
-                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press {accessKey.ToUpper()} to access the police computer");
-                    break;
-                }
-                case InputMethod.GamePad:
-                {
-                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press DPad Right to access the police computer");
-                    break;
-                }
-            }
+            GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{AccessComputerControl}~ to access the police computer");
         } else
         {
             if (menu.menuPool.AreAnyVisible)

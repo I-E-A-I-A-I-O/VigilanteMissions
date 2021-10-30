@@ -73,7 +73,6 @@ class MissionSix : Mission
                     }
                     Music.IncreaseIntensity();
                     ObjectiveLocationBlip.Delete();
-                    Loading.LoadModels(MostWantedMissions.MissionSixModels);
                     vehicles = MostWantedMissions.InitializeMissionSixVehicles();
                     var peds = MostWantedMissions.InitializeMissionSixPeds();
                     var neutrals = MostWantedMissions.InitializeMissionSixCivilianPeds();
@@ -185,13 +184,14 @@ class MissionSix : Mission
 
     void StartScenarios()
     {
-        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
-        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
+        var model = new Model(PedHash.ChiGoon01GMM);
+        Loading.LoadModel(model);
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Driver, model), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[0].CreatePedOnSeat(VehicleSeat.Passenger, model), enemies[0].GetRelGroup()));
 
-        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
-        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, new Model(PedHash.ChiGoon01GMM)), enemies[0].GetRelGroup()));
-
-        Loading.UnloadModels(MostWantedMissions.MissionSixModels);
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Driver, model), enemies[0].GetRelGroup()));
+        enemies.Add(new MissionPed(vehicles[1].CreatePedOnSeat(VehicleSeat.Passenger, model), enemies[0].GetRelGroup()));
+        Loading.UnloadModel(model);
 
         foreach (MissionPed ped in enemies)
         {

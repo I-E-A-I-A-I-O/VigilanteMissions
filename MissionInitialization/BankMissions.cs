@@ -18,7 +18,6 @@ static class BankMissions
         new Model(435429221),
         new Model(-625565461),
         new Model(1264851357),
-        new Model(835315305),
         new Model(-681004504)
     };
 

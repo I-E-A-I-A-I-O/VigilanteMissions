@@ -126,15 +126,8 @@ class MissionNine : Mission
                     }
                     if (Game.Player.Character.IsInRange(neutralPeds[(int)MotelRoomPeds.Jesse].GetPosition(), 2))
                     {
-                        if (Game.LastInputMethod == InputMethod.GamePad)
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to ~b~interrogate ~r~Jesse");
-                        }
-                        else
-                        {
-                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to ~b~interrogate ~r~Jesse");
-                        }
-                        if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to ~b~interrogate ~r~Jesse");
+                        if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                         {
                             neutralPeds[(int)MotelRoomPeds.Jesse].GetPed().PlayAmbientSpeech("GENERIC_FRIGHTENED_HIGH", SpeechModifier.ShoutedClear);
                             neutralPeds[(int)MotelRoomPeds.Jesse].GetTask().ClearAllImmediately();
@@ -260,15 +253,8 @@ class MissionNine : Mission
                     {
                         if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_ONE_POSITION, 1.1f))
                         {
-                            if (Game.LastInputMethod == InputMethod.GamePad)
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to plant the ~y~bomb");
-                            }
-                            else
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to plant the ~y~bomb");
-                            }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to plant the ~y~bomb");
+                            if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                             {
                                 PlayPlantBombAnim(Vector3.RelativeBack.ToHeading());
                                 Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
@@ -284,15 +270,8 @@ class MissionNine : Mission
                     {
                         if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_TWO_POSITION, 1.1f))
                         {
-                            if (Game.LastInputMethod == InputMethod.GamePad)
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to plant the ~y~bomb");
-                            }
-                            else
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to plant the ~y~bomb");
-                            }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to plant the ~y~bomb");
+                            if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                             {
                                 PlayPlantBombAnim(VigilanteMissions.WOVCompatibility ? Vector3.RelativeFront.ToHeading() : Vector3.RelativeBack.ToHeading());
                                 Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
@@ -308,15 +287,8 @@ class MissionNine : Mission
                     {
                         if (Game.Player.Character.IsInRange(MostWantedMissions.MISSION_NINE_LAB_BOMB_THREE_POSITION, 1.1f))
                         {
-                            if (Game.LastInputMethod == InputMethod.GamePad)
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to plant the ~y~bomb");
-                            }
-                            else
-                            {
-                                GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to plant the ~y~bomb");
-                            }
-                            if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                            GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to plant the ~y~bomb");
+                            if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                             {
                                 PlayPlantBombAnim(Vector3.RelativeFront.ToHeading());
                                 Loading.LoadModel(MostWantedMissions.MissionNineBombModel);
@@ -404,15 +376,8 @@ class MissionNine : Mission
                 }
             case Objectives.DestroyLab:
                 {
-                    if (Game.LastInputMethod == InputMethod.GamePad)
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame("Press DPad Right to blow up the ~y~meth lab");
-                    }
-                    else
-                    {
-                        GTA.UI.Screen.ShowHelpTextThisFrame($"Press {VigilanteMissions.interactKey} to blow up the ~y~meth lab");
-                    }
-                    if ((Game.LastInputMethod == InputMethod.MouseAndKeyboard && Game.IsKeyPressed(VigilanteMissions.interactMissionKey)) || (Game.LastInputMethod == InputMethod.GamePad && Game.IsControlJustReleased(GTA.Control.ScriptPadRight)))
+                    GTA.UI.Screen.ShowHelpTextThisFrame($"Press ~{VigilanteMissions.InteractionControl}~ to blow up the ~y~meth lab");
+                    if (Function.Call<bool>(Hash.IS_CONTROL_JUST_RELEASED, 0, VigilanteMissions.InteractionControl))
                     {
                         World.AddExplosion(MostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
                         World.AddExplosion(MostWantedMissions.MISSION_NINE_LAB_LOCATION, ExplosionType.Tanker, 50, 15);
