@@ -78,7 +78,13 @@ public class VigilanteMissions: Script
 
     void UpdateMenuItemTitle(object o, EventArgs e)
     {
-        menu.UpdateLoseCopsTitle();
+        if (Progress.jokerKilled && menu.LoseCopsAdded)
+        {
+            menu.UpdateLoseCopsTitle();
+        } else if (Progress.jokerKilled && !menu.LoseCopsAdded)
+        {
+            menu.AddLoseCops();
+        }
     }
 
     void ControlWatch(object o, EventArgs e)
