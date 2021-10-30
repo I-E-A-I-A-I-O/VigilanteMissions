@@ -8,6 +8,7 @@ class Menu
 {
     public ObjectPool menuPool;
     public NativeMenu mainMenu;
+    public bool LoseCopsAdded { get; private set; } = false;
     NativeMenu mostWantedMenu;
     NativeMenu currentCrimesMenu;
     NativeItem callBackupOption;
@@ -87,9 +88,7 @@ class Menu
         mainMenu.Add(callBackupOption);
         if (Progress.jokerKilled)
         {
-            loseCopsOption = new NativeItem("Lose cops", "Pay Lester to remove your wanted level");
-            mainMenu.Add(loseCopsOption);
-            loseCopsOption.Activated += LoseCopsOption_Activated;
+            AddLoseCops();
         }
         statsMenu = new NativeMenu("Stats", "Stats");
         menuPool.Add(statsMenu);
@@ -97,6 +96,14 @@ class Menu
         statsMenu.Shown += StatsMenuShown;
         callBackupOption.Activated += BackUpCalled;
         currentCrimesMenu.Shown += CurrentCrimesMenu_Shown;
+    }
+
+    public void AddLoseCops()
+    {
+        LoseCopsAdded = true;
+        loseCopsOption = new NativeItem("Lose cops", "Pay Lester to remove your wanted level");
+        mainMenu.Add(loseCopsOption);
+        loseCopsOption.Activated += LoseCopsOption_Activated;
     }
 
     public void UpdateLoseCopsTitle()
