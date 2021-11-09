@@ -36,6 +36,7 @@ class PoliceBackup
             var ped = vehicle.CreatePedOnSeat(VehicleSeat.Driver, models[1]);
             Loading.LoadModels(models);
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped.Handle, Game.GenerateHash("COP"));
+            Function.Call(Hash.SET_PED_AS_COP, ped.Handle, true);
             ped.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             police.Add(ped);
         } else
@@ -51,6 +52,8 @@ class PoliceBackup
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, pedCopilot.Handle, Game.GenerateHash("COP"));
             pedDriver.Weapons.Give(WeaponHash.Pistol, 100, true, true);
             pedCopilot.Weapons.Give(WeaponHash.PumpShotgun, 100, true, true);
+            Function.Call(Hash.SET_PED_AS_COP, pedDriver.Handle, true);
+            Function.Call(Hash.SET_PED_AS_COP, pedCopilot.Handle, true);
             police.Add(pedDriver);
             police.Add(pedCopilot);
         }

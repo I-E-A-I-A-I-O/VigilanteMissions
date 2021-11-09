@@ -131,6 +131,7 @@ class MissionSeven : Mission
                         neutralPeds.Add(new MissionPed(neutrals[i], "COP"));
                         neutralPeds[i].GetPed().Accuracy = 10;
                         Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, neutralPeds[i].GetPed().Handle, 1);
+                        Function.Call(Hash.SET_PED_AS_COP, neutralPeds[i].GetPed().Handle, true);
                     }
 
                     for (var i = 0; i < peds.Count; i++)
